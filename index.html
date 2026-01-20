@@ -3,143 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia Clínica Neonatal Completa</title>
+    <title>Historia Clínica Neonatología - Completa</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.4; padding: 20px; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; text-align: center; text-transform: uppercase; }
-        h3 { color: #2980b9; background: #eaf2f8; padding: 8px; border-left: 5px solid #2980b9; margin-top: 25px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .field { margin-bottom: 12px; }
-        label { font-weight: bold; display: block; font-size: 0.9em; margin-bottom: 4px; color: #444; }
-        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        textarea { resize: vertical; height: 60px; }
-        .calc-box { background: #fdfefe; border: 2px solid #3498db; padding: 20px; border-radius: 10px; margin-top: 20px; }
-        .result-container { display: flex; justify-content: space-around; background: #2c3e50; color: white; padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .result-item { text-align: center; }
-        .result-value { display: block; font-size: 1.4em; font-weight: bold; color: #5dade2; }
-        .full-width { grid-column: span 3; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); padding: 20px; line-height: 1.5; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 25px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: var(--primary); border-bottom: 3px solid var(--secondary); padding-bottom: 10px; }
+        h3 { background: var(--secondary); color: white; padding: 10px; border-radius: 5px; margin-top: 30px; font-size: 1.1em; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .field { display: flex; flex-direction: column; }
+        label { font-weight: bold; font-size: 0.85em; color: #555; margin-bottom: 4px; }
+        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        /* Calculadoras */
+        .calc-section { background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .result-badge { background: var(--primary); color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; margin-top: 10px; display: inline-block; }
+        
+        /* Formato ADCAVANDIMELCO */
+        .adcavandimelco { background: #fff8e1; border-left: 5px solid #ffc107; padding: 15px; margin-top: 20px; }
+        
+        @media print {
+            .no-print { display: none; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Historia Clínica Perinatal</h2>
+    <h1>NOTA DE INGRESO - NEONATOLOGÍA</h1>
 
-    <h3>1. Identificación y Filiación</h3>
+    <h3>1. Datos del Neonato</h3>
     <div class="grid">
-        <div class="field"><label>Nombre del Neonato:</label><input type="text" placeholder="Apellidos, Nombres"></div>
-        <div class="field"><label>Fecha de Nacimiento:</label><input type="date"></div>
-        <div class="field"><label>Hora:</label><input type="time"></div>
-        <div class="field"><label>Sexo:</label>
-            <select><option>Masculino</option><option>Femenino</option><option>Indeterminado</option></select>
-        </div>
-        <div class="field"><label>Nombre de la Madre:</label><input type="text"></div>
-        <div class="field"><label>Nombre del Padre:</label><input type="text"></div>
+        <div class="field"><label>Nombre:</label><input type="text"></div>
+        <div class="field"><label>Fecha Nacimiento:</label><input type="date"></div>
+        <div class="field"><label>Fecha Ingreso:</label><input type="date"></div>
+        <div class="field"><label>Edad (Horas/Días):</label><input type="text"></div>
+        <div class="field"><label>Sexo:</label><select><option>Masculino</option><option>Femenino</option><option>Indeterminado</option></select></div>
+        <div class="field"><label>Raza:</label><input type="text"></div>
+        <div class="field"><label>Nº Cédula:</label><input type="text"></div>
     </div>
 
-    <h3>2. Antecedentes Maternos (Gineco-Obstétricos)</h3>
+    <h3>2. Datos de los Padres</h3>
+    <p><strong>Padre:</strong></p>
     <div class="grid">
-        <div class="field"><label>Edad Materna:</label><input type="number"></div>
-        <div class="field"><label>Grupo Sanguíneo/Factor:</label><input type="text"></div>
-        <div class="field"><label>Gestas (G):</label><input type="number"></div>
-        <div class="field"><label>Partos (P):</label><input type="number"></div>
-        <div class="field"><label>Cesáreas (C):</label><input type="number"></div>
-        <div class="field"><label>Abortos (A):</label><input type="number"></div>
-        <div class="field full-width">
-            <label>Antecedentes Patológicos (Diabetes, HTA, Preeclampsia, Infecciones):</label>
-            <textarea placeholder="Describa enfermedades previas o durante el embarazo..."></textarea>
+        <div class="field"><label>Nombre:</label><input type="text"></div>
+        <div class="field"><label>Cédula:</label><input type="text"></div>
+        <div class="field"><label>Teléfono:</label><input type="text"></div>
+        <div class="field"><label>Dirección:</label><input type="text"></div>
+        <div class="field"><label>Cobertura Salud:</label><input type="text"></div>
+    </div>
+    <p><strong>Madre:</strong></p>
+    <div class="grid">
+        <div class="field"><label>Nombre:</label><input type="text"></div>
+        <div class="field"><label>Cédula:</label><input type="text"></div>
+        <div class="field"><label>Teléfono:</label><input type="text"></div>
+        <div class="field"><label>Dirección:</label><input type="text"></div>
+        <div class="field"><label>Cobertura Salud:</label><input type="text"></div>
+    </div>
+
+    <h3>3. Historia Materna y Antecedentes</h3>
+    <div class="grid">
+        <div class="field"><label>Edad Madre:</label><input type="number"></div>
+        <div class="field"><label>Raza:</label><input type="text"></div>
+        <div class="field"><label>Instrucción:</label><input type="text"></div>
+        <div class="field"><label>Lugar Nacimiento:</label><input type="text"></div>
+        <div class="field"><label>Lugar Residencia:</label><input type="text"></div>
+        <div class="field"><label>Estado Civil:</label><input type="text"></div>
+        <div class="field"><label>Religión:</label><input type="text"></div>
+        <div class="field"><label>Tipo Sangre:</label><input type="text"></div>
+    </div>
+    
+    <div class="grid">
+        <div class="field"><label>A. Patológicos Familiares:</label><textarea></textarea></div>
+        <div class="field"><label>A. Patológicos Personales:</label><textarea></textarea></div>
+        <div class="field"><label>A. Quirúrgicos:</label><textarea></textarea></div>
+    </div>
+    
+    <div class="grid">
+        <div class="field"><label>Alergias:</label><input type="text"></div>
+        <div class="field"><label>Hábitos (Alcohol/Tabaco/Drogas):</label><input type="text"></div>
+    </div>
+
+    <h3>4. Antecedentes Gineco-Obstétricos</h3>
+    <div class="grid">
+        <div class="field"><label>Menarquia:</label><input type="text"></div>
+        <div class="field"><label>Ciclos:</label><input type="text"></div>
+        <div class="field"><label>IVSA (Edad):</label><input type="number"></div>
+        <div class="field"><label>Parejas Sex:</label><input type="number"></div>
+        <div class="field"><label>Planificación:</label><input type="text"></div>
+        <div class="field"><label>Paptest / ETS:</label><input type="text"></div>
+    </div>
+    <div class="grid">
+        <div class="field"><label>FUM:</label><input type="date"></div>
+        <div class="field"><label>Edad Gestacional (Actual):</label><input type="text"></div>
+        <div class="field"><label>Nº Gestas:</label><input type="number"></div>
+        <div class="field"><label>Controles Prenatales:</label><input type="number"></div>
+        <div class="field"><label>Nº Ecos:</label><input type="number"></div>
+        <div class="field"><label>Vacunas/Complementos:</label><input type="text"></div>
+    </div>
+    <div class="grid">
+        <div class="field"><label>Infecciones Embarazo:</label><input type="text"></div>
+        <div class="field"><label>Ruptura Membrana (Horas):</label><input type="text"></div>
+        <div class="field"><label>Maduración Pulmonar:</label><input type="text"></div>
+        <div class="field"><label>Antecedente Importancia:</label><textarea></textarea></div>
+    </div>
+
+    <h3>5. Evolución del Neonato</h3>
+    <div class="grid">
+        <div class="field"><label>Antecedentes Prenatales:</label><textarea></textarea></div>
+        <div class="field"><label>Antecedentes Natales:</label><textarea></textarea></div>
+        <div class="field"><label>Antecedentes Postnatales:</label><textarea></textarea></div>
+    </div>
+    <div class="grid">
+        <div class="field"><label>Motivo Consulta:</label><textarea></textarea></div>
+        <div class="field"><label>Enfermedad Actual:</label><textarea></textarea></div>
+    </div>
+
+    <h3>6. Examen Físico y Signos Vitales</h3>
+    <div class="grid">
+        <div class="field"><label>FC:</label><input type="text"></div>
+        <div class="field"><label>FR:</label><input type="text"></div>
+        <div class="field"><label>Temp:</label><input type="text"></div>
+        <div class="field"><label>Sato2:</label><input type="text"></div>
+        <div class="field"><label>Peso (g):</label><input type="number" id="pesoG"></div>
+        <div class="field"><label>Talla (cm):</label><input type="number"></div>
+        <div class="field"><label>PC (cm):</label><input type="number"></div>
+    </div>
+    <div class="field"><label>Examen Físico Regional:</label><textarea></textarea></div>
+    <div class="field"><label>Diagnósticos de Ingreso:</label><textarea></textarea></div>
+
+    <h3>7. Calculadoras Clínicas</h3>
+    
+    <div class="grid">
+        <div class="calc-section">
+            <label><strong>Puntaje APGAR (5 min)</strong></label>
+            <select id="apgar" onchange="calcApgar()">
+                <option value="10">10 (Normal)</option>
+                <option value="7">7-9 (Normal)</option>
+                <option value="4">4-6 (Depresión Moderada)</option>
+                <option value="0">0-3 (Depresión Severa)</option>
+            </select>
+            <div id="resApgar" class="result-badge">Resultado: -</div>
         </div>
-        <div class="field full-width">
-            <label>Antecedentes Quirúrgicos y Alérgicos:</label>
-            <textarea placeholder="Cirugías previas, alergias a medicamentos..."></textarea>
+
+        <div class="calc-section">
+            <label><strong>Capurro (Somático)</strong></label>
+            <input type="number" id="capurroPuntos" placeholder="Suma de puntos" oninput="calcCapurro()">
+            <div id="resCapurro" class="result-badge">EG: - semanas</div>
+        </div>
+
+        <div class="calc-section">
+            <label><strong>Score de Downes (Dificultad Resp.)</strong></label>
+            <input type="number" id="downesVal" placeholder="0-10" oninput="calcDownes()">
+            <div id="resDownes" class="result-badge">Severidad: -</div>
         </div>
     </div>
 
-    <h3>3. Datos del Embarazo Actual y Parto</h3>
-    <div class="grid">
-        <div class="field"><label>Edad Gestacional (Semanas):</label><input type="number" step="0.1"></div>
-        <div class="field"><label>Control Prenatal (Nº):</label><input type="number"></div>
-        <div class="field"><label>Ruptura Membrana (Horas):</label><input type="number"></div>
-        <div class="field"><label>Tipo de Parto:</label>
-            <select><option>Eutócico (Vaginal)</option><option>Cesárea</option><option>Instrumentado</option></select>
-        </div>
-        <div class="field"><label>Líquido Amniótico:</label><input type="text" placeholder="Claro, meconial, etc."></div>
-        <div class="field"><label>Apgar (1 min / 5 min):</label><input type="text" placeholder="Ej: 8/9"></div>
-    </div>
-
-    <h3>4. Antecedentes Familiares</h3>
-    <div class="grid">
-        <div class="field full-width">
-            <textarea placeholder="Antecedentes del padre, hermanos o enfermedades hereditarias..."></textarea>
-        </div>
-    </div>
-
-    <h3>5. Calculadoras de Infusión (Nutrición Parenteral/Hidratación)</h3>
-    <div class="calc-box">
+    <div class="calc-section">
+        <label><strong>Cálculo de Líquidos e Infusión</strong></label>
         <div class="grid">
-            <div class="field">
-                <label>Peso del Neonato (kg):</label>
-                <input type="number" id="peso" step="0.001" placeholder="Ej: 2.500" oninput="calcularTodo()">
-            </div>
-            <div class="field">
-                <label>VCT (ml/kg/día):</label>
-                <input type="number" id="vct" placeholder="Ej: 80" oninput="calcularTodo()">
-            </div>
-            <div class="field">
-                <label>VIG (mg/kg/min):</label>
-                <input type="number" id="vig" step="0.1" placeholder="Ej: 4" oninput="calcularTodo()">
-            </div>
+            <div class="field"><label>Peso (kg):</label><input type="number" id="calcPeso" step="0.01" oninput="calcFluidos()"></div>
+            <div class="field"><label>VCT (ml/kg/d):</label><input type="number" id="calcVct" oninput="calcFluidos()"></div>
+            <div class="field"><label>VIG (mg/kg/min):</label><input type="number" id="calcVig" step="0.1" oninput="calcFluidos()"></div>
         </div>
+        <div id="resFluidos" class="result-badge">Líquidos Totales: - | Glucosa: -</div>
+    </div>
 
-        <div class="result-container">
-            <div class="result-item">
-                <small>Líquidos Totales (24h)</small>
-                <span class="result-value" id="resLiquidos">0 ml</span>
-            </div>
-            <div class="result-item">
-                <small>Concentración Glucosa</small>
-                <span class="result-value" id="resConcentracion">0 %</span>
-            </div>
-            <div class="result-item">
-                <small>Goteo (ml/hr)</small>
-                <span class="result-value" id="resGoteo">0 ml/h</span>
-            </div>
+    <h3>8. Indicaciones Médicas (ADCAVANDIMELCO)</h3>
+    <div class="adcavandimelco">
+        <div class="grid">
+            <div class="field"><label>A (Alimentación):</label><input type="text"></div>
+            <div class="field"><label>D (Dieta/Líquidos):</label><input type="text"></div>
+            <div class="field"><label>C (Controles/Signos):</label><input type="text"></div>
+            <div class="field"><label>A (Actividad):</label><input type="text"></div>
+            <div class="field"><label>V (Vitales/Monitor):</label><input type="text"></div>
+            <div class="field"><label>A (Alergias):</label><input type="text"></div>
+            <div class="field"><label>N (Notificar cambios):</label><input type="text"></div>
+            <div class="field"><label>D (Diagnósticos):</label><input type="text"></div>
+            <div class="field"><label>I (Insumos):</label><input type="text"></div>
+            <div class="field"><label>M (Medicamentos):</label><textarea></textarea></div>
+            <div class="field"><label>E (Exámenes):</label><textarea></textarea></div>
+            <div class="field"><label>L (Líquidos IV):</label><input type="text"></div>
+            <div class="field"><label>C (Cuidados Enfermería):</label><textarea></textarea></div>
+            <div class="field"><label>O (Otras/Consultas):</label><input type="text"></div>
         </div>
     </div>
 
-    <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 0.8em;">
-        Sistema de Registro Neonatal v2.0 - Actualizado
-    </div>
+    <button class="no-print" onclick="window.print()" style="margin-top:20px; padding:10px 20px; cursor:pointer; background:var(--secondary); color:white; border:none; border-radius:5px;">Imprimir / Guardar PDF</button>
 </div>
 
 <script>
-function calcularTodo() {
-    const peso = parseFloat(document.getElementById('peso').value) || 0;
-    const vct = parseFloat(document.getElementById('vct').value) || 0;
-    const vig = parseFloat(document.getElementById('vig').value) || 0;
+function calcApgar() {
+    const val = document.getElementById('apgar').value;
+    let msg = val >= 7 ? "Normal" : (val >= 4 ? "Depresión Moderada" : "Depresión Severa");
+    document.getElementById('resApgar').innerText = "Estado: " + msg;
+}
 
-    if (peso > 0) {
-        // 1. Líquidos Totales
-        const liqTotales = peso * vct;
-        document.getElementById('resLiquidos').innerText = liqTotales.toFixed(1) + " ml";
+function calcCapurro() {
+    const puntos = parseFloat(document.getElementById('capurroPuntos').value) || 0;
+    if(puntos > 0) {
+        const eg = (puntos + 204) / 7;
+        document.getElementById('resCapurro').innerText = "EG: " + eg.toFixed(1) + " semanas";
+    }
+}
 
-        // 2. Goteo por hora
-        const goteo = liqTotales / 24;
-        document.getElementById('resGoteo').innerText = goteo.toFixed(1) + " ml/h";
+function calcDownes() {
+    const d = parseInt(document.getElementById('downesVal').value) || 0;
+    let msg = d <= 3 ? "Leve" : (d <= 5 ? "Moderado" : "Grave");
+    document.getElementById('resDownes').innerText = "Dificultad: " + msg;
+}
 
-        // 3. Concentración de Glucosa sugerida para mantener el VIG
-        // Fórmula: (VIG * 1.44 * Peso) / (Líquidos_en_100ml)
-        if (liqTotales > 0) {
-            const concentracion = (vig * 1.44 * peso) / (liqTotales / 100);
-            document.getElementById('resConcentracion').innerText = concentracion.toFixed(1) + " %";
-        } else {
-            document.getElementById('resConcentracion').innerText = "0 %";
-        }
-    } else {
-        document.getElementById('resLiquidos').innerText = "0 ml";
-        document.getElementById('resGoteo').innerText = "0 ml/h";
-        document.getElementById('resConcentracion').innerText = "0 %";
+function calcFluidos() {
+    const p = parseFloat(document.getElementById('calcPeso').value) || 0;
+    const vct = parseFloat(document.getElementById('calcVct').value) || 0;
+    const vig = parseFloat(document.getElementById('calcVig').value) || 0;
+    
+    if(p > 0 && vct > 0) {
+        const liq = p * vct;
+        const conc = (vig * 1.44 * p) / (liq / 100);
+        document.getElementById('resFluidos').innerText = "Total: " + liq.toFixed(1) + " ml/día | Conc. Glucosa: " + conc.toFixed(1) + "%";
     }
 }
 </script>

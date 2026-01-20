@@ -3,123 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoLog Pro V7 - Word Export</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Historia Clínica Neonatal Completa</title>
     <style>
-        .input-group { @apply mb-6 p-4 bg-white rounded-2xl shadow-sm border border-gray-200; }
-        label { @apply block text-[10px] font-black text-blue-900 mb-1 uppercase tracking-wider; }
-        input, select, textarea { @apply w-full p-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm mt-1; }
-        .indicacion-label { @apply font-bold text-blue-600 mr-2 min-w-[20px] inline-block; }
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        h3 { color: #2980b9; margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .field { margin-bottom: 10px; }
+        label { font-weight: bold; display: block; color: #555; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .calc-box { background: #eef2f7; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 5px solid #3498db; }
+        .result { font-weight: bold; color: #2c3e50; background: #fff; padding: 5px; border-radius: 4px; border: 1px inset #eee; min-height: 24px; display: block; margin-top: 5px; }
     </style>
 </head>
-<body class="bg-slate-100 pb-40 font-sans text-gray-800">
- 
-<nav class="bg-blue-900 text-white p-4 sticky top-0 z-50 shadow-lg">
-    <h1 class="text-center text-sm font-bold tracking-widest">🏥 HISTORIA CLÍNICA NEONATAL</h1>
-</nav>
- 
-<div class="max-w-2xl mx-auto p-4">
-    
-    <div class="input-group">
-        <h2 class="text-blue-800 font-black mb-3 text-xs border-b pb-1">👤 IDENTIFICACIÓN</h2>
-        <input type="text" id="nombre" placeholder="Nombre del Neonato">
-        <input type="text" id="id" placeholder="Cédula / Historia Clínica" class="mt-2">
+<body>
+
+<div class="container">
+    <h2>Historia Clínica Neonatal</h2>
+
+    <h3>Datos de la Madre</h3>
+    <div class="grid">
+        <div class="field"><label>Nombre de la Madre:</label><input type="text" placeholder="Nombre completo"></div>
+        <div class="field"><label>Edad:</label><input type="number"></div>
+        <div class="field"><label>Gesta:</label><input type="number" placeholder="Ej: 2"></div>
+        <div class="field"><label>Partos:</label><input type="number"></div>
+        <div class="field"><label>Abortos / Cesáreas:</label><input type="text"></div>
+        <div class="field"><label>Grupo Sanguíneo:</label><input type="text" placeholder="Ej: O+"></div>
     </div>
- 
-    <div class="input-group grid grid-cols-2 gap-2">
-        <div><label>Capurro (EG)</label><input type="text" id="capurro" placeholder="Semanas"></div>
-        <div><label>Apgar</label><input type="text" id="apgar" placeholder="1'/5'"></div>
+
+    <h3>Datos del Padre</h3>
+    <div class="grid">
+        <div class="field"><label>Nombre del Padre:</label><input type="text"></div>
+        <div class="field"><label>Edad:</label><input type="number"></div>
+        <div class="field"><label>Antecedentes de Importancia:</label><input type="text"></div>
     </div>
- 
-    <div class="input-group border-green-200 bg-green-50">
-        <h2 class="text-green-800 font-black mb-3 text-xs border-b border-green-200 pb-1">📝 INDICACIONES (AADCAVANDIMELCO)</h2>
-        <div class="space-y-3">
-            <div><label><span class="indicacion-label">A</span> Admisión/Alimentación</label><input type="text" id="ind_a" value="Admisión a UCIN / Ayuno"></div>
-            <div><label><span class="indicacion-label">A</span> Actividad</label><input type="text" id="ind_a2" value="Reposo en termocuna"></div>
-            <div><label><span class="indicacion-label">D</span> Dieta</label><input type="text" id="ind_d" value="Leche materna por sonda si tolera"></div>
-            <div><label><span class="indicacion-label">C</span> Cuidados de Enfermería</label><input type="text" id="ind_c" value="CSV cada 2 horas, control de diuresis"></div>
-            <div><label><span class="indicacion-label">A</span> Alergias</label><input type="text" id="ind_al" value="No conocidas"></div>
-            <div><label><span class="indicacion-label">V</span> Vitales</label><input type="text" id="ind_v" value="Monitorización continua de SatO2 y FC"></div>
-            <div><label><span class="indicacion-label">A</span> Antropometría</label><input type="text" id="ind_an" value="Peso diario"></div>
-            <div><label><span class="indicacion-label">N</span> Notificar</label><input type="text" id="ind_n" value="Cambios en patrón respiratorio"></div>
-            <div><label><span class="indicacion-label">D</span> Diagnóstico</label><textarea id="ind_di">Sepsis neonatal temprana a descartar</textarea></div>
-            <div><label><span class="indicacion-label">I</span> Interconsultas</label><input type="text" id="ind_i" value="Cardiología pediátrica"></div>
-            <div><label><span class="indicacion-label">M</span> Medicamentos</label><textarea id="ind_m">Ampicilina + Amikacina (dosis según peso)</textarea></div>
-            <div><label><span class="indicacion-label">E</span> Exámenes</label><textarea id="ind_e">BH, PCR, Hemocultivo, Rx Tórax</textarea></div>
-            <div><label><span class="indicacion-label">L</span> Líquidos</label><input type="text" id="ind_l" value="Dextrosa 10% TIG 6 mg/kg/min"></div>
-            <div><label><span class="indicacion-label">C</span> Consultas/Citas</label><input type="text" id="ind_co" value="Pendiente"></div>
-            <div><label><span class="indicacion-label">O</span> Observaciones</label><input type="text" id="ind_o" value="Vigilar tolerancia gástrica"></div>
+
+    <h3>Datos del Neonato</h3>
+    <div class="grid">
+        <div class="field"><label>Nombre del Neonato:</label><input type="text" placeholder="Apellidos/Nombre"></div>
+        <div class="field"><label>Fecha de Nacimiento:</label><input type="date"></div>
+        <div class="field"><label>Hora:</label><input type="time"></div>
+        <div class="field"><label>Sexo:</label>
+            <select>
+                <option>Masculino</option>
+                <option>Femenino</option>
+                <option>Indeterminado</option>
+            </select>
         </div>
     </div>
- 
-    <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t flex flex-col gap-2 shadow-2xl z-50">
-        <button onclick="copiarWhatsApp()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2">
-            📱 COPIAR PARA WHATSAPP
-        </button>
-        <button onclick="exportarWord()" class="w-full bg-blue-800 text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2">
-            📄 DESCARGAR PARA WORD (.doc)
-        </button>
+
+    <h3>Calculadoras de Líquidos y Glucosa</h3>
+    <div class="calc-box">
+        <div class="grid">
+            <div class="field">
+                <label>Peso Actual (kg):</label>
+                <input type="number" id="peso" step="0.001" oninput="calcular()">
+            </div>
+            <div class="field">
+                <label>Aporte de Líquidos (ml/kg/d):</label>
+                <input type="number" id="vct" step="1" oninput="calcular()">
+            </div>
+            <div class="field">
+                <label>VIG (mg/kg/min):</label>
+                <input type="number" id="vig" step="0.1" oninput="calcular()">
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; border-top: 1px solid #ccc; pt-10">
+            <p><strong>Resultados Sugeridos:</strong></p>
+            <div class="grid">
+                <div class="field">Líquidos Totales (24h): <span id="resLiquidos" class="result">0 ml</span></div>
+                <div class="field">Concentración de Glucosa: <span id="resConcentracion" class="result">0 %</span></div>
+            </div>
+        </div>
     </div>
 </div>
- 
+
 <script>
-    function obtenerTextoBase() {
-        const v = (id) => document.getElementById(id).value;
-        const fecha = new Date().toLocaleDateString();
- 
-        return `
-HISTORIA CLÍNICA Y PLAN DE MANEJO
-Fecha: ${fecha}
-Paciente: ${v('nombre')}
-ID: ${v('id')}
- 
-VALORACIÓN INICIAL:
-- Capurro: ${v('capurro')}
-- Apgar: ${v('apgar')}
- 
-INDICACIONES (AADCAVANDIMELCO):
-A: ${v('ind_a')}
-A: ${v('ind_a2')}
-D: ${v('ind_d')}
-C: ${v('ind_c')}
-A: ${v('ind_al')}
-V: ${v('ind_v')}
-A: ${v('ind_an')}
-N: ${v('ind_n')}
-D: ${v('ind_di')}
-I: ${v('ind_i')}
-M: ${v('ind_m')}
-E: ${v('ind_e')}
-L: ${v('ind_l')}
-C: ${v('ind_co')}
-O: ${v('ind_o')}
-        `;
+function calcular() {
+    const peso = parseFloat(document.getElementById('peso').value) || 0;
+    const vct = parseFloat(document.getElementById('vct').value) || 0;
+    const vig = parseFloat(document.getElementById('vig').value) || 0;
+
+    if (peso > 0) {
+        // Líquidos totales
+        const liqTotales = peso * vct;
+        document.getElementById('resLiquidos').innerText = liqTotales.toFixed(1) + " ml";
+
+        // Cálculo de Concentración de Glucosa (Fórmula estándar)
+        // Concentración = (VIG * 1.44 * Peso) / (Líquidos Totales / 100)
+        if (liqTotales > 0) {
+            const concentracion = (vig * 1.44 * peso) / (liqTotales / 100);
+            document.getElementById('resConcentracion').innerText = concentracion.toFixed(1) + " %";
+        }
     }
- 
-    function copiarWhatsApp() {
-        navigator.clipboard.writeText(obtenerTextoBase()).then(() => alert("✅ Copiado para WhatsApp"));
-    }
- 
-    function exportarWord() {
-        const texto = obtenerTextoBase().replace(/\n/g, '<br>');
-        const contenidoHTML = `
-            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-            <head><meta charset='utf-8'><title>Historia Clinica</title></head>
-            <body style="font-family: Arial; font-size: 12pt;">
-                <h2 style="text-align: center; color: blue;">NOTA DE INGRESO NEONATAL</h2>
-                ${texto}
-            </body>
-            </html>
-        `;
- 
-        const blob = new Blob(['\ufeff', contenidoHTML], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = "Historia_Clinica_Neo.doc";
-        link.click();
-    }
+}
 </script>
+
 </body>
 </html>
-

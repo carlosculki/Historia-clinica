@@ -5,98 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historia Clínica Neonatal Completa</title>
     <style>
-        body { font-family: sans-serif; line-height: 1.6; padding: 20px; background-color: #f4f7f6; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
-        h3 { color: #2980b9; margin-top: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .field { margin-bottom: 10px; }
-        label { font-weight: bold; display: block; color: #555; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        .calc-box { background: #eef2f7; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 5px solid #3498db; }
-        .result { font-weight: bold; color: #2c3e50; background: #fff; padding: 5px; border-radius: 4px; border: 1px inset #eee; min-height: 24px; display: block; margin-top: 5px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.4; padding: 20px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; text-align: center; text-transform: uppercase; }
+        h3 { color: #2980b9; background: #eaf2f8; padding: 8px; border-left: 5px solid #2980b9; margin-top: 25px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .field { margin-bottom: 12px; }
+        label { font-weight: bold; display: block; font-size: 0.9em; margin-bottom: 4px; color: #444; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        textarea { resize: vertical; height: 60px; }
+        .calc-box { background: #fdfefe; border: 2px solid #3498db; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .result-container { display: flex; justify-content: space-around; background: #2c3e50; color: white; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .result-item { text-align: center; }
+        .result-value { display: block; font-size: 1.4em; font-weight: bold; color: #5dade2; }
+        .full-width { grid-column: span 3; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Historia Clínica Neonatal</h2>
+    <h2>Historia Clínica Perinatal</h2>
 
-    <h3>Datos de la Madre</h3>
+    <h3>1. Identificación y Filiación</h3>
     <div class="grid">
-        <div class="field"><label>Nombre de la Madre:</label><input type="text" placeholder="Nombre completo"></div>
-        <div class="field"><label>Edad:</label><input type="number"></div>
-        <div class="field"><label>Gesta:</label><input type="number" placeholder="Ej: 2"></div>
-        <div class="field"><label>Partos:</label><input type="number"></div>
-        <div class="field"><label>Abortos / Cesáreas:</label><input type="text"></div>
-        <div class="field"><label>Grupo Sanguíneo:</label><input type="text" placeholder="Ej: O+"></div>
-    </div>
-
-    <h3>Datos del Padre</h3>
-    <div class="grid">
-        <div class="field"><label>Nombre del Padre:</label><input type="text"></div>
-        <div class="field"><label>Edad:</label><input type="number"></div>
-        <div class="field"><label>Antecedentes de Importancia:</label><input type="text"></div>
-    </div>
-
-    <h3>Datos del Neonato</h3>
-    <div class="grid">
-        <div class="field"><label>Nombre del Neonato:</label><input type="text" placeholder="Apellidos/Nombre"></div>
+        <div class="field"><label>Nombre del Neonato:</label><input type="text" placeholder="Apellidos, Nombres"></div>
         <div class="field"><label>Fecha de Nacimiento:</label><input type="date"></div>
         <div class="field"><label>Hora:</label><input type="time"></div>
         <div class="field"><label>Sexo:</label>
-            <select>
-                <option>Masculino</option>
-                <option>Femenino</option>
-                <option>Indeterminado</option>
-            </select>
+            <select><option>Masculino</option><option>Femenino</option><option>Indeterminado</option></select>
+        </div>
+        <div class="field"><label>Nombre de la Madre:</label><input type="text"></div>
+        <div class="field"><label>Nombre del Padre:</label><input type="text"></div>
+    </div>
+
+    <h3>2. Antecedentes Maternos (Gineco-Obstétricos)</h3>
+    <div class="grid">
+        <div class="field"><label>Edad Materna:</label><input type="number"></div>
+        <div class="field"><label>Grupo Sanguíneo/Factor:</label><input type="text"></div>
+        <div class="field"><label>Gestas (G):</label><input type="number"></div>
+        <div class="field"><label>Partos (P):</label><input type="number"></div>
+        <div class="field"><label>Cesáreas (C):</label><input type="number"></div>
+        <div class="field"><label>Abortos (A):</label><input type="number"></div>
+        <div class="field full-width">
+            <label>Antecedentes Patológicos (Diabetes, HTA, Preeclampsia, Infecciones):</label>
+            <textarea placeholder="Describa enfermedades previas o durante el embarazo..."></textarea>
+        </div>
+        <div class="field full-width">
+            <label>Antecedentes Quirúrgicos y Alérgicos:</label>
+            <textarea placeholder="Cirugías previas, alergias a medicamentos..."></textarea>
         </div>
     </div>
 
-    <h3>Calculadoras de Líquidos y Glucosa</h3>
+    <h3>3. Datos del Embarazo Actual y Parto</h3>
+    <div class="grid">
+        <div class="field"><label>Edad Gestacional (Semanas):</label><input type="number" step="0.1"></div>
+        <div class="field"><label>Control Prenatal (Nº):</label><input type="number"></div>
+        <div class="field"><label>Ruptura Membrana (Horas):</label><input type="number"></div>
+        <div class="field"><label>Tipo de Parto:</label>
+            <select><option>Eutócico (Vaginal)</option><option>Cesárea</option><option>Instrumentado</option></select>
+        </div>
+        <div class="field"><label>Líquido Amniótico:</label><input type="text" placeholder="Claro, meconial, etc."></div>
+        <div class="field"><label>Apgar (1 min / 5 min):</label><input type="text" placeholder="Ej: 8/9"></div>
+    </div>
+
+    <h3>4. Antecedentes Familiares</h3>
+    <div class="grid">
+        <div class="field full-width">
+            <textarea placeholder="Antecedentes del padre, hermanos o enfermedades hereditarias..."></textarea>
+        </div>
+    </div>
+
+    <h3>5. Calculadoras de Infusión (Nutrición Parenteral/Hidratación)</h3>
     <div class="calc-box">
         <div class="grid">
             <div class="field">
-                <label>Peso Actual (kg):</label>
-                <input type="number" id="peso" step="0.001" oninput="calcular()">
+                <label>Peso del Neonato (kg):</label>
+                <input type="number" id="peso" step="0.001" placeholder="Ej: 2.500" oninput="calcularTodo()">
             </div>
             <div class="field">
-                <label>Aporte de Líquidos (ml/kg/d):</label>
-                <input type="number" id="vct" step="1" oninput="calcular()">
+                <label>VCT (ml/kg/día):</label>
+                <input type="number" id="vct" placeholder="Ej: 80" oninput="calcularTodo()">
             </div>
             <div class="field">
                 <label>VIG (mg/kg/min):</label>
-                <input type="number" id="vig" step="0.1" oninput="calcular()">
+                <input type="number" id="vig" step="0.1" placeholder="Ej: 4" oninput="calcularTodo()">
             </div>
         </div>
 
-        <div style="margin-top: 20px; border-top: 1px solid #ccc; pt-10">
-            <p><strong>Resultados Sugeridos:</strong></p>
-            <div class="grid">
-                <div class="field">Líquidos Totales (24h): <span id="resLiquidos" class="result">0 ml</span></div>
-                <div class="field">Concentración de Glucosa: <span id="resConcentracion" class="result">0 %</span></div>
+        <div class="result-container">
+            <div class="result-item">
+                <small>Líquidos Totales (24h)</small>
+                <span class="result-value" id="resLiquidos">0 ml</span>
+            </div>
+            <div class="result-item">
+                <small>Concentración Glucosa</small>
+                <span class="result-value" id="resConcentracion">0 %</span>
+            </div>
+            <div class="result-item">
+                <small>Goteo (ml/hr)</small>
+                <span class="result-value" id="resGoteo">0 ml/h</span>
             </div>
         </div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 0.8em;">
+        Sistema de Registro Neonatal v2.0 - Actualizado
     </div>
 </div>
 
 <script>
-function calcular() {
+function calcularTodo() {
     const peso = parseFloat(document.getElementById('peso').value) || 0;
     const vct = parseFloat(document.getElementById('vct').value) || 0;
     const vig = parseFloat(document.getElementById('vig').value) || 0;
 
     if (peso > 0) {
-        // Líquidos totales
+        // 1. Líquidos Totales
         const liqTotales = peso * vct;
         document.getElementById('resLiquidos').innerText = liqTotales.toFixed(1) + " ml";
 
-        // Cálculo de Concentración de Glucosa (Fórmula estándar)
-        // Concentración = (VIG * 1.44 * Peso) / (Líquidos Totales / 100)
+        // 2. Goteo por hora
+        const goteo = liqTotales / 24;
+        document.getElementById('resGoteo').innerText = goteo.toFixed(1) + " ml/h";
+
+        // 3. Concentración de Glucosa sugerida para mantener el VIG
+        // Fórmula: (VIG * 1.44 * Peso) / (Líquidos_en_100ml)
         if (liqTotales > 0) {
             const concentracion = (vig * 1.44 * peso) / (liqTotales / 100);
             document.getElementById('resConcentracion').innerText = concentracion.toFixed(1) + " %";
+        } else {
+            document.getElementById('resConcentracion').innerText = "0 %";
         }
+    } else {
+        document.getElementById('resLiquidos').innerText = "0 ml";
+        document.getElementById('resGoteo').innerText = "0 ml/h";
+        document.getElementById('resConcentracion').innerText = "0 %";
     }
 }
 </script>

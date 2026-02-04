@@ -3,229 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia Clínica Neonatal Completa</title>
+    <title>Historia Clínica Neonatal Avanzada</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f2f4f7; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; text-transform: uppercase; border-bottom: 4px solid #3498db; padding-bottom: 10px; }
-        h2 { background: #3498db; color: white; padding: 10px; font-size: 1.2em; border-radius: 4px; margin-top: 30px; }
-        h3 { color: #2980b9; border-bottom: 1px solid #ddd; margin-top: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); padding: 20px; font-size: 13px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; }
+        h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 25px; cursor: pointer; }
+        h3 { border-left: 5px solid var(--secondary); padding-left: 10px; color: var(--secondary); margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .field { display: flex; flex-direction: column; }
-        label { font-weight: bold; font-size: 0.85em; margin-bottom: 4px; color: #555; }
-        input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; }
-        textarea { height: 80px; }
-        .full-width { grid-column: span 3; }
-        .calc-box { background: #e8f4fd; border: 1px solid #3498db; padding: 15px; border-radius: 8px; margin-top: 10px; }
-        .result-display { font-weight: bold; color: #d35400; background: white; padding: 5px; border-radius: 3px; border: 1px solid #ddd; margin-top: 5px; display: block; }
-        .adcavandimelco-box { border: 2px solid #27ae60; padding: 15px; border-radius: 8px; background: #fafffa; }
-        @media print { .no-print { display: none; } body { padding: 0; } .container { box-shadow: none; width: 100%; } }
+        label { font-weight: bold; margin-bottom: 3px; color: #444; }
+        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .calc-card { background: #eef2f7; border: 1px solid #d1d8e0; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .result-box { background: #2c3e50; color: #fff; padding: 10px; border-radius: 4px; font-weight: bold; margin-top: 5px; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin: 10px 0; }
+        .med-row { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-bottom: 10px; position: relative; }
+        .hidden { display: none; }
+        @media print { .no-print { display: none; } .container { box-shadow: none; border: none; } }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="hc-form">
     <h1>Nota de Ingreso Neonatología</h1>
 
-    <h2>1. Identificación y Filiación</h2>
+    <h2>1. Identificación del Neonato</h2>
     <div class="grid">
-        <div class="field"><label>Fecha de Nacimiento:</label><input type="date"></div>
-        <div class="field"><label>Fecha de Ingreso:</label><input type="date"></div>
-        <div class="field"><label>Edad:</label><input type="text" placeholder="Ej: 12 horas"></div>
-        <div class="field"><label>Nombre del Neonato:</label><input type="text"></div>
-        <div class="field"><label>Sexo:</label><select><option>Masculino</option><option>Femenino</option><option>Indeterminado</option></select></div>
-        <div class="field"><label>Raza:</label><input type="text"></div>
-        <div class="field"><label>Número de Cédula:</label><input type="text"></div>
+        <div class="field"><label>Nombre:</label><input type="text"></div>
+        <div class="field"><label>Fecha Nacimiento:</label><input type="date" id="fNac" onchange="calcularEdad()"></div>
+        <div class="field"><label>Hora Nacimiento:</label><input type="time"></div>
+        <div class="field"><label>Fecha Ingreso:</label><input type="date" id="fIng" onchange="calcularEdad()"></div>
+        <div class="field"><label>Hora Ingreso:</label><input type="time"></div>
+        <div class="field"><label>Edad Calculada:</label><input type="text" id="edadCalc" readonly style="background:#eee"></div>
+        <div class="field"><label>Sexo:</label><select><option>Masculino</option><option>Femenino</option></select></div>
+        <div class="field">
+            <label>Raza:</label>
+            <select>
+                <option>Mestizo</option>
+                <option>Afrodescendiente</option>
+                <option>Indígena</option>
+                <option>Otro</option>
+            </select>
+        </div>
+        <div class="field"><label>Nº Cédula:</label><input type="text"></div>
     </div>
 
     <h2>2. Datos de los Padres</h2>
-    <h3>Padre</h3>
     <div class="grid">
-        <div class="field"><label>Nombre del Padre:</label><input type="text"></div>
-        <div class="field"><label>Cédula del Padre:</label><input type="text"></div>
-        <div class="field"><label>Teléfono:</label><input type="text"></div>
-        <div class="field"><label>Dirección:</label><input type="text"></div>
-        <div class="field"><label>Cobertura de Salud:</label><input type="text"></div>
+        <div class="field"><h3>Madre</h3></div><div class="field"><h3>Padre</h3></div>
     </div>
-    <h3>Madre</h3>
     <div class="grid">
-        <div class="field"><label>Nombre de la Madre:</label><input type="text"></div>
+        <div class="field"><label>Nombre Madre:</label><input type="text"></div>
+        <div class="field"><label>Nombre Padre:</label><input type="text"></div>
+        <div class="field"><label>Cédula:</label><input type="text"></div>
         <div class="field"><label>Cédula:</label><input type="text"></div>
         <div class="field"><label>Teléfono:</label><input type="text"></div>
-        <div class="field"><label>Dirección:</label><input type="text"></div>
-        <div class="field"><label>Cobertura de Salud:</label><input type="text"></div>
+        <div class="field"><label>Teléfono:</label><input type="text"></div>
+        <div class="field">
+            <label>¿Cobertura Salud?</label>
+            <select onchange="toggleCobertura(this, 'cobM')"><option value="no">No</option><option value="si">Si</option></select>
+            <input type="text" id="cobM" class="hidden" placeholder="Especificar cobertura">
+        </div>
+        <div class="field">
+            <label>¿Cobertura Salud?</label>
+            <select onchange="toggleCobertura(this, 'cobP')"><option value="no">No</option><option value="si">Si</option></select>
+            <input type="text" id="cobP" class="hidden" placeholder="Especificar cobertura">
+        </div>
     </div>
 
-    <h2>3. Datos de la Historia Materna</h2>
+    <h2>3. Historia Clínica Materna</h2>
     <div class="grid">
         <div class="field"><label>Edad:</label><input type="number"></div>
-        <div class="field"><label>Sexo:</label><input type="text" value="Femenino" readonly></div>
-        <div class="field"><label>Raza:</label><input type="text"></div>
-        <div class="field"><label>Instrucción:</label><input type="text"></div>
-        <div class="field"><label>Lugar de Nacimiento:</label><input type="text"></div>
-        <div class="field"><label>Lugar de Residencia:</label><input type="text"></div>
-        <div class="field"><label>Estado Civil:</label><input type="text"></div>
-        <div class="field"><label>Religión:</label><input type="text"></div>
-        <div class="field"><label>Tipo de Sangre:</label><input type="text"></div>
-    </div>
-
-    <h3>Antecedentes Médicos</h3>
-    <div class="grid">
-        <div class="field full-width"><label>Antecedentes Patológicos Familiares:</label><textarea></textarea></div>
-        <div class="field full-width"><label>Antecedentes Quirúrgicos:</label><textarea></textarea></div>
-        <div class="field full-width"><label>Antecedente Patológicos Personales:</label><textarea></textarea></div>
-        <div class="field"><label>Alergias:</label><input type="text"></div>
-        <div class="field"><label>Hábitos (Alcohol, Tabaco, Drogas):</label><input type="text"></div>
-    </div>
-
-    <h2>4. Antecedentes Gineco-Obstétricos</h2>
-    <div class="grid">
-        <div class="field"><label>Menarquia:</label><input type="text"></div>
-        <div class="field"><label>Ciclos Mentruales:</label><input type="text"></div>
-        <div class="field"><label>Inicio Vida Sexual:</label><input type="text"></div>
-        <div class="field"><label>Parejas Sexuales:</label><input type="number"></div>
-        <div class="field"><label>Método Planificación:</label><input type="text"></div>
-        <div class="field"><label>Paptest:</label><input type="text"></div>
-        <div class="field"><label>Enfermedades Transmisión Sexual:</label><input type="text"></div>
-    </div>
-
-    <h3>Gestación Actual</h3>
-    <div class="grid">
-        <div class="field"><label>F.U.R.:</label><input type="date"></div>
-        <div class="field"><label>Edad Gestacional Actual:</label><input type="text"></div>
-        <div class="field"><label>Número de Gestas:</label><input type="number"></div>
-        <div class="field"><label>Controles Prenatales:</label><input type="number"></div>
-        <div class="field"><label>Ecos:</label><input type="number"></div>
-        <div class="field"><label>Complementos Nutricionales:</label><input type="text"></div>
-        <div class="field"><label>Vacunas:</label><input type="text"></div>
-        <div class="field"><label>Infecciones durante embarazo:</label><input type="text"></div>
-        <div class="field"><label>Ruptura de Membranas:</label><input type="text"></div>
-        <div class="field"><label>Maduración Pulmonar:</label><input type="text"></div>
-        <div class="field full-width"><label>Antecedente de importancia durante la gestación:</label><textarea></textarea></div>
-    </div>
-
-    <h2>5. Antecedentes del Neonato</h2>
-    <div class="grid">
-        <div class="field"><label>Antecedentes Prenatales:</label><textarea></textarea></div>
-        <div class="field"><label>Antecedentes Natales:</label><textarea></textarea></div>
-        <div class="field"><label>Antecedentes Postnatales:</label><textarea></textarea></div>
-    </div>
-    <div class="grid">
-        <div class="field full-width"><label>Motivo de Consulta:</label><textarea></textarea></div>
-        <div class="field full-width"><label>Enfermedad Actual:</label><textarea></textarea></div>
-    </div>
-
-    <h2>6. Examen Físico al Ingreso</h2>
-    <h3>Signos Vitales</h3>
-    <div class="grid">
-        <div class="field"><label>FC (bpm):</label><input type="text"></div>
-        <div class="field"><label>FR (rpm):</label><input type="text"></div>
-        <div class="field"><label>Saturación O2 (%):</label><input type="text"></div>
-        <div class="field"><label>Temperatura (°C):</label><input type="text"></div>
-        <div class="field"><label>Llenado Capilar:</label><input type="text"></div>
-    </div>
-    <h3>Antropometría</h3>
-    <div class="grid">
-        <div class="field"><label>Peso (g):</label><input type="number" id="pesoG" oninput="actualizarPeso()"></div>
-        <div class="field"><label>Talla (cm):</label><input type="number"></div>
-        <div class="field"><label>Perímetro Cefálico (cm):</label><input type="number"></div>
-    </div>
-    <div class="field full-width"><label>Examen Físico (Detalle):</label><textarea></textarea></div>
-    <div class="field full-width"><label>Diagnósticos de Ingreso:</label><textarea></textarea></div>
-
-    <h2>7. Calculadoras Neonatales</h2>
-    <div class="grid">
-        <div class="calc-box">
-            <label><strong>Score APGAR (1 min / 5 min)</strong></label>
-            <input type="text" placeholder="Ej: 8/9">
-            <small>Evaluación de vitalidad</small>
+        <div class="field">
+            <label>Raza:</label>
+            <select><option>Mestizo</option><option>Afrodescendiente</option><option>Indígena</option><option>Otro</option></select>
         </div>
-        <div class="calc-box">
-            <label><strong>Capurro (Edad Gestacional)</strong></label>
-            <input type="number" id="capPuntos" placeholder="Suma puntos" oninput="calcularCapurro()">
-            <span class="result-display" id="resCapurro">Semanas: --</span>
+        <div class="field">
+            <label>Estado Civil:</label>
+            <select><option>Soltera</option><option>Casada</option><option>Unión Libre</option></select>
         </div>
-        <div class="calc-box">
-            <label><strong>Score de Downes (Dificultad Resp.)</strong></label>
-            <select onchange="this.nextElementSibling.innerText = 'Nivel: ' + this.value">
-                <option value="Sin dificultad">0-3: Leve</option>
-                <option value="Dificultad Moderada">4-6: Moderada</option>
-                <option value="Dificultad Grave">>=7: Grave</option>
-            </select>
-            <span class="result-display">Nivel: --</span>
+        <div class="field">
+            <label>Instrucción:</label>
+            <select><option>Básica</option><option>Secundaria Incompleta</option><option>Secundaria Completa</option><option>Superior</option></select>
+        </div>
+        <div class="field"><label>Ocupación/Profesión:</label><input type="text"></div>
+        <div class="field">
+            <label>Tipo de Sangre:</label>
+            <select><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select>
         </div>
     </div>
 
-    <div class="calc-box">
-        <h3>Calculadora de Líquidos y VIG</h3>
+    <h3>Antecedentes Gineco-Obstétricos</h3>
+    <div class="grid">
+        <div class="field"><label>F.U.M:</label><input type="date" id="fum" onchange="calcularEG()"></div>
+        <div class="field"><label>Edad Gestacional (por FUM):</label><input type="text" id="egFum" readonly style="background:#eee"></div>
+        <div class="field">
+            <label>Ruptura de Membranas:</label>
+            <select onchange="toggleCobertura(this, 'horasRpm')"><option value="no">No</option><option value="si">Si</option></select>
+            <div id="horasRpm" class="hidden"><label>Horas:</label><input type="number"></div>
+        </div>
+    </div>
+
+    <h2>4. Examen Físico de Ingreso</h2>
+    <div class="grid">
+        <div class="field"><label>Tensión Arterial:</label><input type="text" placeholder="Ej: 60/40"></div>
+        <div class="field">
+            <label>Percentil TA:</label>
+            <input type="text" placeholder="Consultar Neopeds">
+            <a href="https://neopeds.academy/bp/" target="_blank" style="font-size:10px; color:blue">Abrir Neopeds Academy</a>
+        </div>
+        <div class="field">
+            <label>Peso (kg):</label>
+            <input type="number" id="pesoGlobal" step="0.001" oninput="totalLiquidos24h()">
+        </div>
+    </div>
+    <div class="field">
+        <label>Diagnóstico de Ingreso:</label>
+        <div style="display:flex; gap:5px">
+            <textarea id="diagIngreso" style="flex-grow:1"></textarea>
+            <button class="no-print" onclick="window.open('https://cpockets.com/cie10', '_blank')">Buscar CIE-10</button>
+        </div>
+    </div>
+
+    <h2>5. Calculadoras Neonatales</h2>
+    
+    <div class="calc-card">
+        <h3>Score APGAR</h3>
+        <table style="width:100%; border-collapse:collapse">
+            <tr><th>Tiempo</th><th>Puntuación</th><th>Valoración</th></tr>
+            <tr><td>1 min</td><td><input type="number" id="apgar1" readonly></td><td><button onclick="verApgar('apgar1')">Evaluar</button></td></tr>
+            <tr><td>5 min</td><td><input type="number" id="apgar5" readonly></td><td><button onclick="verApgar('apgar5')">Evaluar</button></td></tr>
+            <tr><td>10 min</td><td><input type="number" id="apgar10" readonly></td><td><button onclick="verApgar('apgar10')">Evaluar</button></td></tr>
+        </table>
+    </div>
+
+    <div class="calc-card">
+        <h3>Score de Downes (Dificultad Respiratoria)</h3>
         <div class="grid">
-            <div class="field"><label>Peso (kg):</label><input type="number" id="liqPeso" step="0.01" oninput="calcFluidos()"></div>
-            <div class="field"><label>VCT (ml/kg/d):</label><input type="number" id="liqVct" oninput="calcFluidos()"></div>
-            <div class="field"><label>VIG (mg/kg/min):</label><input type="number" id="liqVig" step="0.1" oninput="calcFluidos()"></div>
+            <div class="field"><label>Frec. Resp:</label><select class="downes" onchange="calcDownes()"><option value="0"><60</option><option value="1">60-80</option><option value="2">>80 o apnea</option></select></div>
+            <div class="field"><label>Cianosis:</label><select class="downes" onchange="calcDownes()"><option value="0">Ausente</option><option value="1">Con FiO2 <40%</option><option value="2">Con FiO2 >40%</option></select></div>
+            <div class="field"><label>Entrada Aire:</label><select class="downes" onchange="calcDownes()"><option value="0">Buena</option><option value="1">Disminuida</option><option value="2">Ausente</option></select></div>
+            <div class="field"><label>Quejido:</label><select class="downes" onchange="calcDownes()"><option value="0">Ausente</option><option value="1">Audible fono</option><option value="2">Audible sin fono</option></select></div>
+            <div class="field"><label>Retracción:</label><select class="downes" onchange="calcDownes()"><option value="0">Ausente</option><option value="1">Leve</option><option value="2">Intensa</option></select></div>
         </div>
-        <div class="grid">
-            <div class="field">Total Líquidos (24h): <span class="result-display" id="resTotalLiq">-- ml</span></div>
-            <div class="field">Concentración Glucosa: <span class="result-display" id="resConcGlu">-- %</span></div>
-        </div>
+        <div class="result-box" id="resDownes">Total Downes: 0 (Sin dificultad)</div>
     </div>
 
-    <h2>8. Indicaciones Médicas (ADCAVANDIMELCO)</h2>
-    <div class="adcavandimelco-box">
+    <h2>6. Cálculo de Líquidos y Medicamentos</h2>
+    <div class="calc-card">
         <div class="grid">
-            <div class="field"><label><b>A</b>limentación:</label><input type="text"></div>
-            <div class="field"><label><b>D</b>ieta / Líquidos:</label><input type="text"></div>
-            <div class="field"><label><b>C</b>ontroles (Signos):</label><input type="text"></div>
-            <div class="field"><label><b>A</b>ctividad / Posición:</label><input type="text"></div>
-            <div class="field"><label><b>V</b>itales / Monitoreo:</label><input type="text"></div>
-            <div class="field"><label><b>A</b>lergias:</label><input type="text"></div>
-            <div class="field"><label><b>N</b>otificar cambios:</label><input type="text"></div>
-            <div class="field"><label><b>D</b>iagnósticos:</label><input type="text"></div>
-            <div class="field"><label><b>I</b>nsumos:</label><input type="text"></div>
-            <div class="field full-width"><label><b>M</b>edicamentos:</label><textarea></textarea></div>
-            <div class="field full-width"><label><b>E</b>xámenes:</label><textarea></textarea></div>
-            <div class="field"><label><b>L</b>íquidos IV:</label><input type="text"></div>
-            <div class="field"><label><b>C</b>uidados Especiales:</label><textarea></textarea></div>
-            <div class="field"><label><b>O</b>misiones / Consultas:</label><input type="text"></div>
+            <div class="field"><label>LT (ml/kg/d):</label><input type="number" id="ltVal" oninput="totalLiquidos24h()"></div>
+            <div class="field">
+                <label>Concentración Dextrosa:</label>
+                <select><option>2.5%</option><option>5%</option><option>7.5%</option><option>10%</option><option>12.5%</option><option>15%</option></select>
+            </div>
         </div>
+
+        <h3>Medicamentos</h3>
+        <div id="listaMedicamentos"></div>
+        <button class="btn-add no-print" onclick="agregarMedicamento()">+ Añadir Medicamento</button>
+
+        <h3>Extras</h3>
+        <div id="listaExtras" class="grid">
+            <div class="field">
+                <label>Extra 1:</label>
+                <select onchange="totalLiquidos24h()" class="extra-item">
+                    <option value="0">Ninguno</option>
+                    <option value="0.15">15% Fototerapia</option>
+                    <option value="0.15">15% Cuna Radiante</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="result-box" style="font-size:1.4em" id="totalLiquidosFinal">Total Líquidos 24h: 0 ml</div>
     </div>
 
-    <div style="margin-top: 40px; text-align: center;">
-        <button class="no-print" onclick="window.print()" style="padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Imprimir Historia Clínica</button>
+    <h2>7. Indicaciones (ADCAVANDIMELCO)</h2>
+    <div class="grid adcav">
+        <div class="field"><label>A (Alimentación):</label><input type="text"></div>
+        <div class="field"><label>D (Dieta/Líq):</label><input type="text"></div>
+        <div class="field"><label>C (Controles):</label><input type="text"></div>
+        <div class="field"><label>A (Actividad):</label><input type="text"></div>
+        <div class="field"><label>V (Vitales):</label><input type="text"></div>
+        <div class="field"><label>A (Alergias):</label><input type="text"></div>
+        <div class="field"><label>N (Notificar):</label><input type="text"></div>
+        <div class="field"><label>D (Diag):</label><input type="text"></div>
+        <div class="field"><label>I (Insumos):</label><input type="text"></div>
+        <div class="field"><label>M (Med):</label><textarea id="indicacionesMed"></textarea></div>
+        <div class="field"><label>E (Exámenes):</label><textarea></textarea></div>
+        <div class="field"><label>L (Líquidos):</label><input type="text" id="liqIndicacion"></div>
+        <div class="field"><label>C (Cuidados):</label><textarea></textarea></div>
+        <div class="field"><label>O (Otras):</label><input type="text"></div>
+    </div>
+
+    <div style="text-align:center; margin-top:30px">
+        <button class="btn-add no-print" style="background:#2c3e50" onclick="copiarWord()">Copiar para Word</button>
+        <button class="btn-add no-print" style="background:#e67e22" onclick="window.print()">Imprimir 2 Columnas</button>
     </div>
 </div>
 
+<div id="modalApgar" class="hidden" style="position:fixed; top:20%; left:30%; background:white; border:2px solid #333; padding:20px; z-index:100; box-shadow: 0 0 100px rgba(0,0,0,0.5)">
+    <h3>Evaluación APGAR</h3>
+    <div id="apgarInputs"></div>
+    <button onclick="cerrarApgar()">Cerrar y Guardar</button>
+</div>
+
 <script>
-    function actualizarPeso() {
-        const pesoG = document.getElementById('pesoG').value;
-        if(pesoG) {
-            document.getElementById('liqPeso').value = (pesoG / 1000).toFixed(3);
-            calcFluidos();
+    let apgarObjetivo = '';
+    const factoresMed = {
+        "Amikacina": 5, "Ceftazidima": 40, "Ampicilina": 100, "Cloruro de potasio": 2, 
+        "Cloruro de sodio": 3.4, "Fenobarbital": 10, "Fluconazol": 2, "Gentamicina": 4, 
+        "Gluconato de Calcio": 50, "Meropenem": 25, "Vancomicina": 5
+    };
+
+    function calcularEdad() {
+        const fn = new Date(document.getElementById('fNac').value);
+        const fi = new Date(document.getElementById('fIng').value);
+        if(!isNaN(fn) && !isNaN(fi)){
+            const diff = fi - fn;
+            const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('edadCalc').value = `${dias} días, ${horas} horas`;
         }
     }
 
-    function calcularCapurro() {
-        const p = parseFloat(document.getElementById('capPuntos').value) || 0;
-        if(p > 0) {
-            const eg = (p + 204) / 7;
-            document.getElementById('resCapurro').innerText = "EG: " + eg.toFixed(1) + " semanas";
+    function calcularEG() {
+        const fum = new Date(document.getElementById('fum').value);
+        const hoy = new Date();
+        if(!isNaN(fum)){
+            const sem = Math.floor((hoy - fum) / (1000 * 60 * 60 * 24 * 7));
+            const dias = Math.floor(((hoy - fum) / (1000 * 60 * 60 * 24)) % 7);
+            document.getElementById('egFum').value = `${sem}.${dias} semanas`;
         }
     }
 
-    function calcFluidos() {
-        const p = parseFloat(document.getElementById('liqPeso').value) || 0;
-        const vct = parseFloat(document.getElementById('liqVct').value) || 0;
-        const vig = parseFloat(document.getElementById('liqVig').value) || 0;
+    function toggleCobertura(sel, id) {
+        document.getElementById(id).classList.toggle('hidden', sel.value === 'no');
+    }
+
+    function verApgar(id) {
+        apgarObjetivo = id;
+        const items = ["Frecuencia Cardiaca", "Esfuerzo Respiratorio", "Tono Muscular", "Irritabilidad Refleja", "Color"];
+        let html = '';
+        items.forEach((it, i) => {
+            html += `<label>${it}:</label><select class="apgar-sel">
+                <option value="0">0 puntos</option><option value="1">1 punto</option><option value="2">2 puntos</option>
+            </select><br>`;
+        });
+        document.getElementById('apgarInputs').innerHTML = html;
+        document.getElementById('modalApgar').classList.remove('hidden');
+    }
+
+    function cerrarApgar() {
+        let suma = 0;
+        document.querySelectorAll('.apgar-sel').forEach(s => suma += parseInt(s.value));
+        document.getElementById(apgarObjetivo).value = suma;
+        document.getElementById('modalApgar').classList.add('hidden');
+    }
+
+    function calcDownes() {
+        let suma = 0;
+        document.querySelectorAll('.downes').forEach(s => suma += parseInt(s.value));
+        let nivel = suma <= 3 ? "Leve" : (suma <= 6 ? "Moderada" : "Grave");
+        document.getElementById('resDownes').innerText = `Total Downes: ${suma} (${nivel})`;
+    }
+
+    function agregarMedicamento() {
+        const div = document.createElement('div');
+        div.className = 'med-row';
+        div.innerHTML = `
+            <div class="grid">
+                <select class="med-nombre" onchange="totalLiquidos24h()">
+                    ${Object.keys(factoresMed).map(m => `<option value="${m}">${m}</option>`).join('')}
+                    <option value="otro">Otro</option>
+                </select>
+                <input type="number" class="med-dosis" placeholder="Dosis/kg" oninput="totalLiquidos24h()">
+                <select class="med-freq" onchange="totalLiquidos24h()">
+                    <option value="1">cada 24h</option><option value="2">cada 12h</option>
+                    <option value="3">cada 8h</option><option value="0.66">cada 36h</option>
+                </select>
+                <div class="med-res" style="font-size:10px">ml/día: 0</div>
+            </div>`;
+        document.getElementById('listaMedicamentos').appendChild(div);
+    }
+
+    function totalLiquidos24h() {
+        const peso = parseFloat(document.getElementById('pesoGlobal').value) || 0;
+        const lt = parseFloat(document.getElementById('ltVal').value) || 0;
+        let baseLiquidos = peso * lt;
         
-        if(p > 0 && vct > 0) {
-            const liqTot = p * vct;
-            document.getElementById('resTotalLiq').innerText = liqTot.toFixed(1) + " ml";
-            if(vig > 0) {
-                const conc = (vig * 1.44 * p) / (liqTot / 100);
-                document.getElementById('resConcGlu').innerText = conc.toFixed(1) + " %";
-            }
-        }
+        // Extras
+        let extraPorcentaje = 0;
+        document.querySelectorAll('.extra-item').forEach(e => extraPorcentaje += parseFloat(e.value));
+        baseLiquidos += (baseLiquidos * extraPorcentaje);
+
+        // Medicamentos
+        let totalMedMl = 0;
+        let medText = "";
+        document.querySelectorAll('.med-row').forEach(row => {
+            const nombre = row.querySelector('.med-nombre').value;
+            const dosis = parseFloat(row.querySelector('.med-dosis').value) || 0;
+            const freq = parseFloat(row.querySelector('.med-freq').value) || 0;
+            const factor = factoresMed[nombre] || 1;
+            
+            const mlDia = ((peso * dosis) / factor) * freq;
+            totalMedMl += mlDia;
+            row.querySelector('.med-res').innerText = `ml/día: ${mlDia.toFixed(2)}`;
+            medText += `${nombre} ${dias.toFixed(2)}ml | `;
+        });
+
+        const final = baseLiquidos - totalMedMl;
+        document.getElementById('totalLiquidosFinal').innerText = `Total Líquidos 24h: ${final.toFixed(2)} ml`;
+        document.getElementById('liqIndicacion').value = `${final.toFixed(1)} ml/día (${(final/24).toFixed(1)} ml/h)`;
+    }
+
+    function copiarWord() {
+        const text = document.getElementById('hc-form').innerText;
+        navigator.clipboard.writeText(text);
+        alert("Historia clínica copiada al portapapeles. Pégala en Word.");
     }
 </script>
+
+<style>
+/* FORMATO IMPRESIÓN 2 COLUMNAS */
+@media print {
+    h2 { background: #eee !important; color: black !important; border: 1px solid #000; }
+    .grid { grid-template-columns: 1fr 1fr !important; }
+    .container { width: 100% !important; max-width: none !important; }
+}
+</style>
 
 </body>
 </html>

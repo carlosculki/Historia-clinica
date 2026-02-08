@@ -3,241 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HC Neonatal - Autoguardado y Lógica Farmacéutica</title>
+    <title>Historia Clínica Neonatal Integral</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; font-size: 13px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); padding: 20px; font-size: 13px; color: #333; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; }
-        h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 25px; }
-        h3 { border-left: 5px solid var(--secondary); padding-left: 10px; color: var(--secondary); margin-top: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; text-transform: uppercase; }
+        h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 25px; font-size: 1.1em; display: flex; justify-content: space-between; }
+        h3 { border-left: 5px solid var(--secondary); padding-left: 10px; color: var(--secondary); margin-top: 20px; font-size: 1em; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .field { display: flex; flex-direction: column; }
-        label { font-weight: bold; margin-bottom: 3px; color: #444; }
-        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        label { font-weight: bold; margin-bottom: 3px; color: #555; font-size: 0.9em; }
+        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        textarea { min-height: 60px; resize: vertical; }
         .calc-card { background: #eef2f7; border: 1px solid #d1d8e0; padding: 15px; border-radius: 8px; margin-top: 10px; }
         .result-box { background: #2c3e50; color: #fff; padding: 10px; border-radius: 4px; font-weight: bold; margin-top: 5px; }
         .btn-add { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin: 10px 0; }
-        .med-row { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin-bottom: 10px; }
+        .med-row { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin-bottom: 10px; position: relative; }
         .hidden { display: none; }
-        .save-status { position: fixed; bottom: 10px; right: 10px; background: #27ae60; color: white; padding: 5px 10px; border-radius: 20px; font-size: 11px; opacity: 0; transition: opacity 0.5s; }
-        @media print { .no-print { display: none; } .grid { grid-template-columns: 1fr 1fr !important; } }
+        .save-status { position: fixed; bottom: 15px; right: 15px; background: #27ae60; color: white; padding: 8px 15px; border-radius: 20px; font-size: 11px; opacity: 0; transition: opacity 0.5s; z-index: 1000; pointer-events: none; }
+        .full-width { grid-column: 1 / -1; }
+        @media print { .no-print { display: none; } .grid { grid-template-columns: 1fr 1fr !important; } .container { box-shadow: none; border: none; width: 100%; } }
     </style>
 </head>
 <body onload="cargarDatos()">
 
-<div id="save-tag" class="save-status">Guardado automático</div>
+<div id="save-tag" class="save-status">✓ Cambios guardados automáticamente</div>
 
 <div class="container" id="hc-form">
     <h1>Nota de Ingreso Neonatología</h1>
 
     <h2>1. Identificación y Filiación</h2>
     <div class="grid">
-        <div class="field"><label>Nombre Neonato:</label><input type="text" id="nombreNeo" oninput="guardar()"></div>
-        <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" onchange="calcularEdad(); guardar()"></div>
-        <div class="field"><label>Hora Nac.:</label><input type="time" id="hNac" oninput="guardar()"></div>
-        <div class="field"><label>F. Ingreso:</label><input type="date" id="fIng" onchange="calcularEdad(); guardar()"></div>
-        <div class="field"><label>Hora Ing.:</label><input type="time" id="hIng" oninput="guardar()"></div>
-        <div class="field"><label>Edad Calculada:</label><input type="text" id="edadCalc" readonly></div>
+        <div class="field"><label>Nombre del Neonato:</label><input type="text" id="nombreNeo" oninput="guardar()"></div>
+        <div class="field"><label>Fecha Nacimiento:</label><input type="date" id="fNac" onchange="calcularEdad(); guardar()"></div>
+        <div class="field"><label>Hora Nacimiento:</label><input type="time" id="hNac" oninput="guardar()"></div>
+        <div class="field"><label>Fecha Ingreso:</label><input type="date" id="fIng" onchange="calcularEdad(); guardar()"></div>
+        <div class="field"><label>Hora Ingreso:</label><input type="time" id="hIng" oninput="guardar()"></div>
+        <div class="field"><label>Edad Calculada:</label><input type="text" id="edadCalc" readonly style="background:#f0f0f0"></div>
+        <div class="field"><label>Sexo:</label><select id="sexoNeo" onchange="guardar()"><option>Masculino</option><option>Femenino</option><option>Indeterminado</option></select></div>
         <div class="field">
             <label>Raza:</label>
             <select id="razaNeo" onchange="guardar()"><option>Mestizo</option><option>Afrodescendiente</option><option>Indígena</option><option>Otro</option></select>
         </div>
+        <div class="field"><label>Número de Cédula:</label><input type="text" id="cedulaNeo" oninput="guardar()"></div>
     </div>
 
     <h2>2. Datos de los Padres</h2>
     <div class="grid">
-        <div class="field"><label>Madre:</label><input type="text" id="nomMadre" oninput="guardar()"></div>
-        <div class="field">
-            <label>¿Cobertura Madre?</label>
+        <div class="field"><h3>Datos de la Madre</h3>
+            <label>Nombre:</label><input type="text" id="nomMadre" oninput="guardar()">
+            <label>Cédula:</label><input type="text" id="cedMadre" oninput="guardar()">
+            <label>Teléfono:</label><input type="text" id="telMadre" oninput="guardar()">
+            <label>Dirección:</label><input type="text" id="dirMadre" oninput="guardar()">
+            <label>¿Cobertura Salud?</label>
             <select id="cobMadreSel" onchange="toggleC('cobMadreSel','cobMDet'); guardar()"><option value="no">No</option><option value="si">Si</option></select>
-            <input type="text" id="cobMDet" class="hidden" placeholder="Especificar" oninput="guardar()">
+            <input type="text" id="cobMDet" class="hidden" placeholder="Tipo de cobertura" oninput="guardar()">
         </div>
-        <div class="field"><label>Padre:</label><input type="text" id="nomPadre" oninput="guardar()"></div>
-        <div class="field">
-            <label>¿Cobertura Padre?</label>
+        <div class="field"><h3>Datos del Padre</h3>
+            <label>Nombre:</label><input type="text" id="nomPadre" oninput="guardar()">
+            <label>Cédula:</label><input type="text" id="cedPadre" oninput="guardar()">
+            <label>Teléfono:</label><input type="text" id="telPadre" oninput="guardar()">
+            <label>Dirección:</label><input type="text" id="dirPadre" oninput="guardar()">
+            <label>¿Cobertura Salud?</label>
             <select id="cobPadreSel" onchange="toggleC('cobPadreSel','cobPDet'); guardar()"><option value="no">No</option><option value="si">Si</option></select>
-            <input type="text" id="cobPDet" class="hidden" placeholder="Especificar" oninput="guardar()">
+            <input type="text" id="cobPDet" class="hidden" placeholder="Tipo de cobertura" oninput="guardar()">
         </div>
     </div>
 
-    <h2>3. Historia Materna</h2>
+    <h2>3. Datos de la Historia Materna</h2>
     <div class="grid">
-        <div class="field"><label>Estado Civil:</label><select id="estCivil" onchange="guardar()"><option>Soltera</option><option>Casada</option><option>Unión Libre</option></select></div>
-        <div class="field"><label>Instrucción:</label><select id="instr" onchange="guardar()"><option>Básica</option><option>Secundaria Inc.</option><option>Secundaria Comp.</option><option>Superior</option></select></div>
-        <div class="field"><label>Tipo Sangre:</label><select id="tSangre" onchange="guardar()"><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div>
+        <div class="field"><label>Edad:</label><input type="number" id="edadMadre" oninput="guardar()"></div>
+        <div class="field"><label>Raza:</label><select id="razaMadre" onchange="guardar()"><option>Mestizo</option><option>Afrodescendiente</option><option>Indígena</option><option>Otro</option></select></div>
+        <div class="field"><label>Instrucción:</label><select id="instrMadre" onchange="guardar()"><option>Básica</option><option>Secundaria Incompleta</option><option>Secundaria Completa</option><option>Superior</option></select></div>
+        <div class="field"><label>Lugar Nacimiento:</label><input type="text" id="lugNacMadre" oninput="guardar()"></div>
+        <div class="field"><label>Lugar Residencia:</label><input type="text" id="lugResMadre" oninput="guardar()"></div>
+        <div class="field"><label>Estado Civil:</label><select id="estCivilMadre" onchange="guardar()"><option>Soltera</option><option>Casada</option><option>Unión Libre</option></select></div>
+        <div class="field"><label>Religión:</label><input type="text" id="religMadre" oninput="guardar()"></div>
+        <div class="field"><label>Ocupación:</label><input type="text" id="ocupMadre" oninput="guardar()"></div>
+        <div class="field"><label>Tipo de Sangre:</label><select id="sangreMadre" onchange="guardar()"><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div>
+    </div>
+
+    <h3>Antecedentes Médicos</h3>
+    <div class="grid">
+        <div class="field full-width"><label>A. Patológicos Familiares:</label><textarea id="antFam" oninput="guardar()"></textarea></div>
+        <div class="field full-width"><label>A. Quirúrgicos:</label><textarea id="antQuir" oninput="guardar()"></textarea></div>
+        <div class="field full-width"><label>A. Patológicos Personales:</label><textarea id="antPers" oninput="guardar()"></textarea></div>
+        <div class="field"><label>Alergias:</label><input type="text" id="alergias" oninput="guardar()"></div>
+        <div class="field"><label>Hábitos (Alcohol/Tabaco/Drogas):</label><input type="text" id="habitos" oninput="guardar()"></div>
+    </div>
+
+    <h2>4. Antecedentes Gineco-Obstétricos</h2>
+    <div class="grid">
+        <div class="field"><label>Menarquia:</label><input type="text" id="menarquia" oninput="guardar()"></div>
+        <div class="field"><label>Ciclos:</label><input type="text" id="ciclos" oninput="guardar()"></div>
+        <div class="field"><label>Inicio Vida Sexual:</label><input type="text" id="ivsa" oninput="guardar()"></div>
+        <div class="field"><label>Parejas Sex:</label><input type="number" id="parejas" oninput="guardar()"></div>
+        <div class="field"><label>Planificación:</label><input type="text" id="planif" oninput="guardar()"></div>
+        <div class="field"><label>Paptest:</label><input type="text" id="pap" oninput="guardar()"></div>
+        <div class="field"><label>ETS:</label><input type="text" id="ets" oninput="guardar()"></div>
+    </div>
+    <div class="grid">
         <div class="field"><label>F.U.M:</label><input type="date" id="fum" onchange="calcularEG(); guardar()"></div>
-        <div class="field"><label>EG por FUM:</label><input type="text" id="egFum" readonly></div>
+        <div class="field"><label>EG por FUM:</label><input type="text" id="egFum" readonly style="background:#f0f0f0"></div>
+        <div class="field"><label>Nº Gestas:</label><input type="number" id="gestas" oninput="guardar()"></div>
+        <div class="field"><label>Controles Prenatales:</label><input type="number" id="controles" oninput="guardar()"></div>
+        <div class="field"><label>Nº Ecos:</label><input type="number" id="ecos" oninput="guardar()"></div>
+        <div class="field"><label>Infecciones:</label><input type="text" id="infEmb" oninput="guardar()"></div>
+        <div class="field">
+            <label>Ruptura Membranas:</label>
+            <select id="rpmSel" onchange="toggleC('rpmSel','rpmHorasDiv'); guardar()"><option value="no">No</option><option value="si">Si</option></select>
+            <div id="rpmHorasDiv" class="hidden"><label>Horas:</label><input type="number" id="rpmHoras" oninput="guardar()"></div>
+        </div>
+        <div class="field"><label>Maduración Pulmonar:</label><input type="text" id="madPulm" oninput="guardar()"></div>
     </div>
 
-    <h2>4. Calculadoras Clínicas</h2>
+    <h2>5. Evolución y Examen Físico de Ingreso</h2>
+    <div class="grid">
+        <div class="field"><label>Antecedentes Prenatales:</label><textarea id="antPre" oninput="guardar()"></textarea></div>
+        <div class="field"><label>Antecedentes Natales:</label><textarea id="antNat" oninput="guardar()"></textarea></div>
+        <div class="field"><label>Antecedentes Postnatales:</label><textarea id="antPost" oninput="guardar()"></textarea></div>
+    </div>
+    <div class="grid">
+        <div class="field full-width"><label>Motivo de Consulta:</label><textarea id="motivo" oninput="guardar()"></textarea></div>
+        <div class="field full-width"><label>Enfermedad Actual:</label><textarea id="enfAct" oninput="guardar()"></textarea></div>
+    </div>
+    <h3>Signos Vitales y Antropometría</h3>
+    <div class="grid">
+        <div class="field"><label>Tensión Arterial:</label><input type="text" id="taIng" oninput="guardar()"></div>
+        <div class="field"><label>Percentil TA:</label><input type="text" id="taPerc" oninput="guardar()"><a href="https://neopeds.academy/bp/" target="_blank" style="font-size:10px;color:blue">Abrir Neopeds</a></div>
+        <div class="field"><label>Peso (Kg):</label><input type="number" id="pesoGlobal" step="0.001" oninput="actualizarTodo(); guardar()"></div>
+        <div class="field"><label>Talla (cm):</label><input type="number" id="talla" oninput="guardar()"></div>
+        <div class="field"><label>PC (cm):</label><input type="number" id="pc" oninput="guardar()"></div>
+        <div class="field"><label>FC / FR / Temp:</label><input type="text" id="otrosVitales" oninput="guardar()"></div>
+    </div>
+    <div class="field full-width">
+        <label>Diagnóstico de Ingreso:</label>
+        <div style="display:flex;gap:5px"><textarea id="diagIng" style="flex:1" oninput="guardar()"></textarea><button onclick="window.open('https://cpockets.com/cie10','_blank')" class="no-print">Buscar CIE-10</button></div>
+    </div>
+
+    <h2>6. Calculadoras Clínicas (APGAR, Downes, Capurro)</h2>
     <div class="grid">
         <div class="calc-card">
-            <label>Peso (Kg):</label><input type="number" id="pesoGlobal" step="0.001" oninput="actualizarTodo(); guardar()">
-            <label>LT (ml/kg/d):</label><input type="number" id="ltVal" oninput="actualizarTodo(); guardar()">
+            <label><b>APGAR:</b></label>
+            <div style="font-size:11px">1 min: <input type="number" id="apg1" style="width:40px" readonly> <button onclick="evalApgar('apg1')">Eval</button></div>
+            <div style="font-size:11px">5 min: <input type="number" id="apg5" style="width:40px" readonly> <button onclick="evalApgar('apg5')">Eval</button></div>
+            <div style="font-size:11px">10 min: <input type="number" id="apg10" style="width:40px" readonly> <button onclick="evalApgar('apg10')">Eval</button></div>
         </div>
         <div class="calc-card">
-            <label>Score Downes:</label>
-            <select class="downes" onchange="calcDownes(); guardar()"><option value="0">FR <60</option><option value="1">FR 60-80</option><option value="2">FR >80</option></select>
-            <div id="resDownes" class="result-box">Downes: 0</div>
+            <label><b>Downes:</b></label>
+            <select class="downes-item" onchange="calcDownes(); guardar()"><option value="0">Sin dificultad</option><option value="1">Leve</option><option value="2">Grave</option></select>
+            <div id="resDownes" style="font-weight:bold; margin-top:5px">Total: 0</div>
+        </div>
+        <div class="calc-card">
+            <label><b>Capurro:</b></label>
+            <input type="number" id="capPuntos" placeholder="Puntos" oninput="calcCapurro(); guardar()">
+            <div id="resCap" style="font-weight:bold; margin-top:5px">EG: --</div>
         </div>
     </div>
 
-    <h2>5. Cálculo de Medicamentos (Resta de Líquidos)</h2>
-    <div id="listaMedicamentos"></div>
-    <button class="btn-add no-print" onclick="agregarMedicamento()">+ Añadir Medicamento</button>
-
+    <h2>7. Cálculo de Líquidos y Medicamentos</h2>
     <div class="calc-card">
-        <label>Extras:</label>
-        <select id="extra1" onchange="actualizarTodo(); guardar()">
-            <option value="0">Ninguno</option>
-            <option value="0.15">15% Fototerapia</option>
-            <option value="0.15">15% Cuna Radiante</option>
-        </select>
-        <div class="result-box" id="totalLiq24h" style="font-size:1.5em">Líquidos Totales: 0 ml/día</div>
+        <div class="grid">
+            <div class="field"><label>LT (ml/kg/d):</label><input type="number" id="ltVal" oninput="actualizarTodo(); guardar()"></div>
+            <div class="field"><label>Dextrosa (%):</label><select id="dexPerc" onchange="guardar()"><option>5%</option><option>10%</option><option>12.5%</option></select></div>
+            <div class="field"><label>Extras:</label><select id="extraSel" onchange="actualizarTodo(); guardar()"><option value="0">Ninguno</option><option value="0.15">15% Fototerapia</option><option value="0.15">15% Cuna Radiante</option></select></div>
+        </div>
+        <div id="listaMedicamentos"></div>
+        <button class="btn-add no-print" onclick="agregarMed()">+ Añadir Medicamento</button>
+        <div class="result-box" id="resTotalLiq">Líquidos Finales: 0 ml/día</div>
     </div>
 
-    <h2>6. Indicaciones (ADCAVANDIMELCO)</h2>
+    <h2>8. Indicaciones (ADCAVANDIMELCO)</h2>
     <div class="grid">
+        <div class="field"><label>A-D-C-A-V-A-N-D-I:</label><textarea id="indGen" oninput="guardar()"></textarea></div>
         <div class="field"><label>M (Med):</label><textarea id="indMed" readonly style="background:#f9f9f9"></textarea></div>
         <div class="field"><label>L (Líq):</label><input type="text" id="indLiq" readonly></div>
     </div>
 
     <div style="text-align:center; margin-top:20px" class="no-print">
-        <button onclick="borrarTodo()" style="background:#e74c3c; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer">Borrar Historia (Nueva)</button>
+        <button onclick="window.print()" class="btn-add" style="background:#34495e">Imprimir 2 Columnas</button>
+        <button onclick="borrarHistoria()" class="btn-add" style="background:#c0392b">Borrar y Nueva Historia</button>
     </div>
 </div>
 
+<div id="modalApgar" class="hidden" style="position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; border:2px solid #333; padding:20px; z-index:2000; box-shadow:0 0 20px rgba(0,0,0,0.5); width:300px">
+    <h3>Puntaje APGAR</h3>
+    <div id="apgarCont"></div><br>
+    <button onclick="cerrarApgar()">Cerrar y Guardar</button>
+</div>
+
 <script>
-    const factores = {
+    const factoresMed = {
         "Amikacina": 5, "Ceftazidima": 40, "Ampicilina": 100, "Cloruro de potasio": 2, 
         "Cloruro de sodio": 3.4, "Fenobarbital": 10, "Fluconazol": 2, "Gentamicina": 4, 
         "Gluconato de Calcio": 50, "Meropenem": 25, "Vancomicina": 5
     };
 
-    function agregarMedicamento(datos = null) {
-        const id = 'med_' + Date.now();
+    let targetApgar = '';
+
+    function calcularEdad() {
+        const fn = new Date(document.getElementById('fNac').value);
+        const fi = new Date(document.getElementById('fIng').value);
+        if(!isNaN(fn) && !isNaN(fi)){
+            const d = Math.floor((fi-fn)/(1000*60*60*24));
+            const h = Math.floor(((fi-fn)/(1000*60*60))%24);
+            document.getElementById('edadCalc').value = `${d} días, ${h} h`;
+        }
+    }
+
+    function calcularEG() {
+        const fum = new Date(document.getElementById('fum').value);
+        if(!isNaN(fum)){
+            const sem = Math.floor((new Date()-fum)/(1000*60*60*24*7));
+            const dias = Math.floor(((new Date()-fum)/(1000*60*60*24))%7);
+            document.getElementById('egFum').value = `${sem}.${dias} sem`;
+        }
+    }
+
+    function evalApgar(id) {
+        targetApgar = id;
+        const items = ["FC", "Resp", "Tono", "Reflejo", "Color"];
+        let h = '';
+        items.forEach(i => h += `<label>${i}:</label><select class="as"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select><br>`);
+        document.getElementById('apgarCont').innerHTML = h;
+        document.getElementById('modalApgar').classList.remove('hidden');
+    }
+
+    function cerrarApgar() {
+        let s = 0;
+        document.querySelectorAll('.as').forEach(x => s += parseInt(x.value));
+        document.getElementById(targetApgar).value = s;
+        document.getElementById('modalApgar').classList.add('hidden');
+        guardar();
+    }
+
+    function agregarMed(obj = null) {
+        const id = 'm' + Date.now();
         const div = document.createElement('div');
-        div.className = 'med-row';
-        div.id = id;
+        div.className = 'med-row'; div.id = id;
         div.innerHTML = `
             <div class="grid">
-                <div class="field"><label>Fármaco:</label>
-                    <select class="m-nom" onchange="actualizarTodo(); guardar()">
-                        ${Object.keys(factores).map(f => `<option value="${f}">${f}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="field"><label>Dosis (mg/kg):</label><input type="number" class="m-dos" oninput="actualizarTodo(); guardar()"></div>
-                <div class="field"><label>Frecuencia:</label>
-                    <select class="m-fre" onchange="actualizarTodo(); guardar()">
-                        <option value="1">Cada 24h (x1)</option><option value="2">Cada 12h (x2)</option>
-                        <option value="3">Cada 8h (x3)</option><option value="0.66">Cada 36h</option>
-                    </select>
-                </div>
-                <div class="field"><label>Resultado:</label><div class="m-res" style="font-weight:bold">0 ml/día</div></div>
-                <button onclick="document.getElementById('${id}').remove(); actualizarTodo(); guardar()" style="background:red; color:white; border:none; border-radius:5px; height:30px; margin-top:20px">X</button>
+                <select class="mn" onchange="actualizarTodo(); guardar()">${Object.keys(factoresMed).map(f=>`<option>${f}</option>`).join('')}<option>Otro</option></select>
+                <input type="number" class="md" placeholder="Dosis mg/kg" oninput="actualizarTodo(); guardar()">
+                <select class="mf" onchange="actualizarTodo(); guardar()"><option value="1">c/24h</option><option value="2">c/12h</option><option value="3">c/8h</option><option value="0.66">c/36h</option></select>
+                <div class="mr" style="font-weight:bold">0 ml/d</div>
+                <button onclick="document.getElementById('${id}').remove(); actualizarTodo(); guardar()" style="color:red">X</button>
             </div>`;
         document.getElementById('listaMedicamentos').appendChild(div);
-        
-        if(datos) {
-            div.querySelector('.m-nom').value = datos.n;
-            div.querySelector('.m-dos').value = datos.d;
-            div.querySelector('.m-fre').value = datos.f;
-        }
+        if(obj){ div.querySelector('.mn').value=obj.n; div.querySelector('.md').value=obj.d; div.querySelector('.mf').value=obj.f; }
         actualizarTodo();
     }
 
     function actualizarTodo() {
-        const peso = parseFloat(document.getElementById('pesoGlobal').value) || 0;
+        const p = parseFloat(document.getElementById('pesoGlobal').value) || 0;
         const lt = parseFloat(document.getElementById('ltVal').value) || 0;
-        let liqBase = peso * lt;
+        let lb = p * lt;
+        lb += (lb * parseFloat(document.getElementById('extraSel').value));
 
-        // Sumar Extras (Fototerapia/Cuna)
-        const extra = parseFloat(document.getElementById('extra1').value) || 0;
-        liqBase += (liqBase * extra);
-
-        let totalMedDia = 0;
-        let textoMed = "";
-
-        document.querySelectorAll('.med-row').forEach(row => {
-            const nom = row.querySelector('.m-nom').value;
-            const dos = parseFloat(row.querySelector('.m-dos').value) || 0;
-            const fre = parseFloat(row.querySelector('.m-fre').value) || 0;
-            const factor = factores[nom] || 1;
-
-            // Lógica: (Peso * Dosis / Factor) * Frecuencia
-            const mlDosisUnica = (peso * dos) / factor;
-            const mlDia = mlDosisUnica * fre;
-            
-            totalMedDia += mlDia;
-            row.querySelector('.m-res').innerText = `${mlDia.toFixed(2)} ml/día`;
-            textoMed += `${nom}: ${mlDosisUnica.toFixed(2)}ml c/${24/fre}h; `;
+        let tm = 0; let txt = "";
+        document.querySelectorAll('.med-row').forEach(r => {
+            const n = r.querySelector('.mn').value;
+            const d = parseFloat(r.querySelector('.md').value) || 0;
+            const f = parseFloat(r.querySelector('.mf').value) || 0;
+            const factor = factoresMed[n] || 1;
+            const mld = (p * d / factor);
+            const mlt = mld * f;
+            tm += mlt;
+            r.querySelector('.mr').innerText = `${mlt.toFixed(2)} ml/d`;
+            txt += `${n}: ${mld.toFixed(2)}ml c/${Math.round(24/f)}h; `;
         });
-
-        const liqFinal = liqBase - totalMedDia;
-        document.getElementById('totalLiq24h').innerText = `Total Líquidos: ${liqFinal.toFixed(2)} ml/día`;
-        document.getElementById('indLiq').value = `${liqFinal.toFixed(1)} ml/día (${(liqFinal/24).toFixed(1)} ml/h)`;
-        document.getElementById('indMed').value = textoMed;
+        const lf = lb - tm;
+        document.getElementById('resTotalLiq').innerText = `Líquidos Finales: ${lf.toFixed(2)} ml/día`;
+        document.getElementById('indLiq').value = `${lf.toFixed(1)} ml/d (${(lf/24).toFixed(1)} ml/h)`;
+        document.getElementById('indMed').value = txt;
     }
 
-    // --- SISTEMA DE AUTOGUARDADO ---
     function guardar() {
-        const datos = {
-            filiacion: {
-                n: document.getElementById('nombreNeo').value,
-                fn: document.getElementById('fNac').value,
-                fi: document.getElementById('fIng').value,
-                p: document.getElementById('pesoGlobal').value,
-                lt: document.getElementById('ltVal').value,
-                ex: document.getElementById('extra1').value
-            },
-            medicamentos: []
+        const d = {
+            v: {}, // Valores simples
+            m: []  // Medicamentos
         };
-        document.querySelectorAll('.med-row').forEach(row => {
-            datos.medicamentos.push({
-                n: row.querySelector('.m-nom').value,
-                d: row.querySelector('.m-dos').value,
-                f: row.querySelector('.m-fre').value
-            });
+        document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id) d.v[e.id] = e.value; });
+        document.querySelectorAll('.med-row').forEach(r => {
+            d.m.push({ n: r.querySelector('.mn').value, d: r.querySelector('.md').value, f: r.querySelector('.mf').value });
         });
-        localStorage.setItem('hc_neonatal_data', JSON.stringify(datos));
-        
-        // Mostrar etiqueta de guardado
-        const tag = document.getElementById('save-tag');
-        tag.style.opacity = 1;
-        setTimeout(() => tag.style.opacity = 0, 2000);
+        localStorage.setItem('hc_neo_full', JSON.stringify(d));
+        document.getElementById('save-tag').style.opacity = 1;
+        setTimeout(()=> document.getElementById('save-tag').style.opacity = 0, 1500);
     }
 
     function cargarDatos() {
-        const raw = localStorage.getItem('hc_neonatal_data');
+        const raw = localStorage.getItem('hc_neo_full');
         if(!raw) return;
         const d = JSON.parse(raw);
-        
-        document.getElementById('nombreNeo').value = d.filiacion.n || '';
-        document.getElementById('fNac').value = d.filiacion.fn || '';
-        document.getElementById('fIng').value = d.filiacion.fi || '';
-        document.getElementById('pesoGlobal').value = d.filiacion.p || '';
-        document.getElementById('ltVal').value = d.filiacion.lt || '';
-        document.getElementById('extra1').value = d.filiacion.ex || '0';
-        
-        d.medicamentos.forEach(m => agregarMedicamento(m));
-        
+        for(let id in d.v) { const e = document.getElementById(id); if(e) e.value = d.v[id]; }
+        d.m.forEach(med => agregarMed(med));
         actualizarTodo();
-        calcularEdad();
+        // Disparar toggles
+        toggleC('cobMadreSel','cobMDet'); toggleC('cobPadreSel','cobPDet'); toggleC('rpmSel','rpmHorasDiv');
     }
 
-    function borrarTodo() {
-        if(confirm("¿Estás seguro de borrar todos los datos?")) {
-            localStorage.removeItem('hc_neonatal_data');
-            location.reload();
-        }
-    }
-
-    function calcularEdad() { /* ... lógica de fecha ... */ }
-    function calcularEG() { /* ... lógica de FUM ... */ }
-    function toggleC(selId, detId) { 
-        const s = document.getElementById(selId);
-        document.getElementById(detId).classList.toggle('hidden', s.value === 'no');
+    function borrarHistoria() { if(confirm("¿Nueva historia?")) { localStorage.removeItem('hc_neo_full'); location.reload(); } }
+    function toggleC(s, d) { const e = document.getElementById(s); if(e) document.getElementById(d).classList.toggle('hidden', e.value==='no'); }
+    function calcDownes() { /* Lógica visual simple */ }
+    function calcCapurro() { 
+        const p = parseFloat(document.getElementById('capPuntos').value) || 0;
+        if(p>0) document.getElementById('resCap').innerText = `EG: ${((p+204)/7).toFixed(1)} sem`;
     }
 </script>
 </body>

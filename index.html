@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HC Neonatal Pro - ADCAVANDIMELCO & VIG</title>
+    <title>HC Neonatal Integral - Completa</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; font-size: 13px; color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; font-size: 12px; color: #333; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; }
+        h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; text-transform: uppercase; }
         h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 25px; font-size: 1.1em; }
-        h3 { border-left: 5px solid var(--secondary); padding-left: 10px; color: var(--secondary); margin-top: 20px; }
+        h3 { border-left: 5px solid var(--secondary); padding-left: 10px; color: var(--secondary); margin-top: 20px; font-size: 1em; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .field { display: flex; flex-direction: column; }
         label { font-weight: bold; margin-bottom: 3px; color: #555; }
-        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        textarea { min-height: 50px; resize: vertical; }
         .calc-card { background: #eef2f7; border: 1px solid #d1d8e0; padding: 15px; border-radius: 8px; margin-top: 10px; }
         .result-box { background: #2c3e50; color: #fff; padding: 10px; border-radius: 4px; font-weight: bold; margin-top: 5px; }
         .med-row { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        .adcav-item { background: #f9f9f9; border-left: 4px solid var(--secondary); padding: 12px; margin-bottom: 10px; border-radius: 4px; }
         .hidden { display: none; }
-        .adcav-item { background: #f9f9f9; border-left: 4px solid var(--secondary); padding: 10px; margin-bottom: 10px; border-radius: 4px; }
         .save-status { position: fixed; bottom: 15px; right: 15px; background: var(--accent); color: white; padding: 8px 15px; border-radius: 20px; font-size: 11px; opacity: 0; transition: opacity 0.5s; z-index: 1000; }
         @media print { .no-print { display: none; } .grid { grid-template-columns: 1fr 1fr !important; } .container { width: 100%; box-shadow: none; } }
     </style>
@@ -31,243 +32,186 @@
 <div class="container" id="hc-form">
     <h1>Nota de Ingreso Neonatología</h1>
 
-    <h2>1. Identificación</h2>
+    <h2>1. Identificación y Filiación</h2>
     <div class="grid">
         <div class="field"><label>Nombre Neonato:</label><input type="text" id="nombreNeo" oninput="guardar()"></div>
-        <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" onchange="calcularEdad(); guardar()"></div>
-        <div class="field"><label>F. Ingreso:</label><input type="date" id="fIng" onchange="calcularEdad(); guardar()"></div>
-        <div class="field"><label>Edad Calculada:</label><input type="text" id="edadCalc" readonly></div>
+        <div class="field"><label>Fecha Nacimiento:</label><input type="date" id="fNac" onchange="calcularEdad(); guardar()"></div>
+        <div class="field"><label>Hora Nacimiento:</label><input type="time" id="hNac" oninput="guardar()"></div>
+        <div class="field"><label>Fecha Ingreso:</label><input type="date" id="fIng" onchange="calcularEdad(); guardar()"></div>
+        <div class="field"><label>Hora Ingreso:</label><input type="time" id="hIng" oninput="guardar()"></div>
+        <div class="field"><label>Edad Calculada:</label><input type="text" id="edadCalc" readonly style="background:#eee"></div>
+        <div class="field"><label>Raza:</label><select id="razaNeo" onchange="guardar()"><option>Mestizo</option><option>Afrodescendiente</option><option>Indígena</option><option>Otro</option></select></div>
+        <div class="field"><label>Cédula:</label><input type="text" id="cedulaNeo" oninput="guardar()"></div>
     </div>
 
-    <h2>2. Signos Vitales y Antropometría</h2>
+    <h2>2. Datos de los Padres</h2>
+    <div class="grid">
+        <div class="field"><h3>Madre</h3>
+            <label>Nombre:</label><input type="text" id="nomMadre" oninput="guardar()">
+            <label>¿Cobertura?</label><select id="cobMSel" onchange="toggleC('cobMSel','cobMDet'); guardar()"><option value="no">No</option><option value="si">Si</option></select>
+            <input type="text" id="cobMDet" class="hidden" placeholder="Especificar" oninput="guardar()">
+        </div>
+        <div class="field"><h3>Padre</h3>
+            <label>Nombre:</label><input type="text" id="nomPadre" oninput="guardar()">
+            <label>¿Cobertura?</label><select id="cobPSel" onchange="toggleC('cobPSel','cobPDet'); guardar()"><option value="no">No</option><option value="si">Si</option></select>
+            <input type="text" id="cobPDet" class="hidden" placeholder="Especificar" oninput="guardar()">
+        </div>
+    </div>
+
+    <h2>3. Historia Materna</h2>
+    <div class="grid">
+        <div class="field"><label>Raza:</label><select id="razaM" onchange="guardar()"><option>Mestizo</option><option>Afrodescendiente</option><option>Indígena</option><option>Otro</option></select></div>
+        <div class="field"><label>Estado Civil:</label><select id="estCivil" onchange="guardar()"><option>Soltera</option><option>Casada</option><option>Unión Libre</option></select></div>
+        <div class="field"><label>Instrucción:</label><select id="instrM" onchange="guardar()"><option>Básica</option><option>Secundaria Incompleta</option><option>Secundaria Completa</option><option>Superior</option></select></div>
+        <div class="field"><label>Ocupación:</label><input type="text" id="ocupM" oninput="guardar()"></div>
+        <div class="field"><label>Tipo Sangre:</label><select id="sangreM" onchange="guardar()"><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div>
+    </div>
+
+    <h2>4. Antecedentes Gineco-Obstétricos</h2>
+    <div class="grid">
+        <div class="field"><label>F.U.M:</label><input type="date" id="fum" onchange="calcularEG(); guardar()"></div>
+        <div class="field"><label>EG por FUM:</label><input type="text" id="egFum" readonly style="background:#eee"></div>
+        <div class="field"><label>Ruptura Membranas:</label><select id="rpmSel" onchange="toggleC('rpmSel','rpmH'); guardar()"><option value="no">No</option><option value="si">Si</option></select>
+            <div id="rpmH" class="hidden"><label>Horas:</label><input type="number" id="rpmHoras" oninput="guardar()"></div>
+        </div>
+        <div class="field"><label>Gestas/Partos/Abortos:</label><input type="text" id="gpa" oninput="guardar()"></div>
+    </div>
+
+    <h2>5. Examen Físico de Ingreso</h2>
     <div class="grid">
         <div class="field"><label>FC (lpm):</label><input type="number" id="fc" oninput="guardar()"></div>
         <div class="field"><label>FR (rpm):</label><input type="number" id="fr" oninput="guardar()"></div>
         <div class="field"><label>Temp (°C):</label><input type="number" id="temp" step="0.1" oninput="guardar()"></div>
         <div class="field"><label>TA (mmHg):</label><input type="text" id="ta" oninput="guardar()"></div>
+        <div class="field"><label>Percentil TA:</label><input type="text" id="taPerc" oninput="guardar()"><a href="https://neopeds.academy/bp/" target="_blank" style="font-size:10px;color:blue">Abrir Neopeds</a></div>
         <div class="field"><label>Peso (Kg):</label><input type="number" id="pesoGlobal" step="0.001" oninput="actualizarTodo(); guardar()"></div>
     </div>
-    <div class="field"><label>Diagnóstico de Ingreso:</label><textarea id="diagIng" oninput="actualizarDiagnosticosAdcav(); guardar()"></textarea></div>
+    <div class="field"><label>Diagnóstico de Ingreso:</label>
+        <div style="display:flex;gap:5px"><textarea id="diagIng" style="flex:1" oninput="syncDiag(); guardar()"></textarea><button onclick="window.open('https://cpockets.com/cie10','_blank')" class="no-print">CIE-10</button></div>
+    </div>
 
-    <h2>3. Cálculo de Líquidos, Medicamentos y VIG</h2>
+    <h2>6. Cálculo de Líquidos, Medicamentos y VIG</h2>
     <div class="calc-card">
         <div class="grid">
             <div class="field"><label>LT (ml/kg/d):</label><input type="number" id="ltVal" oninput="actualizarTodo(); guardar()"></div>
-            <div class="field">
-                <label>Concentración Dextrosa:</label>
+            <div class="field"><label>Concentración Dextrosa:</label>
                 <select id="dexPerc" onchange="actualizarTodo(); guardar()">
-                    <option value="25">Dextrosa 2.5%</option>
-                    <option value="50" selected>Dextrosa 5%</option>
-                    <option value="75">Dextrosa 7.5%</option>
-                    <option value="100">Dextrosa 10%</option>
-                    <option value="125">Dextrosa 12.5%</option>
-                    <option value="150">Dextrosa 15%</option>
+                    <option value="25">Dextrosa 2.5%</option><option value="50" selected>Dextrosa 5%</option><option value="75">Dextrosa 7.5%</option><option value="100">Dextrosa 10%</option><option value="125">Dextrosa 12.5%</option><option value="150">Dextrosa 15%</option>
                 </select>
             </div>
-            <div class="field">
-                <label>Extras (Sumatoria %):</label>
+            <div class="field"><label>Extras (Añadir al cálculo):</label>
                 <div style="font-size:11px">
                     <input type="checkbox" class="extra-check" value="0.15" onchange="actualizarTodo(); guardar()"> Fototerapia (15%)<br>
                     <input type="checkbox" class="extra-check" value="0.15" onchange="actualizarTodo(); guardar()"> Cuna Radiante (15%)
                 </div>
             </div>
         </div>
-
         <div id="listaMedicamentos"></div>
         <button class="btn-add no-print" onclick="agregarMed()">+ Añadir Medicamento</button>
-
-        <div class="grid" style="margin-top:15px">
+        <div class="grid" style="margin-top:10px">
             <div class="result-box" id="resTotalLiq">Líquidos Finales: 0 ml/d</div>
             <div class="result-box" id="resVig" style="background:var(--accent)">VIG: 0 mg/kg/min</div>
         </div>
     </div>
 
-    <h2>4. Indicaciones Médicas (ADCAVANDIMELCO)</h2>
+    <h2>7. Indicaciones (ADCAVANDIMELCO)</h2>
     <div id="adcav-container">
         <div class="adcav-item"><b>A (Admisión):</b> <input type="text" id="indA" style="width:80%" oninput="guardar()"></div>
-        
         <div class="adcav-item"><b>D (Diagnóstico):</b> <textarea id="indD" style="width:100%" oninput="guardar()"></textarea></div>
-        
-        <div class="adcav-item"><b>C (Condición):</b> 
-            <select onchange="this.nextElementSibling.value=this.value; guardar()">
-                <option value="">Seleccione...</option><option value="Estable">Estable</option><option value="Inestable">Inestable</option>
-            </select>
-            <input type="text" id="indC" placeholder="Editar o escribir..." oninput="guardar()">
-        </div>
-
-        <div class="adcav-item"><b>A (Alergias):</b> 
-            <select onchange="this.nextElementSibling.value=this.value; guardar()">
-                <option value="">Seleccione...</option><option value="No refiere">No refiere</option><option value="Negativo">Negativo</option>
-            </select>
-            <input type="text" id="indAlerg" oninput="guardar()">
-        </div>
-
-        <div class="adcav-item"><b>V (Vitales):</b> 
-            <select onchange="insertarEnTextarea('indV', this.value); guardar()">
-                <option value="">Añadir...</option><option value="Monitoreo continuo">Monitoreo continuo</option>
-                <option value="Control de signos vitales cada 3 horas">Control c/3h</option>
-                <option value="Control ingesta y excreta">Ingesta/Excreta</option>
-                <option value="Balance hídrico y diuresis horaria">Balance/Diuresis</option>
-            </select>
-            <textarea id="indV" style="width:100%" oninput="guardar()"></textarea>
-        </div>
-
-        <div class="adcav-item"><b>A (Actitud/Posición):</b> 
-            <select onchange="this.nextElementSibling.value=this.value; guardar()">
-                <option value="">Seleccione...</option><option value="Semifowler">Semifowler</option><option value="Posición antirreflujo">Antirreflujo</option>
-            </select>
-            <input type="text" id="indAct" oninput="guardar()">
-        </div>
-
-        <div class="adcav-item"><b>D (Dieta):</b> 
-            <select onchange="this.nextElementSibling.value=this.value; guardar()">
-                <option value="">Seleccione...</option><option value="Nada por vía oral (NPO)">NPO</option>
-            </select>
-            <input type="text" id="indDieta" oninput="guardar()">
-        </div>
-
-        <div class="adcav-item"><b>I (Líquidos IV):</b> <textarea id="indI" readonly style="width:100%; background:#eee"></textarea></div>
-
-        <div class="adcav-item"><b>M (Medicamentos):</b> <textarea id="indM" readonly style="width:100%; background:#eee"></textarea></div>
-
-        <div class="adcav-item"><b>E (Exámenes):</b> 
-            <select onchange="insertarEnTextarea('indE', this.value); guardar()">
-                <option value="">Añadir...</option><option value="Radiografía toracoabdominal">Rx Toracoabdominal</option>
-                <option value="Eco transfontanelar">Eco Transfontanelar</option><option value="Ecocardiograma">Ecocardiograma</option>
-            </select>
-            <textarea id="indE" style="width:100%" oninput="guardar()"></textarea>
-        </div>
-
-        <div class="adcav-item"><b>L (Laboratorio):</b> 
-            <select onchange="insertarEnTextarea('indL', this.value); guardar()">
-                <option value="">Añadir...</option><option value="Biometría hemática">Biometría</option><option value="Glucosa, Urea, Creatinina">Química</option>
-                <option value="TGO, TGP, Bilirrubinas">Perfil Hepático</option><option value="TP, TTP, INR">Coagulación</option>
-                <option value="Gasometría">Gasometría</option><option value="Hemocultivo">Hemocultivo</option>
-            </select>
-            <textarea id="indL" style="width:100%" oninput="guardar()"></textarea>
-        </div>
-
+        <div class="adcav-item"><b>C (Condición):</b> <select onchange="this.nextElementSibling.value=this.value; guardar()"><option value="">Seleccione...</option><option value="Estable">Estable</option><option value="Inestable">Inestable</option></select> <input type="text" id="indCond" oninput="guardar()"></div>
+        <div class="adcav-item"><b>A (Alergias):</b> <select onchange="this.nextElementSibling.value=this.value; guardar()"><option value="">Seleccione...</option><option value="No refiere">No refiere</option><option value="Negativo">Negativo</option></select> <input type="text" id="indAler" oninput="guardar()"></div>
+        <div class="adcav-item"><b>V (Vitales):</b> <select onchange="addTxt('indVital', this.value); guardar()"><option value="">Añadir...</option><option value="Monitoreo continuo">Monitoreo continuo</option><option value="Control de signos vitales cada 3 horas">Signos c/3h</option><option value="Balance hídrico y diuresis horaria">Balance/Diuresis</option></select><textarea id="indVital" style="width:100%" oninput="guardar()"></textarea></div>
+        <div class="adcav-item"><b>A (Actitud):</b> <select onchange="this.nextElementSibling.value=this.value; guardar()"><option value="">Seleccione...</option><option value="Semifowler">Semifowler</option><option value="Posición antirreflujo">Antirreflujo</option></select> <input type="text" id="indAct" oninput="guardar()"></div>
+        <div class="adcav-item"><b>D (Dieta):</b> <select onchange="this.nextElementSibling.value=this.value; guardar()"><option value="">Seleccione...</option><option value="Nada por vía oral (NPO)">NPO</option></select> <input type="text" id="indDieta" oninput="guardar()"></div>
+        <div class="adcav-item"><b>I (Líquidos IV):</b> <textarea id="indLiq" readonly style="width:100%; background:#eee"></textarea></div>
+        <div class="adcav-item"><b>M (Medicamentos):</b> <textarea id="indMed" readonly style="width:100%; background:#eee"></textarea></div>
+        <div class="adcav-item"><b>E (Exámenes):</b> <select onchange="addTxt('indEx', this.value); guardar()"><option value="">Añadir...</option><option value="Radiografía toracoabdominal">Rx Toracoabdominal</option><option value="Eco transfontanelar">Eco Transfontanelar</option></select><textarea id="indEx" style="width:100%" oninput="guardar()"></textarea></div>
+        <div class="adcav-item"><b>L (Laboratorio):</b> <select onchange="addTxt('indLab', this.value); guardar()"><option value="">Añadir...</option><option value="Biometría hemática">Biometría</option><option value="Glucosa, Urea, Creatinina">Química</option><option value="Gasometría">Gasometría</option><option value="Hemocultivo">Hemocultivo</option></select><textarea id="indLab" style="width:100%" oninput="guardar()"></textarea></div>
         <div class="adcav-item"><b>C (Interconsultas):</b> <input type="text" id="indInt" style="width:80%" oninput="guardar()"></div>
         <div class="adcav-item"><b>O (Otros):</b> <input type="text" id="indO" style="width:80%" oninput="guardar()"></div>
     </div>
 
-    <div style="text-align:center; margin-top:30px" class="no-print">
-        <button onclick="window.print()" class="btn-add" style="background:#34495e">Imprimir Historia</button>
-        <button onclick="borrarHistoria()" class="btn-add" style="background:#c0392b">Nueva Evolución</button>
+    <div style="text-align:center; margin-top:20px" class="no-print">
+        <button onclick="window.print()" class="btn-add" style="background:#2c3e50">Imprimir a 2 Columnas</button>
+        <button onclick="borrarH()" class="btn-add" style="background:#c0392b">Borrar Todo (Nuevo Paciente)</button>
     </div>
 </div>
 
 <script>
-    const factoresMed = {
-        "Amikacina": 5, "Ceftazidima": 40, "Ampicilina": 100, "Cloruro de potasio": 2, 
-        "Cloruro de sodio": 3.4, "Fenobarbital": 10, "Fluconazol": 2, "Gentamicina": 4, 
-        "Gluconato de Calcio": 50, "Meropenem": 25, "Vancomicina": 5
-    };
+    const factores = { "Amikacina": 5, "Ceftazidima": 40, "Ampicilina": 100, "Cloruro de potasio": 2, "Cloruro de sodio": 3.4, "Fenobarbital": 10, "Fluconazol": 2, "Gentamicina": 4, "Gluconato de Calcio": 50, "Meropenem": 25, "Vancomicina": 5 };
 
-    function agregarMed(obj = null) {
+    function actualizarTodo() {
+        const p = parseFloat(document.getElementById('pesoGlobal').value) || 0;
+        const lt = parseFloat(document.getElementById('ltVal').value) || 0;
+        const conc = parseFloat(document.getElementById('dexPerc').value) || 0;
+        
+        let vol = p * lt;
+        let extP = 0;
+        document.querySelectorAll('.extra-check:checked').forEach(c => extP += parseFloat(c.value));
+        vol += (vol * extP);
+
+        let vMed = 0; let tMed = "";
+        document.querySelectorAll('.med-row').forEach(r => {
+            const n = r.querySelector('.mn').value;
+            const d = parseFloat(r.querySelector('.md').value) || 0;
+            const f = parseFloat(r.querySelector('.mf').value) || 1;
+            const factor = factores[n] || 1;
+            const mld = (p * d) / factor;
+            vMed += (mld * f);
+            tMed += `${n} pasar IV (${(p*d).toFixed(1)} mg), cada ${Math.round(24/f)}h, (${mld.toFixed(2)} ml)\n`;
+        });
+
+        const vFin = vol - vMed;
+        const vig = (p > 0) ? (vFin * conc) / (1440 * p) : 0;
+
+        document.getElementById('resTotalLiq').innerText = `Líquidos Finales: ${vFin.toFixed(2)} ml/d`;
+        document.getElementById('resVig').innerText = `VIG: ${vig.toFixed(2)} mg/kg/min`;
+        
+        const dNm = document.getElementById('dexPerc').options[document.getElementById('dexPerc').selectedIndex].text;
+        document.getElementById('indLiq').value = `${dNm}, pasar IV ${vFin.toFixed(1)} ml en 24 horas.\nVIG: ${vig.toFixed(2)} mg/kg/min`;
+        document.getElementById('indMed').value = tMed;
+    }
+
+    function agregarMed(o = null) {
         const id = 'm' + Date.now();
         const div = document.createElement('div');
         div.className = 'med-row'; div.id = id;
-        div.innerHTML = `
-            <div class="grid">
-                <select class="mn" onchange="actualizarTodo(); guardar()">
-                    ${Object.keys(factoresMed).map(f=>`<option value="${f}">${f}</option>`).join('')}
-                    <option value="Otro">Otro</option>
-                </select>
-                <input type="number" class="md" placeholder="Dosis mg/kg" oninput="actualizarTodo(); guardar()">
-                <select class="mf" onchange="actualizarTodo(); guardar()">
-                    <option value="1">cada 24 horas</option><option value="2">cada 12 horas</option>
-                    <option value="3">cada 8 horas</option><option value="0.66">cada 36 horas</option>
-                </select>
-                <button onclick="document.getElementById('${id}').remove(); actualizarTodo(); guardar()" style="color:red">X</button>
-            </div>`;
+        div.innerHTML = `<div class="grid">
+            <select class="mn" onchange="actualizarTodo(); guardar()">${Object.keys(factores).map(f=>`<option value="${f}">${f}</option>`).join('')}<option>Otro</option></select>
+            <input type="number" class="md" placeholder="mg/kg" oninput="actualizarTodo(); guardar()">
+            <select class="mf" onchange="actualizarTodo(); guardar()"><option value="1">c/24h</option><option value="2">c/12h</option><option value="3">c/8h</option><option value="0.66">c/36h</option></select>
+            <button onclick="document.getElementById('${id}').remove(); actualizarTodo(); guardar()" style="color:red">X</button>
+        </div>`;
         document.getElementById('listaMedicamentos').appendChild(div);
-        if(obj){ div.querySelector('.mn').value=obj.n; div.querySelector('.md').value=obj.d; div.querySelector('.mf').value=obj.f; }
+        if(o){ div.querySelector('.mn').value=o.n; div.querySelector('.md').value=o.d; div.querySelector('.mf').value=o.f; }
         actualizarTodo();
     }
 
-    function actualizarTodo() {
-        const peso = parseFloat(document.getElementById('pesoGlobal').value) || 0;
-        const lt = parseFloat(document.getElementById('ltVal').value) || 0;
-        const concDex = parseFloat(document.getElementById('dexPerc').value) || 0;
-        
-        // 1. Calcular Volumen Base
-        let volBase = peso * lt;
-        
-        // 2. Calcular Extras (Checkboxes)
-        let extraPorc = 0;
-        document.querySelectorAll('.extra-check:checked').forEach(c => extraPorc += parseFloat(c.value));
-        volBase += (volBase * extraPorc);
-
-        // 3. Restar Medicamentos
-        let volMedTotal = 0;
-        let txtMed = "";
-        document.querySelectorAll('.med-row').forEach(r => {
-            const n = r.querySelector('.mn').value;
-            const dos = parseFloat(r.querySelector('.md').value) || 0;
-            const fre = parseFloat(r.querySelector('.mf').value) || 1;
-            const factor = factoresMed[n] || 1;
-            
-            const mld = (peso * dos) / factor; // ml por dosis
-            const mlt = mld * fre;             // ml total día
-            volMedTotal += mlt;
-            
-            const fStr = r.querySelector('.mf').options[r.querySelector('.mf').selectedIndex].text;
-            txtMed += `${n} pasar IV (${(peso*dos).toFixed(1)} mg), ${fStr}, (${mld.toFixed(2)} ml)\n`;
-        });
-
-        const volFinal = volBase - volMedTotal;
-        document.getElementById('resTotalLiq').innerText = `Líquidos Finales: ${volFinal.toFixed(2)} ml/día`;
-        
-        // 4. Calcular VIG
-        // Fórmula: (VolTotal * ConcDex) / (1440 * Peso)
-        let vig = 0;
-        if(peso > 0) {
-            vig = (volFinal * concDex) / (1440 * peso);
-        }
-        document.getElementById('resVig').innerText = `VIG: ${vig.toFixed(2)} mg/kg/min`;
-
-        // 5. Actualizar ADCAVANDIMELCO (I y M)
-        const dexNombre = document.getElementById('dexPerc').options[document.getElementById('dexPerc').selectedIndex].text;
-        document.getElementById('indI').value = `${dexNombre}, pasar IV ${volFinal.toFixed(1)} ml en 24 horas.\nVIG: ${vig.toFixed(2)} mg/kg/min`;
-        document.getElementById('indM').value = txtMed;
-    }
-
-    function actualizarDiagnosticosAdcav() {
-        document.getElementById('indD').value = document.getElementById('diagIng').value;
-    }
-
-    function insertarEnTextarea(id, valor) {
-        if(!valor) return;
-        const t = document.getElementById(id);
-        t.value += (t.value ? ", " : "") + valor;
-    }
-
     function guardar() {
-        const d = { v: {}, m: [], c: [] };
-        document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id) d.v[e.id] = e.value; });
-        document.querySelectorAll('.med-row').forEach(r => {
-            d.m.push({ n: r.querySelector('.mn').value, d: r.querySelector('.md').value, f: r.querySelector('.mf').value });
-        });
-        document.querySelectorAll('.extra-check').forEach((c, i) => { if(c.checked) d.c.push(i); });
-        
-        localStorage.setItem('hc_neo_v3', JSON.stringify(d));
-        const tag = document.getElementById('save-tag');
-        tag.style.opacity = 1; setTimeout(()=>tag.style.opacity=0, 1000);
+        const data = { v: {}, m: [], c: [] };
+        document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id) data.v[e.id] = e.value; });
+        document.querySelectorAll('.med-row').forEach(r => data.m.push({ n: r.querySelector('.mn').value, d: r.querySelector('.md').value, f: r.querySelector('.mf').value }));
+        document.querySelectorAll('.extra-check').forEach((c, i) => { if(c.checked) data.c.push(i); });
+        localStorage.setItem('hc_neo_final_fix', JSON.stringify(data));
+        const s = document.getElementById('save-tag'); s.style.opacity = 1; setTimeout(()=>s.style.opacity=0, 1000);
     }
 
     function cargarDatos() {
-        const raw = localStorage.getItem('hc_neo_v3');
+        const raw = localStorage.getItem('hc_neo_final_fix');
         if(!raw) return;
         const d = JSON.parse(raw);
         for(let id in d.v) { const e = document.getElementById(id); if(e) e.value = d.v[id]; }
         d.m.forEach(m => agregarMed(m));
         d.c.forEach(i => document.querySelectorAll('.extra-check')[i].checked = true);
-        actualizarTodo();
+        actualizarTodo(); toggleC('cobMSel','cobMDet'); toggleC('cobPSel','cobPDet'); toggleC('rpmSel','rpmH');
     }
 
-    function borrarHistoria() { if(confirm("¿Desea limpiar todos los campos?")) { localStorage.removeItem('hc_neo_v3'); location.reload(); } }
-    function calcularEdad() { /* Implementación de fecha */ }
+    function syncDiag() { document.getElementById('indD').value = document.getElementById('diagIng').value; }
+    function addTxt(id, v) { if(v) { const t = document.getElementById(id); t.value += (t.value ? ", " : "") + v; } }
+    function toggleC(s, d) { const e = document.getElementById(s); if(e) document.getElementById(d).classList.toggle('hidden', e.value==='no'); }
+    function calcularEdad() { /* Lógica de fechas */ }
+    function calcularEG() { /* Lógica FUM */ }
+    function borrarH() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('hc_neo_final_fix'); location.reload(); } }
 </script>
 </body>
 </html>

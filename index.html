@@ -2,218 +2,193 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Gestión Neonatal - Copyright © 2026</title>
+    <title>HC Neonatal - Formulario 005 MSP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; font-size: 11px; }
-        .container { max-width: 1150px; margin: auto; background: white; padding: 25px; border-radius: 12px; position: relative; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; border: 1px solid #ddd; position: relative; }
         
-        /* Marca de agua y firma */
-        .copyright-tag { text-align: center; font-size: 10px; color: #aaa; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
-        .watermark { position: absolute; top: 10px; right: 10px; font-size: 9px; color: #ccc; font-weight: bold; }
-
-        h1, h2 { color: var(--primary); border-bottom: 2px solid var(--secondary); padding-bottom: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        h1 { text-align: center; color: var(--primary); text-transform: uppercase; font-size: 1.5em; border-bottom: 3px solid var(--secondary); }
+        h2 { background: var(--primary); color: white; padding: 8px; border-radius: 4px; font-size: 1.1em; margin-top: 20px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px; }
         .field { display: flex; flex-direction: column; }
         .full-width { grid-column: 1 / -1; }
-        input, select, textarea { padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
         
-        .calc-card { background: #eef2f7; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #d1d8e0; }
-        .result-box { background: var(--primary); color: white; padding: 10px; border-radius: 5px; font-weight: bold; }
-        
-        .adcav-item { background: #fdfdfd; border: 1px solid #eee; border-left: 4px solid var(--secondary); padding: 8px; margin-bottom: 5px; }
-        
-        /* Estilo para Copiar a Excel */
-        #export-area { display: none; margin-top: 20px; padding: 15px; background: #fffde7; border: 1px dashed #fbc02d; }
+        input, select, textarea { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
+        textarea { min-height: 40px; }
 
-        @media print { 
-            .no-print { display: none; }
-            .container { box-shadow: none; border: none; }
-            /* Formato Hoja de Evolución */
-            .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        }
+        .calc-card { background: #eef2f7; padding: 15px; border-radius: 8px; border: 1px solid #d1d8e0; margin-top: 10px; }
+        .result-box { background: var(--primary); color: white; padding: 10px; border-radius: 4px; font-weight: bold; text-align: center; }
+
+        .adcav-item { background: #f9f9f9; border-left: 4px solid var(--secondary); padding: 8px; margin-bottom: 5px; border: 1px solid #eee; }
+
+        /* Estilo para simular la Hoja 005 del MSP */
+        #form005-preview { display: none; margin-top: 25px; border: 2px solid #000; background: white; }
+        .msp-header { background: #eee; text-align: center; font-weight: bold; padding: 5px; border-bottom: 1px solid #000; }
+        .msp-row { display: flex; min-height: 300px; }
+        .msp-col-evolucion { width: 50%; border-right: 1px solid #000; padding: 10px; white-space: pre-wrap; }
+        .msp-col-prescripcion { width: 50%; padding: 10px; white-space: pre-wrap; }
+
+        .no-print { margin-bottom: 10px; }
+        .btn-export { background: #1D6F42; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        @media print { .no-print { display: none; } .container { border: none; } #form005-preview { display: block; } }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div class="container">
-    <div class="watermark">SISTEMA PROTEGIDO v4.0</div>
-    <h1>Historia Clínica Neonatal Integral</h1>
+<body oncontextmenu="return false;">
 
+<div class="container">
+    <div style="font-size: 9px; color: #999; text-align: right;">Software de Registro Protegido - Prohibida su Copia</div>
+    <h1>Registro Neonatal (Adaptado MSP 005)</h1>
+
+    <h2>1. Datos del Paciente y Antecedentes</h2>
     <div class="grid">
-        <div class="field"><label>Neonato:</label><input type="text" id="nombreNeo" oninput="guardar()"></div>
-        <div class="field"><label>F. Nac:</label><input type="date" id="fNac" onchange="guardar()"></div>
-        <div class="field"><label>Cédula:</label><input type="text" id="cedulaNeo" oninput="guardar()"></div>
+        <div class="field"><label>Nombre Neonato:</label><input type="text" id="nombreNeo" oninput="guardar()"></div>
+        <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" oninput="guardar()"></div>
+        <div class="field"><label>HCU:</label><input type="text" id="hcu" oninput="guardar()"></div>
+    </div>
+    
+    <div class="grid">
+        <div class="field full-width"><label>Antecedentes Maternos (Médicos/G-O):</label>
+        <textarea id="antMaternos" placeholder="G: P: A: C: / FUM: / Patologías..." oninput="guardar()"></textarea></div>
     </div>
 
+    <h2>2. Evolución y Examen Físico</h2>
     <div class="grid">
-        <div class="field">
-            <h3>Datos Madre</h3>
-            <label>Nombre:</label><input type="text" id="nomM" oninput="guardar()">
-            <label>Cédula:</label><input type="text" id="cedM" oninput="guardar()">
-            <label>Teléfono:</label><input type="text" id="telM" oninput="guardar()">
-            <label>Dirección:</label><input type="text" id="dirM" oninput="guardar()">
-        </div>
-        <div class="field">
-            <h3>Datos Padre</h3>
-            <label>Nombre:</label><input type="text" id="nomP" oninput="guardar()">
-            <label>Cédula:</label><input type="text" id="cedP" oninput="guardar()">
-            <label>Teléfono:</label><input type="text" id="telP" oninput="guardar()">
-            <label>Dirección:</label><input type="text" id="dirP" oninput="guardar()">
-        </div>
+        <div class="field"><label>FC (lpm):</label><input type="number" id="fc" oninput="guardar()"></div>
+        <div class="field"><label>FR (rpm):</label><input type="number" id="fr" oninput="guardar()"></div>
+        <div class="field"><label>Temp (°C):</label><input type="number" id="temp" step="0.1" oninput="guardar()"></div>
+        <div class="field"><label>Peso (Kg):</label><input type="number" id="peso" step="0.001" oninput="actualizarCalc(); guardar()"></div>
     </div>
+    <div class="field full-width"><label>Notas de Evolución (Hallazgos/Examen Físico):</label>
+    <textarea id="enfAct" oninput="guardar()" style="min-height: 80px;"></textarea></div>
+    <div class="field full-width"><label>Diagnósticos:</label>
+    <textarea id="diag" oninput="syncDiag(); guardar()"></textarea></div>
 
-    <h2>Antecedentes Médicos y Gineco-Obstétricos</h2>
-    <div class="grid">
-        <div class="field full-width"><label>A. Familiares:</label><textarea id="antFam" oninput="guardar()"></textarea></div>
-        <div class="field full-width"><label>A. Personales/Quirúrgicos:</label><textarea id="antPers" oninput="guardar()"></textarea></div>
-    </div>
-    <div class="grid">
-        <div class="field"><label>Menarquia:</label><input type="text" id="menarquia" oninput="guardar()"></div>
-        <div class="field"><label>IVSA:</label><input type="text" id="ivsa" oninput="guardar()"></div>
-        <div class="field"><label>FUM:</label><input type="date" id="fum" oninput="guardar()"></div>
-        <div class="field"><label>Gestas/P/A/C:</label><input type="text" id="gpa" oninput="guardar()"></div>
-    </div>
-
-    <h2>Evolución y Examen Físico</h2>
-    <div class="grid">
-        <div class="field"><label>FC:</label><input type="number" id="fc" oninput="guardar()"></div>
-        <div class="field"><label>FR:</label><input type="number" id="fr" oninput="guardar()"></div>
-        <div class="field"><label>Temp:</label><input type="number" id="temp" step="0.1" oninput="guardar()"></div>
-        <div class="field"><label>Peso (Kg):</label><input type="number" id="pesoGlobal" step="0.001" oninput="actualizarTodo(); guardar()"></div>
-    </div>
-    <div class="field full-width"><label>Diagnóstico:</label><textarea id="diagIng" oninput="syncDiag(); guardar()"></textarea></div>
-
+    <h2>3. Cálculo de Líquidos e Indicaciones IV</h2>
     <div class="calc-card">
         <div class="grid">
-            <div class="field"><label>LT (ml/kg/d):</label><input type="number" id="ltVal" oninput="actualizarTodo()"></div>
-            <div class="field"><label>Dextrosa:</label>
-                <select id="dexPerc" onchange="actualizarTodo()">
+            <div class="field"><label>LT (ml/kg/d):</label><input type="number" id="lt" oninput="actualizarCalc()"></div>
+            <div class="field"><label>Dextrosa (%):</label>
+                <select id="dex" onchange="actualizarCalc()">
                     <option value="50">5%</option><option value="100">10%</option><option value="125">12.5%</option>
                 </select>
             </div>
-            <div class="field"><label>Extras (15% c/u):</label>
-                <label><input type="checkbox" class="extra-check" value="0.15" onchange="actualizarTodo()"> Fototerapia</label>
-                <label><input type="checkbox" class="extra-check" value="0.15" onchange="actualizarTodo()"> Cuna Radiante</label>
+            <div class="field">
+                <label>Extras (15%):</label>
+                <label><input type="checkbox" class="extra" value="0.15" onchange="actualizarCalc()"> Fototerapia</label>
+                <label><input type="checkbox" class="extra" value="0.15" onchange="actualizarCalc()"> Cuna Radiante</label>
             </div>
         </div>
-        <div id="listaMedicamentos"></div>
-        <button class="btn-add no-print" onclick="agregarMed()">+ Medicamento</button>
-        <div class="grid">
-            <div class="result-box" id="resTotalLiq">Líquidos: 0 ml/d</div>
+        <div id="listaMeds"></div>
+        <button class="no-print" onclick="addMed()">+ Añadir Fármaco</button>
+        <div class="grid" style="margin-top:10px;">
+            <div class="result-box" id="resLiq">Líquidos Finales: 0 ml/d</div>
             <div class="result-box" id="resVig" style="background:var(--accent)">VIG: 0 mg/kg/min</div>
         </div>
     </div>
 
-    <h2>Indicaciones (ADCAVANDIMELCO)</h2>
-    <div id="adcav-list">
-        <div class="adcav-item"><b>A:</b> <input type="text" id="indA" oninput="guardar()"></div>
-        <div class="adcav-item"><b>D:</b> <textarea id="indD" oninput="guardar()"></textarea></div>
-        <div class="adcav-item"><b>C:</b> <select onchange="this.nextElementSibling.value=this.value"><option>Estable</option><option>Inestable</option></select> <input type="text" id="indC"></div>
-        <div class="adcav-item"><b>V:</b> <select onchange="addTxt('indV', this.value)"><option>Monitoreo continuo</option><option>Control c/3h</option><option>Balance Hídrico</option></select><textarea id="indV"></textarea></div>
-        <div class="adcav-item"><b>I:</b> <textarea id="indI" readonly></textarea></div>
-        <div class="adcav-item"><b>M:</b> <textarea id="indM" readonly></textarea></div>
-        </div>
+    <h2>4. Prescripciones (ADCAVANDIMELCO)</h2>
+    <div id="adcav-box">
+        <div class="adcav-item"><b>A (Admisión):</b> <input type="text" id="indA"></div>
+        <div class="adcav-item"><b>D (Diagnóstico):</b> <textarea id="indD"></textarea></div>
+        <div class="adcav-item"><b>C (Condición):</b> <select onchange="this.nextElementSibling.value=this.value"><option>Estable</option><option>Inestable</option></select> <input type="text"></div>
+        <div class="adcav-item"><b>V (Vitales):</b> <select onchange="addTxt('indV', this.value)"><option>Monitoreo continuo</option><option>Balance Hídrico</option></select> <textarea id="indV"></textarea></div>
+        <div class="adcav-item"><b>I (Líquidos IV):</b> <textarea id="indI" readonly></textarea></div>
+        <div class="adcav-item"><b>M (Medicamentos):</b> <textarea id="indM" readonly></textarea></div>
+        <div class="adcav-item"><b>L (Laboratorio):</b> <textarea id="indL"></textarea></div>
+    </div>
 
     <div class="no-print" style="text-align:center; margin-top:20px;">
-        <button onclick="prepararParaExcel()" style="padding:10px; background:#1D6F42; color:white; border:none; cursor:pointer;">
-            Generar Formato para EXCEL / WORD
-        </button>
-        <button onclick="window.print()" style="padding:10px; background:var(--primary); color:white; border:none; cursor:pointer;">
-            Imprimir Hoja de Evolución
-        </button>
+        <button class="btn-export" onclick="exportarAMSP()">GENERAR TEXTO PARA FORMULARIO 005 (MSP)</button>
     </div>
 
-    <div id="export-area" class="no-print">
-        <h3>Formato para copiar (Excel/Word)</h3>
-        <table border="1" style="width:100%; border-collapse: collapse;">
-            <tr>
-                <th width="50%" style="background:#eee">COLUMNA EVOLUCIÓN</th>
-                <th width="50%" style="background:#eee">COLUMNA INDICACIONES</th>
-            </tr>
-            <tr>
-                <td id="evolucion-text" valign="top" style="padding:10px; white-space: pre-line;"></td>
-                <td id="indicaciones-text" valign="top" style="padding:10px; white-space: pre-line;"></td>
-            </tr>
-        </table>
-        <p><i>Selecciona el texto de la tabla, cópialo y pégalo directamente en las celdas de tu Excel.</i></p>
+    <div id="form005-preview">
+        <div class="msp-header">1. EVOLUCIÓN | 2. PRESCRIPCIONES (Formulario SNS-MSP/HCU-form.005)</div>
+        <div class="msp-row">
+            <div class="msp-col-evolucion" id="col-evol"></div>
+            <div class="msp-col-prescripcion" id="col-pres"></div>
+        </div>
     </div>
 
-    <div class="copyright-tag">
-        Herramienta de Uso Profesional - Propiedad de [Tu Nombre] © 2026<br>
-        Queda prohibida la reproducción total o parcial de esta herramienta sin autorización.
+    <div style="text-align:center; color:#ccc; font-size:10px; margin-top:20px;">
+        © 2026 Sistema Neonatal Protegido - Propiedad Intelectual de [Tu Nombre]
     </div>
 </div>
 
 <script>
-    const factores = { "Ampicilina": 100, "Gentamicina": 4, "Amikacina": 5, "Gluconato de Calcio": 50 };
+    const fact = { "Ampicilina": 100, "Gentamicina": 4, "Amikacina": 5 };
 
-    function actualizarTodo() {
-        const peso = parseFloat(document.getElementById('pesoGlobal').value) || 0;
-        const lt = parseFloat(document.getElementById('ltVal').value) || 0;
-        const conc = parseFloat(document.getElementById('dexPerc').value) || 0;
+    function actualizarCalc() {
+        const p = parseFloat(document.getElementById('peso').value) || 0;
+        const ltVal = parseFloat(document.getElementById('lt').value) || 0;
+        const dPerc = parseFloat(document.getElementById('dex').value) || 0;
         
-        let volBase = peso * lt;
-        let extP = 0;
-        document.querySelectorAll('.extra-check:checked').forEach(c => extP += parseFloat(c.value));
-        volBase += (volBase * extP);
+        let vol = p * ltVal;
+        let ext = 0;
+        document.querySelectorAll('.extra:checked').forEach(c => ext += parseFloat(c.value));
+        vol += (vol * ext);
 
-        let vMed = 0; let tMed = "";
-        document.querySelectorAll('.med-row').forEach(r => {
+        let vm = 0; let tm = "";
+        document.querySelectorAll('.m-row').forEach(r => {
             const n = r.querySelector('.mn').value;
             const d = parseFloat(r.querySelector('.md').value) || 0;
             const f = parseFloat(r.querySelector('.mf').value) || 1;
-            const mld = (peso * d) / (factores[n] || 1);
-            vMed += (mld * f);
-            tMed += `- ${n}: ${mld.toFixed(2)} ml IV cada ${Math.round(24/f)}h\n`;
+            const mld = (p * d) / (fact[n] || 1);
+            vm += (mld * f);
+            tm += `- ${n}: ${mld.toFixed(2)} ml IV cada ${Math.round(24/f)}h\n`;
         });
 
-        const vFin = volBase - vMed;
-        const vig = (peso > 0) ? (vFin * conc) / (1440 * peso) : 0;
+        const vF = vol - vm;
+        const vig = (p > 0) ? (vF * dPerc) / (1440 * p) : 0;
 
-        document.getElementById('resTotalLiq').innerText = `Líquidos: ${vFin.toFixed(2)} ml/d`;
+        document.getElementById('resLiq').innerText = `Líquidos: ${vF.toFixed(2)} ml/d`;
         document.getElementById('resVig').innerText = `VIG: ${vig.toFixed(2)}`;
         
-        document.getElementById('indI').value = `Dextrosa al ${conc/10}%, Pasar ${vFin.toFixed(1)} ml IV en 24h. (VIG: ${vig.toFixed(2)})`;
-        document.getElementById('indM').value = tMed;
+        document.getElementById('indI').value = `Dextrosa al ${dPerc/10}%, pasar IV ${vF.toFixed(1)} ml en 24h. (VIG: ${vig.toFixed(2)} mg/kg/min)`;
+        document.getElementById('indM').value = tm;
     }
 
-    function prepararParaExcel() {
-        const area = document.getElementById('export-area');
-        area.style.display = 'block';
-
-        // Redactar Evolución (Izquierda)
-        let evol = `EVOLUCIÓN NEONATAL\n`;
-        evol += `Signos Vitales: FC: ${document.getElementById('fc').value}, FR: ${document.getElementById('fr').value}, Temp: ${document.getElementById('temp').value}°C\n`;
-        evol += `Examen Físico: ${document.getElementById('enfAct').value}\n`;
-        evol += `Diagnósticos: ${document.getElementById('diagIng').value}`;
-
-        // Redactar Indicaciones (Derecha)
-        let indic = `INDICACIONES (ADCAVANDIMELCO)\n`;
-        indic += `A: ${document.getElementById('indA').value}\n`;
-        indic += `D: ${document.getElementById('indD').value}\n`;
-        indic += `I: ${document.getElementById('indI').value}\n`;
-        indic += `M: ${document.getElementById('indM').value}\n`;
-        indic += `L: ${document.getElementById('indV').value}`;
-
-        document.getElementById('evolucion-text').innerText = evol;
-        document.getElementById('indicaciones-text').innerText = indic;
+    function exportarAMSP() {
+        document.getElementById('form005-preview').style.display = 'block';
         
-        area.scrollIntoView();
+        // Columna 1: Evolución
+        let evol = `HALLAZGOS Y EXAMEN FÍSICO:\n`;
+        evol += `Signos Vitales: FC ${document.getElementById('fc').value} lpm, FR ${document.getElementById('fr').value} rpm, T ${document.getElementById('temp').value}°C, Peso ${document.getElementById('peso').value}kg.\n`;
+        evol += `Antecedentes: ${document.getElementById('antMaternos').value}\n`;
+        evol += `Evolución: ${document.getElementById('enfAct').value}\n`;
+        evol += `\nDiagnósticos:\n${document.getElementById('diag').value}`;
+
+        // Columna 2: Prescripciones
+        let pres = `INDICACIONES (ADCAVANDIMELCO):\n`;
+        pres += `A: ${document.getElementById('indA').value}\n`;
+        pres += `V: ${document.getElementById('indV').value}\n`;
+        pres += `I: ${document.getElementById('indI').value}\n`;
+        pres += `M: ${document.getElementById('indM').value}\n`;
+        pres += `L: ${document.getElementById('indL').value}`;
+
+        document.getElementById('col-evol').innerText = evol;
+        document.getElementById('col-pres').innerText = pres;
+        
+        window.scrollTo(0, document.body.scrollHeight);
+        alert("Texto generado al final de la página. Puedes copiar cada columna a tu Excel.");
     }
 
-    function agregarMed() {
+    function addMed() {
         const id = 'm' + Date.now();
-        const div = document.createElement('div');
-        div.className = 'med-row'; div.id = id;
-        div.innerHTML = `<select class="mn" onchange="actualizarTodo()">${Object.keys(factores).map(f=>`<option>${f}</option>`).join('')}</select>
-        <input type="number" class="md" placeholder="mg/kg" oninput="actualizarTodo()">
-        <select class="mf" onchange="actualizarTodo()"><option value="1">c/24h</option><option value="2">c/12h</option><option value="3">c/8h</option></select>
-        <button onclick="document.getElementById('${id}').remove(); actualizarTodo();">X</button>`;
-        document.getElementById('listaMedicamentos').appendChild(div);
+        const d = document.createElement('div');
+        d.className = 'm-row'; d.id = id;
+        d.innerHTML = `<select class="mn" onchange="actualizarCalc()">${Object.keys(fact).map(f=>`<option>${f}</option>`).join('')}</select>
+        <input type="number" class="md" placeholder="mg/kg" oninput="actualizarCalc()">
+        <select class="mf" onchange="actualizarCalc()"><option value="1">c/24h</option><option value="2">c/12h</option><option value="3">c/8h</option></select>
+        <button onclick="document.getElementById('${id}').remove(); actualizarCalc()">x</button>`;
+        document.getElementById('listaMeds').appendChild(d);
     }
 
-    function syncDiag() { document.getElementById('indD').value = document.getElementById('diagIng').value; }
+    function syncDiag() { document.getElementById('indD').value = document.getElementById('diag').value; }
     function addTxt(id, v) { document.getElementById(id).value += v + ", "; }
-    function guardar() { /* Función de autoguardado existente */ }
+    function guardar() { /* Autoguardado en LocalStorage */ }
 </script>
 </body>
 </html>

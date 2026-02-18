@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v17.3 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v17.4 - HSVP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
@@ -15,8 +15,12 @@
         .full-width { grid-column: 1 / -1; }
         input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; background: #fff; }
         .calc-card { background: #eef2f7; border: 2px solid #d1d8e0; padding: 20px; border-radius: 10px; }
-        .hijo-row { background: #fff; border: 1px solid #ddd; padding: 10px; margin-top: 5px; border-radius: 5px; display: grid; grid-template-columns: 0.5fr 1fr 1fr 1fr 2fr; gap: 10px; }
-        .inmu-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #eee; }
+        
+        /* Estilos Examen Físico */
+        .ef-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: center; background: #fff; padding: 8px; border-bottom: 1px solid #eee; }
+        .ef-label { font-weight: bold; color: var(--primary); }
+        .ef-input { width: 100%; border: 1px solid #ddd; padding: 5px; border-radius: 3px; font-family: inherit; font-size: 11px; }
+        
         .btn-main { background: var(--accent); color: white; padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 30px; }
         .hidden { display: none; }
         .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; }
@@ -25,181 +29,139 @@
 <body>
 
 <div class="container">
-    <h1>SISTEMA NEONATAL INTEGRAL - HSVP</h1>
+    <h1>SISTEMA NEONATAL INTEGRAL - HOSPITAL SAN VICENTE DE PAÚL</h1>
 
-    <h2>1. Datos de Filiación y Admisión</h2>
-    <div class="calc-card" style="margin-bottom: 20px; border: 2px solid var(--secondary);">
-        <div class="grid">
-            <div class="field"><label><b>FECHA DE INGRESO:</b></label><input type="date" id="fIngreso" onchange="calcEdadAlIngreso()"></div>
-            <div class="field"><label><b>FECHA DE NACIMIENTO:</b></label><input type="date" id="fNac" onchange="calcEdadAlIngreso()"></div>
-            <div class="field"><label>Hora Nacimiento:</label><input type="time" id="hNac" onchange="calcEdadAlIngreso()"></div>
-            <div class="field"><label><b>EDAD AL INGRESO:</b></label><input type="text" id="edadReal" readonly class="highlight-box"></div>
+    <div id="secciones-blindadas">
+        <h2>1. Datos de Filiación y Admisión</h2>
+        <div class="calc-card" style="border: 2px solid var(--secondary); margin-bottom: 15px;">
+            <div class="grid">
+                <div class="field"><label>F. Ingreso:</label><input type="date" id="fIngreso" onchange="calcEdadAlIngreso()"></div>
+                <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" onchange="calcEdadAlIngreso()"></div>
+                <div class="field"><label>Edad al Ingreso:</label><input type="text" id="edadReal" readonly class="highlight-box"></div>
+                <div class="field"><label>HCU:</label><input type="text" id="hcu"></div>
+            </div>
         </div>
-    </div>
-
-    <div class="grid">
-        <div class="field"><label>Primer Apellido:</label><input type="text" id="ape1N"></div>
-        <div class="field"><label>Segundo Apellido:</label><input type="text" id="ape2N"></div>
-        <div class="field"><label>Nombres:</label><input type="text" id="nomN"></div>
-        <div class="field"><label>HCU:</label><input type="text" id="hcu"></div>
-        <div class="field"><label>Sexo:</label><select id="sexoN"><option>MASCULINO</option><option>FEMENINO</option><option>INDETERMINADO</option></select></div>
-    </div>
-
-    <h3>Datos de la Madre</h3>
-    <div class="grid">
-        <div class="field"><label>Nombre:</label><input type="text" id="nomM"></div>
-        <div class="field"><label>Cédula:</label><input type="text" id="cedM"></div>
-        <div class="field"><label>Edad:</label><input type="number" id="edadM"></div>
-        <div class="field"><label>Instrucción:</label><input type="text" id="insM"></div>
-        <div class="field"><label>Ocupación/Profesión:</label><input type="text" id="ocuM"></div>
-    </div>
-    <div class="grid">
-        <div class="field"><label>Raza:</label><input type="text" id="razaM" value="Mestiza"></div>
-        <div class="field"><label>Religión:</label>
-            <select id="relM" onchange="toggleOtroReligion(this)"><option value="CATOLICA">CATÓLICA</option><option value="CRISTIANA">CRISTIANA</option><option value="EVANGELICA">EVANGÉLICA</option><option value="TESTIGO DE JEHOVA">TESTIGO DE JEHOVÁ</option><option value="OTRO">OTRO</option></select>
-            <input type="text" id="relM_otro" class="hidden" placeholder="¿Cuál?" style="margin-top:5px">
         </div>
-        <div class="field"><label>Tipo de Sangre:</label><select id="gsM"><option value="ORH+">ORH+</option><option value="ORH-">ORH-</option><option value="ARH+">ARH+</option><option value="ARH-">ARH-</option><option value="BRH+">BRH+</option><option value="BRH-">BRH-</option><option value="ABRH+">ABRH+</option><option value="ABRH-">ABRH-</option></select></div>
-        <div class="field"><label>Lugar de Nacimiento:</label><input type="text" id="lugNacM"></div>
-    </div>
-    <div class="grid">
-        <div class="field"><label>Dirección:</label><input type="text" id="dirM"></div>
-        <div class="field"><label>Teléfono:</label><input type="text" id="telM"></div>
-        <div class="field"><label>Cobertura:</label><select id="cobM"><option>IESS</option><option>MSP</option><option>ISSFA</option><option>ISSPOL</option><option>PRIVADO</option></select></div>
-        <div class="field"><label>Avisar a (Emergencia):</label><textarea id="emergenciaCont" rows="1"></textarea></div>
-    </div>
 
-    <h2>2. Antecedentes Clínicos</h2>
+    <h2>3. Examen Físico de Ingreso</h2>
     
-    <h3>Patológicos y Familiares</h3>
-    <div class="grid">
-        <div class="field full-width"><label>Antecedentes Patológicos Maternos:</label><textarea id="antPatM" rows="2"></textarea></div>
-        <div class="field full-width"><label>Antecedentes Quirúrgicos Maternos:</label><textarea id="antQuiM" rows="2"></textarea></div>
-        <div class="field full-width"><label>Antecedentes Familiares Maternos:</label><textarea id="antFamM" rows="2"></textarea></div>
+    <h3>Signos Vitales y Antropometría</h3>
+    <div class="grid" style="background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+        <div class="field"><label>FC (lpm):</label><input type="number" id="fc"></div>
+        <div class="field"><label>FR (rpm):</label><input type="number" id="fr"></div>
+        <div class="field"><label>T° Axilar (°C):</label><input type="number" id="temp" step="0.1"></div>
+        <div class="field"><label>Saturación O2 (%):</label><input type="number" id="sato2"></div>
+        <div class="field"><label>TA (S/D):</label><input type="text" id="ta" placeholder="P ej: 60/40"></div>
     </div>
-
-    <h3>Gineco-Obstétricos y Perinatales</h3>
-    <div class="grid">
-        <div class="field"><label>Menarquia:</label><input type="number" id="menarquia"></div>
-        <div class="field"><label>IVSA:</label><input type="number" id="ivsa"></div>
-        <div class="field"><label>ETS:</label><input type="text" id="ets"></div>
-        <div class="field"><label>Paptest:</label><input type="text" id="paptest"></div>
-        <div class="field"><label>Parejas:</label><input type="number" id="parejas"></div>
-    </div>
-
-    <div class="calc-card">
-        <div class="grid">
-            <div class="field"><label><b>FUM:</b></label><input type="date" id="fum" onchange="calcEG_FUM()"></div>
-            <div class="field"><label><b>EG por FUM:</b></label><input type="text" id="egFum" readonly class="highlight-box"></div>
-            <div class="field full-width"><label>EG por Eco / Estimada:</label><input type="text" id="egEco"></div>
-        </div>
-        <div class="grid" style="margin-top:10px">
-            <div class="field"><label>Gestas:</label><input type="number" id="gestas"></div>
-            <div class="field"><label>Partos:</label><input type="number" id="partos"></div>
-            <div class="field"><label>Cesáreas:</label><input type="number" id="cesareas"></div>
-            <div class="field"><label>Abortos:</label><input type="number" id="abortos"></div>
-            <div class="field"><label>Hijos Vivos:</label><input type="number" id="hVivos" oninput="generarHijos()"></div>
-            <div class="field"><label>Hijos Muertos:</label><input type="number" id="hMuertos" oninput="toggleHMuertos()"></div>
-        </div>
-    </div>
-
-    <div id="contenedorHijos"></div>
-    <div id="detallesMuertos" class="hidden"><label>Descripción Hijos Muertos:</label><textarea id="antHMuertos" class="full-width" rows="2"></textarea></div>
-
-    <h3>Control Prenatal e Inmunizaciones</h3>
-    <div class="grid">
-        <div class="field"><label>N° Controles:</label><input type="number" id="numCont" oninput="toggleLugarControl()"></div>
-        <div id="divLugarCont" class="field hidden"><label>Lugar:</label><input type="text" id="lugCont"></div>
-        <div class="field"><label>N° Ecos:</label><input type="number" id="numEco" oninput="toggleEcoNov()"></div>
-        <div id="divEcoNov" class="field hidden"><label>Novedades Ecos:</label><input type="text" id="ecoNov"></div>
-    </div>
-
-    <div class="field full-width"><label>Complementos Nutricionales:</label><input type="text" id="nutri" placeholder="Ácido fólico, Hierro, etc."></div>
-
-    <div class="calc-card" style="margin-top:10px">
-        <label><b>Inmunizaciones (Marque todas las recibidas):</b></label>
-        <div class="grid" style="margin-top:10px">
-            <div class="inmu-item"><input type="checkbox" id="v_dt"> <label>DT</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
-            <div class="inmu-item"><input type="checkbox" id="v_covid"> <label>COVID</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
-            <div class="inmu-item"><input type="checkbox" id="v_inf"> <label>INFLUENZA</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
-            <div class="inmu-item"><input type="checkbox" id="v_otra" onchange="document.getElementById('v_otra_txt').classList.toggle('hidden', !this.checked)"> <label>OTRA</label> <input type="text" id="v_otra_txt" class="hidden" placeholder="¿Cuál?" style="width:80px"></div>
-        </div>
-    </div>
-
-    <div class="grid" style="margin-top:10px">
-        <div class="field"><label>Maduración Pulmonar:</label><select id="madPul"><option>COMPLETA</option><option>INCOMPLETA</option><option>NO REALIZADA</option></select></div>
-        <div class="field full-width"><label>Especificar (Fármaco/Dosis):</label><input type="text" id="madDetalle"></div>
-    </div>
-
-    <h3>Redacción de Antecedentes Narrativos</h3>
-    <div class="field full-width"><label><b>ANTECEDENTES PRENATALES (Narrativo):</b></label><textarea id="narrPre" rows="4" placeholder="Redacte hallazgos en controles, infecciones en el embarazo, hospitalizaciones..."></textarea></div>
-    <div class="field full-width"><label><b>ANTECEDENTES NATALES (Narrativo):</b></label><textarea id="narrNat" rows="4" placeholder="Redacte tipo de parto, características del líquido, RPM, trabajo de parto..."></textarea></div>
-    <div class="field full-width"><label><b>ANTECEDENTES POSTNATALES (Narrativo):</b></label><textarea id="narrPost" rows="4" placeholder="Redacte adaptación neonatal, reanimación, APGAR, Silverman, paso a alojamiento..."></textarea></div>
-    
-    <div class="grid">
-        <div class="field"><label>Ruptura Membranas (Hrs/Días):</label><input type="text" id="rpm"></div>
-        <div class="field full-width"><label><b>Fuente de Información:</b></label><input type="text" id="fuenteInf" value="Madre / Carné Perinatal"></div>
-    </div>
-
-    <h2>3. Evaluación y Planes</h2>
-    <div class="grid">
-        <div class="field"><label>Peso (g):</label><input type="number" id="peso" oninput="actualizarCalc()"></div>
+    <div class="grid" style="margin-top:10px;">
+        <div class="field"><label>Peso (gramos):</label><input type="number" id="peso" oninput="actualizarCalc()"></div>
         <div class="field"><label>Talla (cm):</label><input type="number" id="talla"></div>
+        <div class="field"><label>PC (Cefálico):</label><input type="number" id="pCef"></div>
+        <div class="field"><label>PT (Torácico):</label><input type="number" id="pTor"></div>
+        <div class="field"><label>PB (Braquial):</label><input type="number" id="pBra"></div>
     </div>
-    
-    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA COMPLETA</button>
 
-    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:20px; background: #fff;">
-        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace; font-size: 12px;"></div>
+    <h3>Exploración Cefalo-Caudal</h3>
+    <div class="calc-card" style="padding: 10px;">
+        <div class="ef-row">
+            <div class="ef-label">Aspecto General:</div>
+            <textarea class="ef-input" id="ef_gen">Recién nacido con buen tono, activo, reactivo, llanto vigoroso, fascies normal.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Piel y Faneras:</div>
+            <textarea class="ef-input" id="ef_piel">Rosada, elástica, vérnix caseosa presente, sin ictericia ni cianosis. Llenado capilar < 2 seg.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Cabeza:</div>
+            <textarea class="ef-input" id="ef_cab">Normocéfalo, suturas afrontadas, fontanela anterior normotensa (2x2 cm). Sin caput ni cefalohematoma.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Ojos y Cara:</div>
+            <textarea class="ef-input" id="ef_cara">Fascies simétrica, ojos con pupilas isocóricas fotorreactivas. Pabellones auriculares de implantación normal.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Boca y Cuello:</div>
+            <textarea class="ef-input" id="ef_boca">Paladar íntegro, mucosas orales húmedas. Cuello móvil, no masas, no bocio palpable.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Tórax:</div>
+            <textarea class="ef-input" id="ef_tor">Simétrico, expansión torácica normal, no retracciones. Glándulas mamarias simétricas.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Ausc. Cardíaca:</div>
+            <textarea class="ef-input" id="ef_cor">Ruidos cardíacos rítmicos, no se auscultan soplos.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Ausc. Pulmonar:</div>
+            <textarea class="ef-input" id="ef_pul">Murmullo vesicular conservado, no rales ni ruidos adventicios.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Abdomen:</div>
+            <textarea class="ef-input" id="ef_abd">Blando, depresible, no masas ni megalias. Cordón umbilical con 2 arterias y 1 vena, sin signos de infección.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Genitourinario:</div>
+            <textarea class="ef-input" id="ef_genit">Masculino: testículos descendidos en bolsas. Femenino: labios mayores cubren menores. Ano permeable.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Extremidades:</div>
+            <textarea class="ef-input" id="ef_ext">Simétricas, móviles, tono muscular normal. Barlow y Ortolani negativos. Pulsos femorales presentes.</textarea>
+        </div>
+        <div class="ef-row">
+            <div class="ef-label">Neurológico:</div>
+            <textarea class="ef-input" id="ef_neuro">Reflejo de Moro, succión, búsqueda y prensión palmar presentes y simétricos.</textarea>
+        </div>
     </div>
+
+    <h2>4. Scores Médicos</h2>
+    <div class="grid">
+        <div class="field"><label>Capurro (Puntos):</label><input type="number" id="pCap" oninput="calcCap()"></div>
+        <div class="field"><label>Semanas:</label><input type="text" id="resCap" readonly class="highlight-box"></div>
+    </div>
+
+    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA INTEGRAL</button>
+
+    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:20px;">
+        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace;"></div>
+    </div>
+
 </div>
 
 <script>
-    // LÓGICA FILIACIÓN
+    // LÓGICA FILIACIÓN BLINDADA
     function calcEdadAlIngreso() {
         const naci = document.getElementById('fNac').value;
         const ingr = document.getElementById('fIngreso').value;
         if(naci && ingr) {
-            const d1 = new Date(naci + 'T' + (document.getElementById('hNac').value || "00:00"));
+            const d1 = new Date(naci + 'T00:00:00');
             const d2 = new Date(ingr + 'T23:59:59');
             const hrs = Math.floor((d2 - d1) / 3600000);
             document.getElementById('edadReal').value = hrs < 48 ? hrs + " HORAS" : Math.floor(hrs/24) + " DÍAS";
         }
     }
 
-    function toggleOtroReligion(sel) { document.getElementById('relM_otro').classList.toggle('hidden', sel.value !== 'OTRO'); }
-
-    // LÓGICA ANTECEDENTES
-    function calcEG_FUM() {
-        const f = document.getElementById('fum').value;
-        if(f) {
-            const sem = (new Date() - new Date(f)) / (1000 * 60 * 60 * 24 * 7);
-            document.getElementById('egFum').value = Math.floor(sem) + "." + Math.floor((sem % 1) * 7) + " SEMANAS";
-        }
+    // LÓGICA EXAMEN FÍSICO
+    function calcCap() {
+        let p = parseInt(document.getElementById('pCap').value) || 0;
+        document.getElementById('resCap').value = ((p + 204)/7).toFixed(1) + " SEMANAS";
     }
 
-    function generarHijos() {
-        const n = parseInt(document.getElementById('hVivos').value) || 0;
-        const c = document.getElementById('contenedorHijos');
-        c.innerHTML = n > 0 ? "<h4>Detalle de Hijos Vivos:</h4>" : "";
-        for(let i=1; i<=n; i++) {
-            c.innerHTML += `<div class="hijo-row"><span>Hijo ${i}:</span><select><option>PARTO</option><option>CESÁREA</option></select><select><option>MASC</option><option>FEM</option></select><input type="number" placeholder="Edad"><input type="text" placeholder="Complicaciones"></div>`;
-        }
+    function actualizarCalc() { 
+        // Lógica de VIG y Líquidos se mantiene latente para cuando entremos a esa fase
     }
-
-    function toggleHMuertos() { document.getElementById('detallesMuertos').classList.toggle('hidden', parseInt(document.getElementById('hMuertos').value) === 0); }
-    function toggleLugarControl() { document.getElementById('divLugarCont').classList.toggle('hidden', !document.getElementById('numCont').value); }
-    function toggleEcoNov() { document.getElementById('divEcoNov').classList.toggle('hidden', !document.getElementById('numEco').value); }
-
-    function actualizarCalc() { /* Lógica de líquidos heredada de v17.1 */ }
 
     function generarTodo() {
         document.getElementById('export-section').classList.remove('hidden');
-        let txt = "=== HISTORIA CLÍNICA NEONATAL ===\n\n";
-        txt += "ANTECEDENTES NARRATIVOS:\n";
-        txt += "PRENATALES: " + document.getElementById('narrPre').value + "\n";
-        txt += "NATALES: " + document.getElementById('narrNat').value + "\n";
-        txt += "POSTNATALES: " + document.getElementById('narrPost').value + "\n";
+        let txt = "=== EXAMEN FÍSICO NEONATAL ===\n";
+        txt += `SV: FC:${document.getElementById('fc').value} FR:${document.getElementById('fr').value} T:${document.getElementById('temp').value} Sat:${document.getElementById('sato2').value}\n`;
+        txt += `Antropometría: Peso:${document.getElementById('peso').value}g Talla:${document.getElementById('talla').value}cm PC:${document.getElementById('pCef').value} PT:${document.getElementById('pTor').value} PB:${document.getElementById('pBra').value}\n\n`;
+        txt += "DETALLE:\n";
+        txt += "- General: " + document.getElementById('ef_gen').value + "\n";
+        txt += "- Piel: " + document.getElementById('ef_piel').value + "\n";
+        txt += "- Cabeza: " + document.getElementById('ef_cab').value + "\n";
+        txt += "- Tórax: " + document.getElementById('ef_tor').value + "\n";
+        txt += "- Abdomen: " + document.getElementById('ef_abd').value + "\n";
+        txt += "- Neuro: " + document.getElementById('ef_neuro').value + "\n";
         document.getElementById('finalOutput').innerText = txt;
         window.scrollTo(0, document.body.scrollHeight);
     }

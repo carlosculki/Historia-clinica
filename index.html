@@ -1,91 +1,132 @@
-<h2>5. Plan de Manejo (ADCAVANDIMELCO)</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SISTEMA NEONATAL INTEGRAL v18.0 - HSVP</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
+        h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 20px; font-size: 1.2em; text-transform: uppercase; }
+        .adcav-grid { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding: 10px; }
+        .letra { font-weight: bold; font-size: 1.4em; color: var(--secondary); display: flex; align-items: center; }
+        .input-box { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; font-size: 11px; }
+        .res-auto { background: #fffde7; border: 1px solid #ffd54f; padding: 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-weight: bold; }
+        .calc-card { background: #eef2f7; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .btn-main { background: var(--accent); color: white; padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        select { padding: 5px; border-radius: 4px; }
+    </style>
+</head>
+<body>
 
-<div class="calc-card" style="border: 2px solid var(--accent);">
-    <div class="grid">
-        <div class="field">
-            <label><b>Peso para Cálculos (g):</b></label>
-            <input type="number" id="pesoCalc" placeholder="Se toma del Examen Físico" oninput="calcularADCAV()">
-            <small style="color:blue">Viene de la sección anterior</small>
-        </div>
-        <div class="field">
-            <label>Líquidos Totales (ml/kg/d):</label>
-            <input type="number" id="liqTot" value="80" oninput="calcularADCAV()">
-        </div>
-        <div class="field">
-            <label>VIG (mg/kg/min):</label>
-            <input type="number" id="vig" value="4" step="0.1" oninput="calcularADCAV()">
+<div class="container">
+    <h1>PLAN DE MANEJO - ADCAVANDIMELCO (Neonatología HSVP)</h1>
+
+    <div class="calc-card">
+        <h3>Pre-Cálculos para Líquidos y Medicamentos</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+            <div><label>Peso (g):</label><input type="number" id="p" value="3000" oninput="actualizarTodo()"></div>
+            <div><label>Líquidos (ml/kg/d):</label><input type="number" id="l" value="80" oninput="actualizarTodo()"></div>
+            <div><label>VIG (mg/kg/min):</label><input type="number" id="v" value="4" step="0.1" oninput="actualizarTodo()"></div>
+            <div><label>% Dextrosa:</label><select id="dex" onchange="actualizarTodo()"><option value="5">5%</option><option value="10" selected>10%</option><option value="12.5">12.5%</option></select></div>
         </div>
     </div>
 
-    <div id="areaResultados" style="margin-top:15px;">
-        <div class="adcav-item">
-            <div class="adcav-header">
-                <span>A - ALIMENTACIÓN Y LÍQUIDOS</span>
-                <span id="res_vol_dia" class="res-destacado" style="background:#fff; padding:2px 8px; border-radius:4px;">0 ml/día</span>
+    <div id="adcav-form">
+        <div class="adcav-grid"><div class="letra">A</div><div><b>ADMISION:</b><textarea id="adm" class="input-box" rows="1">Ingreso a sala de Neonatología.</textarea></div></div>
+
+        <div class="adcav-grid"><div class="letra">D</div><div><b>DIAGNOSTICO:</b><textarea id="diag" class="input-box" rows="2" placeholder="Se cargan de la sección anterior..."></textarea></div></div>
+
+        <div class="adcav-grid"><div class="letra">C</div><div><b>CONDICION:</b>
+            <select id="cond" onchange="updateText('cond','txt_cond')"><option>ESTABLE</option><option>INESTABLE</option><option value="OTRO">OTRO (Escribir)</option></select>
+            <input type="text" id="txt_cond" class="input-box" style="margin-top:5px" placeholder="Detalle condición...">
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">A</div><div><b>ALERGIAS:</b>
+            <select id="aler" onchange="updateText('aler','txt_aler')"><option>NO REFIERE</option><option>NEGATIVO</option><option value="OTRO">OTRO (Escribir)</option></select>
+            <input type="text" id="txt_aler" class="input-box" style="margin-top:5px">
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">V</div><div><b>VITALES:</b>
+            <select id="vit" onchange="addVit(this.value)"><option value="">Seleccione...</option><option>MONITOREO CONTINUO</option><option>CONTROL DE SIGNOS VITALES CADA 3 HORAS</option><option>CONTROL INGESTA EXCRETA</option><option>BALANCE HIDRICO</option><option>DIURESIS HORARIA</option></select>
+            <textarea id="txt_vit" class="input-box" rows="2" style="margin-top:5px"></textarea>
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">A</div><div><b>ACTITUD:</b>
+            <select id="act" onchange="updateText('act','txt_act')"><option>SEMIFOWLER</option><option>POSICION ANTIRREFLUJO</option><option value="OTRO">OTRO</option></select>
+            <input type="text" id="txt_act" class="input-box" style="margin-top:5px">
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">D</div><div><b>DIETA:</b>
+            <select id="diet" onchange="updateText('diet','txt_diet')"><option>NADA POR VIA ORAL</option><option>LECHE MATERNA EXCLUSIVA</option><option>LECHE MATERNA POR GAVAGE</option></select>
+            <input type="text" id="txt_diet" class="input-box" style="margin-top:5px">
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">I</div><div><b>I.V.:</b><div id="res_iv" class="res-auto"></div></div></div>
+
+        <div class="adcav-grid"><div class="letra">M</div><div><b>MEDICAMENTOS:</b>
+            <div style="display:flex; gap:5px">
+                <select id="med_sel"><option value="AMPICILINA|50|12">Ampicilina (50mg/kg)</option><option value="AMIKACINA|15|24">Amikacina (15mg/kg)</option><option value="GENTAMICINA|4|24">Gentamicina (4mg/kg)</option></select>
+                <button onclick="calcMed()">+ Calcular e Inyectar en Plan</button>
             </div>
-            <textarea id="plan_A" style="width:100%; border:none; background:transparent; font-family:inherit;" rows="3"></textarea>
-            <div style="margin-top:5px; font-weight:bold; color:var(--accent);" id="res_bomba">Ritmo: 0 cc/h</div>
-        </div>
+            <textarea id="txt_med" class="input-box" rows="3" style="margin-top:5px"></textarea>
+        </div></div>
 
-        <div class="adcav-item">
-            <div class="adcav-header">D - DIURESIS Y DESTINO</div>
-            <input type="text" id="plan_D" value="Control de diuresis y deposiciones. Termocuna." style="width:100%">
-        </div>
+        <div class="adcav-grid"><div class="letra">E</div><div><b>EXAMENES:</b>
+            <select onchange="addToList('txt_exa', this.value)"><option value="">Seleccione...</option><option>RADIOGRAFIA TORACOABDOMINAL</option><option>ECO TRANSFONTANELAR</option><option>ECO CARDIOGRAMA</option></select>
+            <input type="text" id="txt_exa" class="input-box" style="margin-top:5px">
+        </div></div>
 
-        <div class="adcav-item">
-            <div class="adcav-header">C - CONTROLES Y SIGNOS VITALES</div>
-            <input type="text" id="plan_C" value="CSV cada 3 horas + SatO2 continua." style="width:100%">
-        </div>
+        <div class="adcav-grid"><div class="letra">L</div><div><b>LABORATORIO:</b>
+            <select onchange="addToList('txt_lab', this.value)"><option value="">Seleccione...</option><option>BIOMETRIA HEMATICA</option><option>GLUCOSA</option><option>GASOMETRIA</option><option>HEMOCULTIVO</option><option>EMO</option><option>TIPIFICACION</option></select>
+            <input type="text" id="txt_lab" class="input-box" style="margin-top:5px">
+        </div></div>
 
-        <div class="adcav-item">
-            <div class="adcav-header">A - ACTIVIDAD Y POSICIÓN</div>
-            <input type="text" id="plan_Act" value="Reposo, posición semifowler, mínima manipulación." style="width:100%">
-        </div>
+        <div class="adcav-grid"><div class="letra">C</div><div><b>INTERCONSULTA:</b><input type="text" id="int" class="input-box"></div></div>
 
-        <div class="adcav-item">
-            <div class="adcav-header">V - VITAMINAS Y MEDICAMENTOS</div>
-            <textarea id="plan_V" style="width:100%; border:none; background:transparent;" rows="2">Fitomenadiona 1mg IM (DU). Profilaxis ocular.</textarea>
-        </div>
+        <div class="adcav-grid"><div class="letra">O</div><div><b>OTROS:</b><input type="text" id="otr" class="input-box"></div></div>
     </div>
+
+    <button class="btn-main" style="margin-top:20px" onclick="generarFinal()">VISTA PREVIA FINAL PARA COPIAR</button>
 </div>
 
 <script>
-    // Esta función ahora sí conecta los datos
-    function calcularADCAV() {
-        // Intentamos obtener el peso del campo de arriba o del campo de la sección 3
-        const pesoG = parseFloat(document.getElementById('pesoCalc').value) || 
-                      parseFloat(document.getElementById('peso')?.value) || 0;
-        
-        const liqKg = parseFloat(document.getElementById('liqTot').value) || 0;
-        const vigDeseado = parseFloat(document.getElementById('vig').value) || 0;
-        
-        if (pesoG > 0) {
-            const pesoKg = pesoG / 1000;
-            const volTotal = (liqKg * pesoKg).toFixed(1);
-            const ritmo = (volTotal / 24).toFixed(1);
-            
-            // Cálculo de Dextrosa para el VIG (Simplificado para el plan)
-            // VIG = (cc/h * %Dextrosa) / (6 * pesoKg)
-            // %Dextrosa = (VIG * 6 * pesoKg) / ritmo
-            let percDextrosa = (vigDeseado * 6 * pesoKg) / ritmo;
-            if(isNaN(percDextrosa)) percDextrosa = 10;
+    function actualizarTodo() {
+        const pesoKg = parseFloat(document.getElementById('p').value) / 1000;
+        const liqKg = parseFloat(document.getElementById('l').value);
+        const vig = parseFloat(document.getElementById('v').value);
+        const dexP = document.getElementById('dex').value;
 
-            document.getElementById('res_vol_dia').innerText = volTotal + " ml/día";
-            document.getElementById('res_bomba').innerText = "RITMO EN BOMBA: " + ritmo + " cc/h";
-            
-            document.getElementById('plan_A').value = 
-                `NPO + Líquidos IV.\nPrescripción: Dextrosa al ${percDextrosa.toFixed(1)}% ${volTotal}ml IV para 24h a pasar a ${ritmo} cc/h.\nVIG: ${vigDeseado} mg/kg/min.`;
-        } else {
-            document.getElementById('res_vol_dia').innerText = "Ingrese peso...";
-            document.getElementById('res_bomba').innerText = "Ritmo: 0 cc/h";
-        }
+        const vol24h = (liqKg * pesoKg).toFixed(1);
+        const ritmo = (vol24h / 24).toFixed(1);
+
+        // Formato pedido: DEXTROSA EN AGUA (% ESCOGIDO), PASAR INTRAVENOSO (ML CALCULADO), PASAR INTRAVENOSO EN 24 HORAS. 
+        document.getElementById('res_iv').innerHTML = 
+            `DEXTROSA EN AGUA AL ${dexP}%, PASAR INTRAVENOSO ${vol24h} ML, PASAR INTRAVENOSO EN 24 HORAS.<br>` +
+            `VIG: ${vig} MG/KG/MIN`;
     }
 
-    // Ejecutar al cargar para que no aparezca vacío
-    window.onload = function() {
-        // Si hay un peso guardado en la sección 3, lo traemos
-        const pesoPrevio = document.getElementById('peso')?.value;
-        if(pesoPrevio) document.getElementById('pesoCalc').value = pesoPrevio;
-        calcularADCAV();
-    };
+    function calcMed() {
+        const pesoKg = parseFloat(document.getElementById('p').value) / 1000;
+        const [nombre, dosisUnit, freq] = document.getElementById('med_sel').value.split('|');
+        const dosisTotal = (dosisUnit * pesoKg).toFixed(1);
+        
+        // Formato: MEDICAMENTO PASAR INTRAVENOSO (MG DOSIS), CADA (FRECUENCIA), (ML)ML
+        // Simulación básica de ML (se asume dilución estándar 100mg/ml para el ejemplo)
+        const ml = (dosisTotal / 100).toFixed(1); 
+        const nuevaLinea = `${nombre} PASAR INTRAVENOSO ${dosisTotal} MG, CADA ${freq} HORAS, ${ml} ML\n`;
+        document.getElementById('txt_med').value += nuevaLinea;
+    }
+
+    function updateText(selId, txtId) {
+        const val = document.getElementById(selId).value;
+        document.getElementById(txtId).value = val === "OTRO" ? "" : val;
+    }
+
+    function addVit(val) { if(val) document.getElementById('txt_vit').value += val + ". "; }
+    function addToList(id, val) { if(val) document.getElementById(id).value += val + ", "; }
+
+    window.onload = actualizarTodo;
 </script>
+</body>
+</html>

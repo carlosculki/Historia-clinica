@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v17.2 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v17.3 - HSVP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
@@ -16,8 +16,7 @@
         input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; background: #fff; }
         .calc-card { background: #eef2f7; border: 2px solid #d1d8e0; padding: 20px; border-radius: 10px; }
         .hijo-row { background: #fff; border: 1px solid #ddd; padding: 10px; margin-top: 5px; border-radius: 5px; display: grid; grid-template-columns: 0.5fr 1fr 1fr 1fr 2fr; gap: 10px; }
-        .result-box { background: #2c3e50; color: #fff; padding: 15px; border-radius: 5px; font-weight: bold; text-align: center; font-size: 1.3em; border: 2px solid var(--secondary); margin-top: 15px; }
-        .adcav-item { background: #fff; border: 1px solid #ddd; border-left: 5px solid var(--secondary); padding: 15px; margin-bottom: 10px; border-radius: 4px; }
+        .inmu-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #eee; }
         .btn-main { background: var(--accent); color: white; padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 30px; }
         .hidden { display: none; }
         .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; }
@@ -56,7 +55,10 @@
     </div>
     <div class="grid">
         <div class="field"><label>Raza:</label><input type="text" id="razaM" value="Mestiza"></div>
-        <div class="field"><label>Religión:</label><select id="relM" onchange="toggleOtroReligion(this)"><option value="CATOLICA">CATÓLICA</option><option value="CRISTIANA">CRISTIANA</option><option value="EVANGELICA">EVANGÉLICA</option><option value="TESTIGO DE JEHOVA">TESTIGO DE JEHOVÁ</option><option value="OTRO">OTRO</option></select><input type="text" id="relM_otro" class="hidden" placeholder="¿Cuál?" style="margin-top:5px"></div>
+        <div class="field"><label>Religión:</label>
+            <select id="relM" onchange="toggleOtroReligion(this)"><option value="CATOLICA">CATÓLICA</option><option value="CRISTIANA">CRISTIANA</option><option value="EVANGELICA">EVANGÉLICA</option><option value="TESTIGO DE JEHOVA">TESTIGO DE JEHOVÁ</option><option value="OTRO">OTRO</option></select>
+            <input type="text" id="relM_otro" class="hidden" placeholder="¿Cuál?" style="margin-top:5px">
+        </div>
         <div class="field"><label>Tipo de Sangre:</label><select id="gsM"><option value="ORH+">ORH+</option><option value="ORH-">ORH-</option><option value="ARH+">ARH+</option><option value="ARH-">ARH-</option><option value="BRH+">BRH+</option><option value="BRH-">BRH-</option><option value="ABRH+">ABRH+</option><option value="ABRH-">ABRH-</option></select></div>
         <div class="field"><label>Lugar de Nacimiento:</label><input type="text" id="lugNacM"></div>
     </div>
@@ -64,163 +66,141 @@
         <div class="field"><label>Dirección:</label><input type="text" id="dirM"></div>
         <div class="field"><label>Teléfono:</label><input type="text" id="telM"></div>
         <div class="field"><label>Cobertura:</label><select id="cobM"><option>IESS</option><option>MSP</option><option>ISSFA</option><option>ISSPOL</option><option>PRIVADO</option></select></div>
-        <div class="field"><label>En caso de emergencia avisar a:</label><textarea id="emergenciaCont" rows="1"></textarea></div>
+        <div class="field"><label>Avisar a (Emergencia):</label><textarea id="emergenciaCont" rows="1"></textarea></div>
     </div>
 
-    <h2>2. Antecedentes Maternos y Gestacionales</h2>
+    <h2>2. Antecedentes Clínicos</h2>
     
-    <h3>Patológicos y Familiares (Madre)</h3>
+    <h3>Patológicos y Familiares</h3>
     <div class="grid">
-        <div class="field full-width"><label>Antecedentes Patológicos:</label><textarea id="antPatM" rows="2"></textarea></div>
-        <div class="field full-width"><label>Antecedentes Quirúrgicos:</label><textarea id="antQuiM" rows="2"></textarea></div>
-        <div class="field full-width"><label>Antecedentes Familiares:</label><textarea id="antFamM" rows="2"></textarea></div>
+        <div class="field full-width"><label>Antecedentes Patológicos Maternos:</label><textarea id="antPatM" rows="2"></textarea></div>
+        <div class="field full-width"><label>Antecedentes Quirúrgicos Maternos:</label><textarea id="antQuiM" rows="2"></textarea></div>
+        <div class="field full-width"><label>Antecedentes Familiares Maternos:</label><textarea id="antFamM" rows="2"></textarea></div>
     </div>
 
-    <h3>Antecedentes Gineco-Obstétricos</h3>
+    <h3>Gineco-Obstétricos y Perinatales</h3>
     <div class="grid">
-        <div class="field"><label>Menarquia (años):</label><input type="number" id="menarquia"></div>
-        <div class="field"><label>IVSA (años):</label><input type="number" id="ivsa"></div>
+        <div class="field"><label>Menarquia:</label><input type="number" id="menarquia"></div>
+        <div class="field"><label>IVSA:</label><input type="number" id="ivsa"></div>
         <div class="field"><label>ETS:</label><input type="text" id="ets"></div>
         <div class="field"><label>Paptest:</label><input type="text" id="paptest"></div>
-        <div class="field"><label>Planificación Fam.:</label><input type="text" id="planifica"></div>
-        <div class="field"><label>Parejas Sexuales:</label><input type="number" id="parejas"></div>
+        <div class="field"><label>Parejas:</label><input type="number" id="parejas"></div>
     </div>
 
-    <div class="calc-card" style="margin-top:10px; border-left: 5px solid var(--accent);">
+    <div class="calc-card">
         <div class="grid">
             <div class="field"><label><b>FUM:</b></label><input type="date" id="fum" onchange="calcEG_FUM()"></div>
             <div class="field"><label><b>EG por FUM:</b></label><input type="text" id="egFum" readonly class="highlight-box"></div>
-            <div class="field full-width"><label>EG por Eco / Estimada (especificar):</label><input type="text" id="egEco"></div>
+            <div class="field full-width"><label>EG por Eco / Estimada:</label><input type="text" id="egEco"></div>
+        </div>
+        <div class="grid" style="margin-top:10px">
+            <div class="field"><label>Gestas:</label><input type="number" id="gestas"></div>
+            <div class="field"><label>Partos:</label><input type="number" id="partos"></div>
+            <div class="field"><label>Cesáreas:</label><input type="number" id="cesareas"></div>
+            <div class="field"><label>Abortos:</label><input type="number" id="abortos"></div>
+            <div class="field"><label>Hijos Vivos:</label><input type="number" id="hVivos" oninput="generarHijos()"></div>
+            <div class="field"><label>Hijos Muertos:</label><input type="number" id="hMuertos" oninput="toggleHMuertos()"></div>
         </div>
     </div>
 
-    <div class="grid" style="margin-top:15px">
-        <div class="field"><label>Gestas:</label><input type="number" id="gestas"></div>
-        <div class="field"><label>Partos:</label><input type="number" id="partos"></div>
-        <div class="field"><label>Cesáreas:</label><input type="number" id="cesareas"></div>
-        <div class="field"><label>Abortos:</label><input type="number" id="abortos"></div>
-        <div class="field"><label>Hijos Vivos:</label><input type="number" id="hVivos" oninput="generarHijos()"></div>
-        <div class="field"><label>Hijos Muertos:</label><input type="number" id="hMuertos" oninput="toggleHMuertos()"></div>
-    </div>
-    
     <div id="contenedorHijos"></div>
-    <div id="detallesMuertos" class="hidden" style="margin-top:10px">
-        <label><b>Descripción de Antecedente Hijos Muertos:</b></label>
-        <textarea id="antHMuertos" class="full-width" rows="2"></textarea>
-    </div>
+    <div id="detallesMuertos" class="hidden"><label>Descripción Hijos Muertos:</label><textarea id="antHMuertos" class="full-width" rows="2"></textarea></div>
 
-    <h3>Control Prenatal y Embarazo Actual</h3>
+    <h3>Control Prenatal e Inmunizaciones</h3>
     <div class="grid">
         <div class="field"><label>N° Controles:</label><input type="number" id="numCont" oninput="toggleLugarControl()"></div>
-        <div id="divLugarCont" class="field hidden"><label>Lugar de Controles:</label><input type="text" id="lugCont"></div>
+        <div id="divLugarCont" class="field hidden"><label>Lugar:</label><input type="text" id="lugCont"></div>
         <div class="field"><label>N° Ecos:</label><input type="number" id="numEco" oninput="toggleEcoNov()"></div>
-        <div id="divEcoNov" class="field hidden"><label>Novedades en Ecos:</label><input type="text" id="ecoNov"></div>
+        <div id="divEcoNov" class="field hidden"><label>Novedades Ecos:</label><input type="text" id="ecoNov"></div>
     </div>
 
-    <div class="grid">
-        <div class="field full-width"><label>Complementos Nutricionales (Ácido Fólico, Hierro, Calcio, etc):</label><input type="text" id="nutri"></div>
-    </div>
+    <div class="field full-width"><label>Complementos Nutricionales:</label><input type="text" id="nutri" placeholder="Ácido fólico, Hierro, etc."></div>
 
-    <div class="grid">
-        <div class="field">
-            <label>Inmunizaciones:</label>
-            <select id="inmuTipo" onchange="toggleInmuOtro()">
-                <option value="DT">DT</option><option value="COVID">COVID</option>
-                <option value="INFLUENZA">INFLUENZA</option><option value="OTRA">OTRA</option>
-            </select>
-            <input type="text" id="inmuOtro" class="hidden" placeholder="¿Cuál?" style="margin-top:5px">
+    <div class="calc-card" style="margin-top:10px">
+        <label><b>Inmunizaciones (Marque todas las recibidas):</b></label>
+        <div class="grid" style="margin-top:10px">
+            <div class="inmu-item"><input type="checkbox" id="v_dt"> <label>DT</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
+            <div class="inmu-item"><input type="checkbox" id="v_covid"> <label>COVID</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
+            <div class="inmu-item"><input type="checkbox" id="v_inf"> <label>INFLUENZA</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
+            <div class="inmu-item"><input type="checkbox" id="v_otra" onchange="document.getElementById('v_otra_txt').classList.toggle('hidden', !this.checked)"> <label>OTRA</label> <input type="text" id="v_otra_txt" class="hidden" placeholder="¿Cuál?" style="width:80px"></div>
         </div>
-        <div class="field"><label>N° Dosis:</label><input type="number" id="inmuDosis"></div>
-        <div class="field"><label>Maduración Pulmonar:</label>
-            <select id="madPul"><option value="COMPLETA">COMPLETA</option><option value="INCOMPLETA">INCOMPLETA</option><option value="NO REALIZADA">NO REALIZADA</option></select>
-        </div>
-        <div class="field"><label>Especificar Maduración:</label><input type="text" id="madDetalle" placeholder="Ej: Betametasona 2 dosis"></div>
     </div>
 
+    <div class="grid" style="margin-top:10px">
+        <div class="field"><label>Maduración Pulmonar:</label><select id="madPul"><option>COMPLETA</option><option>INCOMPLETA</option><option>NO REALIZADA</option></select></div>
+        <div class="field full-width"><label>Especificar (Fármaco/Dosis):</label><input type="text" id="madDetalle"></div>
+    </div>
+
+    <h3>Redacción de Antecedentes Narrativos</h3>
+    <div class="field full-width"><label><b>ANTECEDENTES PRENATALES (Narrativo):</b></label><textarea id="narrPre" rows="4" placeholder="Redacte hallazgos en controles, infecciones en el embarazo, hospitalizaciones..."></textarea></div>
+    <div class="field full-width"><label><b>ANTECEDENTES NATALES (Narrativo):</b></label><textarea id="narrNat" rows="4" placeholder="Redacte tipo de parto, características del líquido, RPM, trabajo de parto..."></textarea></div>
+    <div class="field full-width"><label><b>ANTECEDENTES POSTNATALES (Narrativo):</b></label><textarea id="narrPost" rows="4" placeholder="Redacte adaptación neonatal, reanimación, APGAR, Silverman, paso a alojamiento..."></textarea></div>
+    
     <div class="grid">
-        <div class="field full-width"><label>Infecciones / Hospitalizaciones durante embarazo:</label><textarea id="infEmbarazo" rows="2"></textarea></div>
-        <div class="field"><label>Ruptura Membranas:</label><input type="text" id="rpm" placeholder="Ej: 12 horas / 2 días"></div>
-        <div class="field"><label><b>Fuente de Información:</b></label><input type="text" id="fuenteInf" value="Madre / Carné Perinatal"></div>
+        <div class="field"><label>Ruptura Membranas (Hrs/Días):</label><input type="text" id="rpm"></div>
+        <div class="field full-width"><label><b>Fuente de Información:</b></label><input type="text" id="fuenteInf" value="Madre / Carné Perinatal"></div>
     </div>
 
-    <h2>3. Examen Físico y Planes (v17.1)</h2>
+    <h2>3. Evaluación y Planes</h2>
     <div class="grid">
         <div class="field"><label>Peso (g):</label><input type="number" id="peso" oninput="actualizarCalc()"></div>
         <div class="field"><label>Talla (cm):</label><input type="number" id="talla"></div>
-        <div class="field"><label>P. Cefálico:</label><input type="number" id="pCef"></div>
     </div>
-
+    
     <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA COMPLETA</button>
 
-    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:10px;">
-        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace;"></div>
+    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:20px; background: #fff;">
+        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace; font-size: 12px;"></div>
     </div>
-
 </div>
 
 <script>
-    // LÓGICA DE FILIACIÓN
+    // LÓGICA FILIACIÓN
     function calcEdadAlIngreso() {
         const naci = document.getElementById('fNac').value;
         const ingr = document.getElementById('fIngreso').value;
         if(naci && ingr) {
-            const fechaNac = new Date(naci + 'T' + (document.getElementById('hNac').value || "00:00"));
-            const fechaIng = new Date(ingr + 'T23:59:59');
-            const diffMs = fechaIng - fechaNac;
-            const diffHrs = Math.floor(diffMs / 3600000);
-            document.getElementById('edadReal').value = diffHrs < 48 ? diffHrs + " HORAS" : Math.floor(diffHrs/24) + " DÍAS";
+            const d1 = new Date(naci + 'T' + (document.getElementById('hNac').value || "00:00"));
+            const d2 = new Date(ingr + 'T23:59:59');
+            const hrs = Math.floor((d2 - d1) / 3600000);
+            document.getElementById('edadReal').value = hrs < 48 ? hrs + " HORAS" : Math.floor(hrs/24) + " DÍAS";
         }
     }
 
     function toggleOtroReligion(sel) { document.getElementById('relM_otro').classList.toggle('hidden', sel.value !== 'OTRO'); }
 
-    // LÓGICA DE ANTECEDENTES
+    // LÓGICA ANTECEDENTES
     function calcEG_FUM() {
         const f = document.getElementById('fum').value;
         if(f) {
-            const fumDate = new Date(f);
-            const hoy = new Date();
-            const diffSemanas = (hoy - fumDate) / (1000 * 60 * 60 * 24 * 7);
-            const semanas = Math.floor(diffSemanas);
-            const dias = Math.floor((diffSemanas - semanas) * 7);
-            document.getElementById('egFum').value = `${semanas}.${dias} SEMANAS`;
+            const sem = (new Date() - new Date(f)) / (1000 * 60 * 60 * 24 * 7);
+            document.getElementById('egFum').value = Math.floor(sem) + "." + Math.floor((sem % 1) * 7) + " SEMANAS";
         }
     }
 
     function generarHijos() {
         const n = parseInt(document.getElementById('hVivos').value) || 0;
-        const cont = document.getElementById('contenedorHijos');
-        cont.innerHTML = n > 0 ? "<h4>Detalle de Hijos:</h4>" : "";
+        const c = document.getElementById('contenedorHijos');
+        c.innerHTML = n > 0 ? "<h4>Detalle de Hijos Vivos:</h4>" : "";
         for(let i=1; i<=n; i++) {
-            cont.innerHTML += `<div class="hijo-row">
-                <span>Hijo ${i}</span>
-                <select><option>PARTO</option><option>CESÁREA</option></select>
-                <select><option>MASC</option><option>FEM</option></select>
-                <input type="number" placeholder="Edad">
-                <input type="text" placeholder="Complicaciones">
-            </div>`;
+            c.innerHTML += `<div class="hijo-row"><span>Hijo ${i}:</span><select><option>PARTO</option><option>CESÁREA</option></select><select><option>MASC</option><option>FEM</option></select><input type="number" placeholder="Edad"><input type="text" placeholder="Complicaciones"></div>`;
         }
     }
 
-    function toggleHMuertos() {
-        const n = parseInt(document.getElementById('hMuertos').value) || 0;
-        document.getElementById('detallesMuertos').classList.toggle('hidden', n === 0);
-    }
-
+    function toggleHMuertos() { document.getElementById('detallesMuertos').classList.toggle('hidden', parseInt(document.getElementById('hMuertos').value) === 0); }
     function toggleLugarControl() { document.getElementById('divLugarCont').classList.toggle('hidden', !document.getElementById('numCont').value); }
     function toggleEcoNov() { document.getElementById('divEcoNov').classList.toggle('hidden', !document.getElementById('numEco').value); }
-    function toggleInmuOtro() { document.getElementById('inmuOtro').classList.toggle('hidden', document.getElementById('inmuTipo').value !== 'OTRA'); }
 
-    // MANTENIMIENTO DE CÁLCULOS (Simplificado para esta vista previa, pero heredado de v17.1)
-    function actualizarCalc() { /* Lógica de VIG y Líquidos */ }
+    function actualizarCalc() { /* Lógica de líquidos heredada de v17.1 */ }
 
     function generarTodo() {
         document.getElementById('export-section').classList.remove('hidden');
-        let out = `ANTECEDENTES GINECO-OBSTÉTRICOS:\n`;
-        out += `EG FUM: ${document.getElementById('egFum').value} | EG ECO: ${document.getElementById('egEco').value}\n`;
-        out += `G:${document.getElementById('gestas').value} P:${document.getElementById('partos').value} C:${document.getElementById('cesareas').value} A:${document.getElementById('abortos').value} HV:${document.getElementById('hVivos').value} HM:${document.getElementById('hMuertos').value}\n`;
-        out += `FUENTE: ${document.getElementById('fuenteInf').value}`;
-        document.getElementById('finalOutput').innerText = out;
+        let txt = "=== HISTORIA CLÍNICA NEONATAL ===\n\n";
+        txt += "ANTECEDENTES NARRATIVOS:\n";
+        txt += "PRENATALES: " + document.getElementById('narrPre').value + "\n";
+        txt += "NATALES: " + document.getElementById('narrNat').value + "\n";
+        txt += "POSTNATALES: " + document.getElementById('narrPost').value + "\n";
+        document.getElementById('finalOutput').innerText = txt;
         window.scrollTo(0, document.body.scrollHeight);
     }
 </script>

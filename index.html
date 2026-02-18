@@ -2,35 +2,38 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v20.0 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v21.0 - HSVP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 12px; border-top: 10px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; font-size: 1.2em; text-transform: uppercase; margin-top: 20px; }
-        .adcav-grid { display: grid; grid-template-columns: 100px 1fr; gap: 10px; border-bottom: 1px solid #eee; padding: 12px; }
-        .letra { font-weight: bold; font-size: 1.8em; color: var(--secondary); align-self: center; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 12px; border-top: 10px solid var(--primary); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 20px; font-size: 1.2em; text-transform: uppercase; border-left: 10px solid var(--secondary); }
+        .adcav-grid { display: grid; grid-template-columns: 110px 1fr; gap: 10px; border-bottom: 1px solid #eee; padding: 12px; }
+        .letra { font-weight: bold; font-size: 2em; color: var(--secondary); text-align: center; align-self: center; }
         .calc-card { background: #eef2f7; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #d1d8e0; }
-        .res-destacado { background: #fffde7; border: 2px solid #ffd54f; padding: 12px; border-radius: 8px; font-weight: bold; color: #d35400; font-size: 1.1em; }
+        .res-destacado { background: #fffde7; border: 2px solid #ffd54f; padding: 15px; border-radius: 8px; font-weight: bold; color: #d35400; font-size: 1.1em; line-height: 1.6; }
         .med-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .med-table th { font-size: 9px; text-align: left; background: #2c3e50; color: white; padding: 6px; }
-        .med-table td { padding: 4px; border-bottom: 1px solid #eee; }
-        .input-inline { width: 95%; padding: 5px; border: 1px solid #ccc; border-radius: 3px; font-size: 10px; }
-        .btn-add { background: var(--secondary); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .med-table th { font-size: 9px; text-align: left; background: var(--primary); color: white; padding: 6px; }
+        .med-table td { padding: 6px; border-bottom: 1px solid #eee; }
+        .input-inline { width: 95%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
+        .btn-add { background: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .hidden { display: none; }
+        .bal-alerta { background-color: #ffebee; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>ADCAVANDIMELCO - HSVP v20.0 (Cruce Final Blindado)</h1>
+    <h1>ADCAVANDIMELCO - HSVP (Fase Final: Planes y Cálculos)</h1>
 
     <div class="calc-card">
+        <h3>Parámetros para Balance Hídrico Estricto</h3>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
             <div><label><b>Peso (g):</b></label><input type="number" id="p" value="3000" oninput="recalcular()"></div>
             <div><label><b>LT (ml/kg/d):</b></label><input type="number" id="l" value="80" oninput="recalcular()"></div>
             <div><label><b>% Dextrosa:</b></label><input type="number" id="dexPerc" value="10" oninput="recalcular()"></div>
-            <div style="background: #dff9fb; padding: 10px; border-radius: 5px;">
+            <div style="background: #dff9fb; padding: 10px; border-radius: 5px; border: 1px solid #81ecec;">
+                <b>Incrementos:</b><br>
                 <label><input type="checkbox" id="foto" onchange="recalcular()"> Fototerapia (+15%)</label><br>
                 <label><input type="checkbox" id="cuna" onchange="recalcular()"> Cuna Radiante (+15%)</label>
             </div>
@@ -40,163 +43,204 @@
     <div id="adcav-form">
         <div class="adcav-grid"><div class="letra">A</div><div><b>ADMISION:</b><input class="input-inline" id="adm" value="Neonatología"></div></div>
         
-        <div class="adcav-grid"><div class="letra">D</div><div><b>DIAGNOSTICOS:</b><textarea class="input-inline" id="diag" rows="2" placeholder="Diagnósticos CIE-10 se cargan aquí..."></textarea></div></div>
+        <div class="adcav-grid"><div class="letra">D</div><div><b>DIAGNOSTICOS:</b><textarea class="input-inline" id="diag" rows="2" placeholder="Se cargan automáticamente de la sección 4..."></textarea></div></div>
         
-        <div class="adcav-grid"><div class="letra">C</div><div><b>CONDICION:</b><select id="cond"><option>ESTABLE</option><option>INESTABLE</option></select></div></div>
+        <div class="adcav-grid"><div class="letra">C</div><div><b>CONDICION:</b>
+            <select id="cond" class="input-inline"><option>ESTABLE</option><option>INESTABLE</option></select>
+        </div></div>
         
-        <div class="adcav-grid"><div class="letra">A</div><div><b>ALERGIAS:</b><select id="aler"><option>NEGATIVO</option><option>NO REFIERE</option></select></div></div>
+        <div class="adcav-grid"><div class="letra">A</div><div><b>ALERGIAS:</b>
+            <select id="aler" class="input-inline"><option>NEGATIVO</option><option>NO REFIERE</option></select>
+        </div></div>
         
-        <div class="adcav-grid"><div class="letra">V</div><div><b>VITALES / MONITOREO:</b>
-            <select onchange="document.getElementById('vit_txt').value += this.value + ', '">
-                <option value="">Añadir...</option>
+        <div class="adcav-grid"><div class="letra">V</div><div><b>CONTROL DE SIGNOS VITALES:</b>
+            <select onchange="addToList('vit_txt', this.value)" class="input-inline">
+                <option value="">Añadir Control...</option>
                 <option value="MONITOREO CONTINUO">Monitoreo Continuo</option>
-                <option value="CSV CADA 3H">CSV cada 3h</option>
-                <option value="DIURESIS HORARIA">Diuresis Horaria</option>
+                <option value="CONTROL DE SIGNOS VITALES CADA 3 HORAS">Control cada 3 horas</option>
+                <option value="CONTROL INGESTA EXCRETA">Control Ingesta/Excreta</option>
                 <option value="BALANCE HIDRICO">Balance Hídrico</option>
+                <option value="DIURESIS HORARIA">Diuresis Horaria</option>
             </select>
             <input id="vit_txt" class="input-inline" style="margin-top:5px" value="Monitorización continua. ">
         </div></div>
 
-        <div class="adcav-grid"><div class="letra">A</div><div><b>ACTITUD / POSICION:</b><select id="act"><option>SEMIFOWLER</option><option>POSICION ANTIRREFLUJO</option></select></div></div>
+        <div class="adcav-grid"><div class="letra">A</div><div><b>ACTITUD / POSICION:</b>
+            <select id="act" class="input-inline"><option>SEMIFOWLER</option><option>POSICION ANTIRREFLUJO</option></select>
+        </div></div>
 
         <div class="adcav-grid">
             <div class="letra">D</div>
             <div>
                 <b>DIETA:</b>
-                <select id="tipoDieta" onchange="recalcular()">
+                <select id="tipoDieta" onchange="recalcular()" class="input-inline">
                     <option value="NPO">NADA POR VIA ORAL (NPO)</option>
                     <option value="LM">LECHE MATERNA (LM)</option>
                 </select>
-                <span id="boxDieta" class="hidden">
-                    Cant(ml): <input type="number" id="dietCant" value="0" style="width:50px" oninput="recalcular()"> 
-                    Frec(h): <input type="number" id="dietFreq" value="3" style="width:40px" oninput="recalcular()">
-                </span>
-                <span id="resDietaTotal" style="margin-left:15px; font-weight:bold; color:var(--accent);"></span>
+                <div id="boxDieta" class="hidden" style="margin-top:5px; background:#f1f2f6; padding:8px; border-radius:5px;">
+                    Cant. por toma (ml): <input type="number" id="dietCant" value="0" style="width:60px" oninput="recalcular()"> 
+                    Frecuencia (h): <input type="number" id="dietFreq" value="3" style="width:50px" oninput="recalcular()">
+                    <span id="resDietaTotal" style="margin-left:15px; font-weight:bold; color:var(--accent);"></span>
+                </div>
             </div>
         </div>
 
         <div class="adcav-grid">
             <div class="letra">I</div>
             <div>
-                <b>LIQUIDOS INTRAVENOSOS:</b>
-                <div class="res-destacado" id="resFinalIV">DEXTROSA AL --%, PASAR IV -- ML EN 24H. VIG: --</div>
+                <b>LIQUIDOS INTRAVENOSOS (Prescripción Final):</b>
+                <div class="res-destacado" id="resFinalIV">Cargando cálculos...</div>
             </div>
         </div>
 
         <div class="adcav-grid">
             <div class="letra">M</div>
             <div>
-                <b>MEDICAMENTOS Y DILUCIONES:</b>
-                <table class="med-table" id="tablaMed">
+                <b>MEDICAMENTOS (Diluciones según Tabla HSVP 2023):</b>
+                <table class="med-table">
                     <thead>
                         <tr>
-                            <th width="25%">Fármaco</th>
-                            <th width="15%">Dosis (mg/kg)</th>
-                            <th width="15%">Frec (h)</th>
-                            <th width="15%">Conc (mg/ml)</th>
-                            <th width="10%">¿Balance?</th>
+                            <th width="25%">Medicamento</th>
+                            <th width="12%">Dosis</th>
+                            <th width="12%">Frec(h)</th>
+                            <th width="15%">Conc(mg/ml)</th>
+                            <th width="10%">¿Bal?</th>
                             <th width="15%">Vol/Día</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="bodyMed">
-                        </tbody>
+                    <tbody id="bodyMed"></tbody>
                 </table>
                 <button class="btn-add" onclick="agregarFilaMed()">+ Agregar Medicamento</button>
             </div>
         </div>
 
-        <div class="adcav-grid"><div class="letra">E</div><div><b>EXAMENES:</b><input class="input-inline" id="exa"></div></div>
-        <div class="adcav-grid"><div class="letra">L</div><div><b>LABORATORIO:</b><input class="input-inline" id="lab"></div></div>
-        <div class="adcav-grid"><div class="letra">C</div><div><b>INTERCONSULTA:</b><input class="input-inline" id="int"></div></div>
+        <div class="adcav-grid"><div class="letra">E</div><div><b>EXAMENES:</b>
+            <select onchange="addToList('exa_txt', this.value)" class="input-inline">
+                <option value="">Añadir Examen...</option>
+                <option value="RADIOGRAFIA TORACOABDOMINAL">Rayos X Toracoabdominal</option>
+                <option value="ECO TRANSFONTANELAR">Eco Transfontanelar</option>
+                <option value="ECO CARDIOGRAMA">Ecocardiograma</option>
+            </select>
+            <input class="input-inline" id="exa_txt" style="margin-top:5px">
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">L</div><div><b>LABORATORIO:</b>
+            <select onchange="addToList('lab_txt', this.value)" class="input-inline">
+                <option value="">Añadir Laboratorio...</option>
+                <option value="BIOMETRIA HEMATICA">Biometría</option>
+                <option value="GLUCOSA">Glucosa</option>
+                <option value="GASOMETRIA">Gasometría</option>
+                <option value="PCR">PCR</option>
+                <option value="HEMOCULTIVO">Hemocultivo</option>
+            </select>
+            <input class="input-inline" id="lab_txt" style="margin-top:5px">
+        </div></div>
+
+        <div class="adcav-grid"><div class="letra">C</div><div><b>INTERCONSULTAS:</b><input class="input-inline" id="int"></div></div>
         <div class="adcav-grid"><div class="letra">O</div><div><b>OTROS:</b><input class="input-inline" id="otr"></div></div>
     </div>
 </div>
 
 <script>
-    let medicamentos = [
-        {nombre: 'Ampicilina', dosis: 50, frec: 12, conc: 100, bal: true},
-        {nombre: 'Amikacina', dosis: 15, frec: 24, conc: 50, bal: true}
-    ];
+    // BASE DE DATOS ACTUALIZADA SEGÚN TABLA HSVP (22-04-23) [cite: 5]
+    const dbHSVP = {
+        "AMIKACINA": { dosis: 15, conc: 5, bal: true, frec: 24 }, // [cite: 5]
+        "AMPICILINA": { dosis: 50, conc: 100, bal: true, frec: 12 }, // [cite: 5]
+        "BICARBONATO DE SODIO 8,4%": { dosis: 2, conc: 0.5, bal: true, frec: 24 }, // [cite: 5]
+        "CEFTAZIDIMA SÓDICA": { dosis: 50, conc: 40, bal: true, frec: 12 }, // [cite: 5]
+        "CEFTRIAXONA": { dosis: 50, conc: 40, bal: true, frec: 24 }, // [cite: 5]
+        "CLORURO DE SODIO 20%": { dosis: 3, conc: 3.42, bal: true, frec: 24 }, // [cite: 5]
+        "CLORURO DE POTASIO 14.8": { dosis: 2, conc: 2, bal: true, frec: 24 }, // [cite: 5]
+        "FENOBARBITAL": { dosis: 20, conc: 10, bal: true, frec: 24 }, // [cite: 5]
+        "FUROSEMIDA": { dosis: 1, conc: 2, bal: true, frec: 12 }, // [cite: 5]
+        "GENTAMICINA": { dosis: 4, conc: 4, bal: true, frec: 24 }, // [cite: 5]
+        "GLUCONATO DE CALCIO 10%": { dosis: 200, conc: 50, bal: true, frec: 24 }, // [cite: 5]
+        "MEROPENEM": { dosis: 40, conc: 25, bal: true, frec: 8 }, // [cite: 5]
+        "METRONIDAZOL 0,5%": { dosis: 7.5, conc: 5, bal: true, frec: 12 }, // [cite: 5]
+        "PENICILINA G SÓDICA": { dosis: 50000, conc: 20000, bal: true, frec: 12 }, // [cite: 5]
+        "VANCOMICINA": { dosis: 15, conc: 5, bal: true, frec: 12 } // [cite: 5]
+    };
 
-    function agregarFilaMed() {
-        medicamentos.push({nombre: '', dosis: 0, frec: 24, conc: 1, bal: true});
-        renderMed();
-    }
-
-    function eliminarFila(index) {
-        medicamentos.splice(index, 1);
-        renderMed();
-        recalcular();
-    }
+    let medicamentos = [];
 
     function renderMed() {
         const body = document.getElementById('bodyMed');
         body.innerHTML = '';
         medicamentos.forEach((m, i) => {
+            let opciones = `<option value="">-- Seleccione --</option>`;
+            for (let med in dbHSVP) {
+                opciones += `<option value="${med}" ${m.nombre === med ? 'selected' : ''}>${med}</option>`;
+            }
             body.innerHTML += `
-                <tr>
-                    <td><input type="text" class="input-inline" value="${m.nombre}" oninput="medicamentos[${i}].nombre=this.value; recalcular()"></td>
+                <tr class="${!m.bal ? 'bal-alerta' : ''}">
+                    <td>
+                        <select class="input-inline" onchange="cargarMed(${i}, this.value)">${opciones}<option value="OTRO">OTRO...</option></select>
+                        <input type="text" class="input-inline ${m.nombre in dbHSVP || m.nombre==='' ? 'hidden' : ''}" value="${m.nombre}" oninput="medicamentos[${i}].nombre=this.value; recalcular()">
+                    </td>
                     <td><input type="number" class="input-inline" value="${m.dosis}" oninput="medicamentos[${i}].dosis=this.value; recalcular()"></td>
                     <td><input type="number" class="input-inline" value="${m.frec}" oninput="medicamentos[${i}].frec=this.value; recalcular()"></td>
                     <td><input type="number" class="input-inline" value="${m.conc}" oninput="medicamentos[${i}].conc=this.value; recalcular()"></td>
-                    <td style="text-align:center"><input type="checkbox" ${m.bal ? 'checked' : ''} onchange="medicamentos[${i}].bal=this.checked; recalcular()"></td>
-                    <td><span id="volDia_${i}">0</span> ml</td>
-                    <td><button onclick="eliminarFila(${i})" style="color:red; border:none; background:none; cursor:pointer">✖</button></td>
+                    <td style="text-align:center"><input type="checkbox" ${m.bal ? 'checked' : ''} onchange="medicamentos[${i}].bal=this.checked; renderMed()"></td>
+                    <td style="font-weight:bold;"><span id="volDia_${i}">0</span> ml</td>
+                    <td><button onclick="eliminarMed(${i})" style="color:red; border:none; background:none; cursor:pointer">✖</button></td>
                 </tr>
             `;
         });
         recalcular();
     }
 
-    function recalcular() {
-        const pesoKg = parseFloat(document.getElementById('p').value) / 1000;
-        let lt = parseFloat(document.getElementById('l').value) || 0;
-        const dexP = parseFloat(document.getElementById('dexPerc').value) || 10;
-
-        // 1. Incrementos
-        const baseLT = lt;
-        if(document.getElementById('foto').checked) lt += baseLT * 0.15;
-        if(document.getElementById('cuna').checked) lt += baseLT * 0.15;
-        
-        const volTotalTeorico = lt * pesoKg;
-
-        // 2. Dieta
-        let volDietaDia = 0;
-        if(document.getElementById('tipoDieta').value === "LM") {
-            document.getElementById('boxDieta').classList.remove('hidden');
-            const cant = parseFloat(document.getElementById('dietCant').value) || 0;
-            const freq = parseFloat(document.getElementById('dietFreq').value) || 1;
-            volDietaDia = cant * (24 / freq);
-            document.getElementById('resDietaTotal').innerText = `(-${volDietaDia.toFixed(1)} ml/día)`;
-        } else {
-            document.getElementById('boxDieta').classList.add('hidden');
-            document.getElementById('resDietaTotal').innerText = "";
+    function cargarMed(idx, nombre) {
+        if(nombre === "OTRO") { medicamentos[idx].nombre = "Otro"; }
+        else if(dbHSVP[nombre]) {
+            const d = dbHSVP[nombre];
+            medicamentos[idx] = { nombre: nombre, dosis: d.dosis, frec: d.frec, conc: d.conc, bal: d.bal };
         }
-
-        // 3. Medicamentos (Lógica v10.0)
-        let volMedBalanceTotal = 0;
-        medicamentos.forEach((m, i) => {
-            const mlPorDosis = (pesoKg * m.dosis) / m.conc;
-            const mlDia = mlPorDosis * (24 / m.frec);
-            document.getElementById(`volDia_${i}`).innerText = mlDia.toFixed(2);
-            if(m.bal) volMedBalanceTotal += mlDia;
-        });
-
-        // 4. Volumen IV Bolsa
-        const volIVFinal = volTotalTeorico - volDietaDia - volMedBalanceTotal;
-        const ritmoCC = (volIVFinal / 24).toFixed(1);
-
-        // 5. VIG Real
-        const vigReal = (volIVFinal * dexP) / (1440 * pesoKg);
-
-        // UI
-        document.getElementById('resFinalIV').innerHTML = 
-            `DEXTROSA EN AGUA AL ${dexP}%, PASAR INTRAVENOSO ${volIVFinal.toFixed(1)} ML EN 24 HORAS (${ritmoCC} CC/H).<br>` +
-            `VIG: ${vigReal.toFixed(2)} MG/KG/MIN`;
+        renderMed();
     }
 
-    window.onload = renderMed;
+    function recalcular() {
+        const pKg = parseFloat(document.getElementById('p').value) / 1000;
+        let lt = parseFloat(document.getElementById('l').value) || 0;
+        const dexP = parseFloat(document.getElementById('dexPerc').value) || 0;
+
+        // Incrementos
+        if(document.getElementById('foto').checked) lt += (parseFloat(document.getElementById('l').value) * 0.15);
+        if(document.getElementById('cuna').checked) lt += (parseFloat(document.getElementById('l').value) * 0.15);
+        
+        const volTotalTeorico = lt * pKg;
+
+        // Resta Dieta
+        let vDieta = 0;
+        if(document.getElementById('tipoDieta').value === "LM") {
+            document.getElementById('boxDieta').classList.remove('hidden');
+            vDieta = (parseFloat(document.getElementById('dietCant').value) || 0) * (24 / (parseFloat(document.getElementById('dietFreq').value) || 1));
+            document.getElementById('resDietaTotal').innerText = `(-${vDieta.toFixed(1)} ml/día)`;
+        } else { document.getElementById('boxDieta').classList.add('hidden'); }
+
+        // Resta Medicamentos
+        let vMedBal = 0;
+        medicamentos.forEach((m, i) => {
+            const vDia = ((pKg * m.dosis) / m.conc) * (24 / m.frec);
+            document.getElementById(`volDia_${i}`).innerText = vDia.toFixed(2);
+            if(m.bal) vMedBal += vDia;
+        });
+
+        // Volumen Final Bolsa e IV
+        const vIVFinal = volTotalTeorico - vDieta - vMedBal;
+        const ritmo = (vIVFinal / 24).toFixed(1);
+        const vigReal = (vIVFinal * dexP) / (1440 * pKg);
+
+        document.getElementById('resFinalIV').innerHTML = 
+            `DEXTROSA EN AGUA AL ${dexP}%, PASAR INTRAVENOSO ${vIVFinal.toFixed(1)} ML EN 24 HORAS (Ritmo: ${ritmo} cc/h).<br>` +
+            `VIG REAL CALCULADA: ${vigReal.toFixed(2)} MG/KG/MIN`;
+    }
+
+    function addToList(id, val) { if(val) document.getElementById(id).value += val + ", "; }
+    function agregarFilaMed() { medicamentos.push({nombre:'', dosis:0, frec:24, conc:1, bal:true}); renderMed(); }
+    function eliminarMed(idx) { medicamentos.splice(idx, 1); renderMed(); }
+
+    window.onload = recalcular;
 </script>
 </body>
 </html>

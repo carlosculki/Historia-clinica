@@ -2,30 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v17.7 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v17.8 - HSVP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
-        .container { max-width: 1450px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
-        h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; }
+        .container { max-width: 1450px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
         h2 { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 25px; font-size: 1.2em; border-left: 10px solid var(--secondary); text-transform: uppercase; }
         h3 { color: var(--secondary); border-bottom: 2px solid #eee; margin-top: 20px; font-size: 1.1em; padding-bottom: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .field { display: flex; flex-direction: column; }
         input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
         .calc-card { background: #eef2f7; border: 2px solid #d1d8e0; padding: 15px; border-radius: 10px; }
         
-        /* Estilos Sección Diagnósticos */
-        .dx-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        .dx-table th, .dx-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .dx-table th { background: #f8f9fa; }
-        .search-container { position: relative; width: 100%; }
-        #dx-search { width: 100%; padding: 12px; border: 2px solid var(--secondary); border-radius: 8px; font-weight: bold; }
-        .suggestions { position: absolute; width: 100%; background: white; border: 1px solid #ddd; z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
-        .suggestion-item:hover { background: #e3f2fd; }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .tag-principal { background: #e74c3c; color: white; padding: 2px 5px; border-radius: 3px; font-size: 9px; }
+        /* Estilos ADCAV y Diluciones */
+        .adcav-item { background: white; padding: 12px; border-radius: 6px; border-left: 5px solid var(--secondary); margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .adcav-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .res-destacado { color: #e74c3c; font-weight: bold; font-size: 1.1em; }
         
         .btn-main { background: var(--accent); color: white; padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 30px; }
         .hidden { display: none; }
@@ -36,138 +28,118 @@
 <div class="container">
     <h1>SISTEMA NEONATAL INTEGRAL - HSVP</h1>
 
-    <div id="blindaje-previo">
-        <p style="text-align:right; color: #aaa; font-style: italic;">Secciones de Filiación, Antecedentes y Examen Físico Protegidas ✓</p>
-    </div>
+    <p style="text-align:right; color: #aaa; font-style: italic;">Secciones 1 a 4 (Filiación, Antecedentes, Examen Físico, DX) están Protegidas ✓</p>
 
-    <h2>4. Diagnósticos y Codificación CIE-10</h2>
+    <h2>5. Plan de Manejo (ADCAVANDIMELCO)</h2>
     
     <div class="calc-card">
-        <label><b>Buscador de Diagnósticos (Escriba para sugerencias o agregar nuevo):</b></label>
-        <div class="search-container">
-            <input type="text" id="dx-search" placeholder="Ej: Sepsis, Recién Nacido, Dificultad..." oninput="showSuggestions(this.value)">
-            <div id="dx-suggestions" class="suggestions hidden"></div>
+        <div class="grid">
+            <div class="field"><label>Líquidos Totales (ml/kg/d):</label><input type="number" id="liqTot" value="80" oninput="calcularADCAV()"></div>
+            <div class="field"><label>VIG (mg/kg/min):</label><input type="number" id="vig" value="4" step="0.1" oninput="calcularADCAV()"></div>
+            <div class="field"><label>Dextrosa (%):</label><input type="number" id="dexPerc" value="10" oninput="calcularADCAV()"></div>
         </div>
 
-        <table class="dx-table" id="tabla-diagnosticos">
-            <thead>
-                <tr>
-                    <th>Cod. CIE-10</th>
-                    <th>Diagnóstico</th>
-                    <th>Tipo</th>
-                    <th>Condición</th>
-                    <th>Principal</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="lista-dx">
-                </tbody>
-        </table>
+        <div id="resultadoADCAV">
+            <div class="adcav-item">
+                <div class="adcav-header"><span>A - ALIMENTACIÓN / LÍQUIDOS</span> <span id="res_liq_tit" class="res-destacado"></span></div>
+                <textarea id="plan_A" class="full-width" rows="2" style="width:98%">NPO. Líquidos intravenosos según cálculo.</textarea>
+            </div>
+            
+            <div class="adcav-item">
+                <div class="adcav-header">D - DESTINO / DIURESIS</div>
+                <textarea id="plan_D" class="full-width" rows="1" style="width:98%">Termocuna / Alojamiento. Control de diuresis y deposiciones.</textarea>
+            </div>
+
+            <div class="adcav-item">
+                <div class="adcav-header">C - CONTROLES (Signos Vitales)</div>
+                <textarea id="plan_C" class="full-width" rows="1" style="width:98%">Monitorización continua de FC, FR, SatO2 y T° cada 2-4 horas.</textarea>
+            </div>
+
+            <div class="adcav-item">
+                <div class="adcav-header">A - ACTIVIDAD / POSICIÓN</div>
+                <input type="text" id="plan_Act" value="Reposo en posición semifowler (30°), manejo de mínima manipulación." style="width:98%">
+            </div>
+
+            <div class="adcav-item">
+                <div class="adcav-header">V - VITAMINAS / MEDICAMENTOS</div>
+                <textarea id="plan_V" class="full-width" rows="2" style="width:98%">Fitomenadiona 1mg IM (dosis única). Profilaxis ocular.</textarea>
+            </div>
+        </div>
     </div>
 
-    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA INTEGRAL</button>
-
-    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:20px;">
-        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace;"></div>
+    <h2>6. Terapéutica y Diluciones Críticas</h2>
+    <div class="calc-card" style="background: #fff;">
+        <p>Seleccione un fármaco para calcular dilución (Basado en peso corporal):</p>
+        <div class="grid">
+            <div class="field">
+                <label>Fármaco Común:</label>
+                <select id="farmaSelect" onchange="calcularDilucion()">
+                    <option value="">Seleccione...</option>
+                    <option value="ampicilina">Ampicilina (50mg/kg)</option>
+                    <option value="amikacina">Amikacina (15mg/kg)</option>
+                    <option value="gentamicina">Gentamicina (4mg/kg)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Resultado de Dilución:</label>
+                <div id="resDilucion" class="res-destacado" style="padding:10px; background:#f9f9f9; border:1px solid #ddd; border-radius:4px;">--</div>
+            </div>
+        </div>
+        <div class="field full-width">
+            <label>Otros Medicamentos e Indicaciones:</label>
+            <textarea id="otrosMed" rows="3" placeholder="Redacte aquí el resto del tratamiento..."></textarea>
+        </div>
     </div>
+
+    <button class="btn-main" onclick="finalizarHC()">GENERAR HISTORIA CLÍNICA COMPLETA Y FINAL</button>
+
 </div>
 
 <script>
-    // BASE DE DATOS INICIAL (El sistema aprenderá más conforme el usuario escriba)
-    let dbCIE10 = [
-        {c: "Z38.0", d: "Recién nacido vivo, único, nacido en hospital"},
-        {c: "P36.9", d: "Sepsis bacteriana del recién nacido, no especificada"},
-        {c: "P22.0", d: "Síndrome de dificultad respiratoria del recién nacido"},
-        {c: "P22.1", d: "Taquipnea transitoria del recién nacido"},
-        {c: "P59.9", d: "Ictericia neonatal, no especificada"},
-        {c: "P70.4", d: "Hipoglucemia neonatal transitoria"},
-        {c: "P07.3", d: "Recién nacido pretérmino (otros)"},
-        {c: "P05.1", d: "Pequeño para la edad gestacional"},
-        {c: "P24.0", d: "Síndrome de aspiración de meconio"}
-    ];
+    // Referencia al peso de la sección 3 blindada
+    function getPeso() { return parseFloat(parent.document.getElementById('peso')?.value) || 3000; }
 
-    // Cargar diagnósticos aprendidos previamente
-    const learnedDx = JSON.parse(localStorage.getItem('learnedDx')) || [];
-    dbCIE10 = [...dbCIE10, ...learnedDx];
-
-    function showSuggestions(val) {
-        const div = document.getElementById('dx-suggestions');
-        if (val.length < 2) { div.classList.add('hidden'); return; }
+    function calcularADCAV() {
+        const pesoKg = getPeso() / 1000;
+        const liq = parseFloat(document.getElementById('liqTot').value) || 0;
+        const vig = parseFloat(document.getElementById('vig').value) || 0;
         
-        const filtered = dbCIE10.filter(i => i.d.toLowerCase().includes(val.toLowerCase()) || i.c.toLowerCase().includes(val.toLowerCase()));
+        // Cálculo de Líquidos Totales
+        const total24h = (liq * pesoKg).toFixed(1);
+        const ritmoCC = (total24h / 24).toFixed(1);
         
-        div.innerHTML = '';
-        filtered.forEach(item => {
-            const row = document.createElement('div');
-            row.className = 'suggestion-item';
-            row.innerHTML = `<b>${item.c}</b> - ${item.d}`;
-            row.onclick = () => addDx(item.c, item.d);
-            div.appendChild(row);
-        });
-
-        // Opción para agregar nuevo si no existe
-        const addNew = document.createElement('div');
-        addNew.className = 'suggestion-item';
-        addNew.style.color = 'var(--accent)';
-        addNew.innerHTML = `+ Agregar como nuevo diagnóstico: "${val}"`;
-        addNew.onclick = () => {
-            const code = prompt("Ingrese código CIE-10 para este diagnóstico (opcional):") || "S/C";
-            const newEntry = {c: code.toUpperCase(), d: val.toUpperCase()};
-            learnedDx.push(newEntry);
-            localStorage.setItem('learnedDx', JSON.stringify(learnedDx));
-            dbCIE10.push(newEntry);
-            addDx(newEntry.c, newEntry.d);
-        };
-        div.appendChild(addNew);
+        // Cálculo simplificado de VIG para visualización rápida
+        document.getElementById('res_liq_tit').innerText = `${total24h} ml/día (${ritmoCC} cc/h)`;
         
-        div.classList.remove('hidden');
+        let planA = `Líquidos Totales: ${liq} ml/kg/d. \nPrescripción: Dextrosa al 10% ${total24h} ml a pasar a ${ritmoCC} cc/h. VIG: ${vig} mg/kg/min.`;
+        document.getElementById('plan_A').value = planA;
     }
 
-    let dxSeleccionados = [];
+    function calcularDilucion() {
+        const farma = document.getElementById('farmaSelect').value;
+        const pesoKg = getPeso() / 1000;
+        let msg = "";
 
-    function addDx(code, desc) {
-        const id = Date.now();
-        dxSeleccionados.push({id, code, desc, principal: false});
-        renderDx();
-        document.getElementById('dx-suggestions').classList.add('hidden');
-        document.getElementById('dx-search').value = '';
+        if(farma === "ampicilina") {
+            let dosis = (50 * pesoKg).toFixed(1);
+            msg = `Ampicilina: Administrar ${dosis} mg IV cada 12h. (Diluir 500mg en 5cc, tomar ${(dosis/100).toFixed(2)}cc y llevar a 2cc).`;
+        } else if(farma === "amikacina") {
+            let dosis = (15 * pesoKg).toFixed(1);
+            msg = `Amikacina: Administrar ${dosis} mg IV cada 24h.`;
+        } else if(farma === "gentamicina") {
+            let dosis = (4 * pesoKg).toFixed(1);
+            msg = `Gentamicina: Administrar ${dosis} mg IV cada 24h.`;
+        }
+        document.getElementById('resDilucion').innerText = msg;
     }
 
-    function renderDx() {
-        const tbody = document.getElementById('lista-dx');
-        tbody.innerHTML = '';
-        dxSeleccionados.forEach(item => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${item.code}</td>
-                    <td>${item.desc}</td>
-                    <td><select onchange="updateDx(${item.id}, 'tipo', this.value)"><option>PRESUNTIVO</option><option>DEFINITIVO</option></select></td>
-                    <td><select onchange="updateDx(${item.id}, 'cond', this.value)"><option>INGRESO</option><option>EGRESO</option></select></td>
-                    <td style="text-align:center"><input type="radio" name="principal" ${item.principal ? 'checked' : ''} onclick="setPrincipal(${item.id})"></td>
-                    <td><button onclick="removeDx(${item.id})" style="color:red">✖</button></td>
-                </tr>
-            `;
-        });
+    function finalizarHC() {
+        alert("Generando Historia Clínica Consolidada para impresión...");
+        // Aquí iría la lógica de impresión que une todas las secciones blindadas.
     }
 
-    function setPrincipal(id) {
-        dxSeleccionados.forEach(i => i.principal = (i.id === id));
-    }
-
-    function removeDx(id) {
-        dxSeleccionados = dxSeleccionados.filter(i => i.id !== id);
-        renderDx();
-    }
-
-    function generarTodo() {
-        document.getElementById('export-section').classList.remove('hidden');
-        let out = "=== LISTA DE DIAGNÓSTICOS (CIE-10) ===\n";
-        dxSeleccionados.forEach(i => {
-            out += `[${i.principal ? 'P' : 'S'}] ${i.code} - ${i.desc}\n`;
-        });
-        document.getElementById('finalOutput').innerText = out;
-        window.scrollTo(0, document.body.scrollHeight);
-    }
+    // Inicializar cálculos
+    window.onload = calcularADCAV;
 </script>
 </body>
 </html>

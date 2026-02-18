@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v17.4 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v17.5 - HSVP</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; --warning: #e67e22; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
         .container { max-width: 1450px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
         h1 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--secondary); padding-bottom: 10px; }
@@ -15,154 +15,176 @@
         .full-width { grid-column: 1 / -1; }
         input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; background: #fff; }
         .calc-card { background: #eef2f7; border: 2px solid #d1d8e0; padding: 20px; border-radius: 10px; }
-        
-        /* Estilos Examen Físico */
         .ef-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: center; background: #fff; padding: 8px; border-bottom: 1px solid #eee; }
-        .ef-label { font-weight: bold; color: var(--primary); }
-        .ef-input { width: 100%; border: 1px solid #ddd; padding: 5px; border-radius: 3px; font-family: inherit; font-size: 11px; }
-        
+        .ef-label { font-weight: bold; }
+        .ef-input { width: 100%; border: 1px solid #ddd; padding: 5px; border-radius: 3px; font-size: 11px; }
+        .apgar-col { display: flex; flex-direction: column; gap: 5px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; text-align: center; }
         .btn-main { background: var(--accent); color: white; padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 30px; }
         .hidden { display: none; }
-        .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; }
+        .tool-link { font-size: 9px; color: var(--secondary); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>SISTEMA NEONATAL INTEGRAL - HOSPITAL SAN VICENTE DE PAÚL</h1>
+    <h1>SISTEMA NEONATAL INTEGRAL - HSVP</h1>
 
-    <div id="secciones-blindadas">
-        <h2>1. Datos de Filiación y Admisión</h2>
-        <div class="calc-card" style="border: 2px solid var(--secondary); margin-bottom: 15px;">
-            <div class="grid">
-                <div class="field"><label>F. Ingreso:</label><input type="date" id="fIngreso" onchange="calcEdadAlIngreso()"></div>
-                <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" onchange="calcEdadAlIngreso()"></div>
-                <div class="field"><label>Edad al Ingreso:</label><input type="text" id="edadReal" readonly class="highlight-box"></div>
-                <div class="field"><label>HCU:</label><input type="text" id="hcu"></div>
-            </div>
-        </div>
-        </div>
-
-    <h2>3. Examen Físico de Ingreso</h2>
-    
-    <h3>Signos Vitales y Antropometría</h3>
-    <div class="grid" style="background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
-        <div class="field"><label>FC (lpm):</label><input type="number" id="fc"></div>
-        <div class="field"><label>FR (rpm):</label><input type="number" id="fr"></div>
-        <div class="field"><label>T° Axilar (°C):</label><input type="number" id="temp" step="0.1"></div>
-        <div class="field"><label>Saturación O2 (%):</label><input type="number" id="sato2"></div>
-        <div class="field"><label>TA (S/D):</label><input type="text" id="ta" placeholder="P ej: 60/40"></div>
-    </div>
-    <div class="grid" style="margin-top:10px;">
-        <div class="field"><label>Peso (gramos):</label><input type="number" id="peso" oninput="actualizarCalc()"></div>
-        <div class="field"><label>Talla (cm):</label><input type="number" id="talla"></div>
-        <div class="field"><label>PC (Cefálico):</label><input type="number" id="pCef"></div>
-        <div class="field"><label>PT (Torácico):</label><input type="number" id="pTor"></div>
-        <div class="field"><label>PB (Braquial):</label><input type="number" id="pBra"></div>
-    </div>
-
-    <h3>Exploración Cefalo-Caudal</h3>
-    <div class="calc-card" style="padding: 10px;">
-        <div class="ef-row">
-            <div class="ef-label">Aspecto General:</div>
-            <textarea class="ef-input" id="ef_gen">Recién nacido con buen tono, activo, reactivo, llanto vigoroso, fascies normal.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Piel y Faneras:</div>
-            <textarea class="ef-input" id="ef_piel">Rosada, elástica, vérnix caseosa presente, sin ictericia ni cianosis. Llenado capilar < 2 seg.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Cabeza:</div>
-            <textarea class="ef-input" id="ef_cab">Normocéfalo, suturas afrontadas, fontanela anterior normotensa (2x2 cm). Sin caput ni cefalohematoma.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Ojos y Cara:</div>
-            <textarea class="ef-input" id="ef_cara">Fascies simétrica, ojos con pupilas isocóricas fotorreactivas. Pabellones auriculares de implantación normal.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Boca y Cuello:</div>
-            <textarea class="ef-input" id="ef_boca">Paladar íntegro, mucosas orales húmedas. Cuello móvil, no masas, no bocio palpable.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Tórax:</div>
-            <textarea class="ef-input" id="ef_tor">Simétrico, expansión torácica normal, no retracciones. Glándulas mamarias simétricas.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Ausc. Cardíaca:</div>
-            <textarea class="ef-input" id="ef_cor">Ruidos cardíacos rítmicos, no se auscultan soplos.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Ausc. Pulmonar:</div>
-            <textarea class="ef-input" id="ef_pul">Murmullo vesicular conservado, no rales ni ruidos adventicios.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Abdomen:</div>
-            <textarea class="ef-input" id="ef_abd">Blando, depresible, no masas ni megalias. Cordón umbilical con 2 arterias y 1 vena, sin signos de infección.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Genitourinario:</div>
-            <textarea class="ef-input" id="ef_genit">Masculino: testículos descendidos en bolsas. Femenino: labios mayores cubren menores. Ano permeable.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Extremidades:</div>
-            <textarea class="ef-input" id="ef_ext">Simétricas, móviles, tono muscular normal. Barlow y Ortolani negativos. Pulsos femorales presentes.</textarea>
-        </div>
-        <div class="ef-row">
-            <div class="ef-label">Neurológico:</div>
-            <textarea class="ef-input" id="ef_neuro">Reflejo de Moro, succión, búsqueda y prensión palmar presentes y simétricos.</textarea>
+    <h2>1. Datos de Filiación y Admisión</h2>
+    <div class="calc-card" style="border: 2px solid var(--secondary); margin-bottom: 15px;">
+        <div class="grid">
+            <div class="field"><label>F. Ingreso:</label><input type="date" id="fIngreso" onchange="calcEdadAlIngreso()"></div>
+            <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" onchange="calcEdadAlIngreso()"></div>
+            <div class="field"><label>Hora Nac.:</label><input type="time" id="hNac" onchange="calcEdadAlIngreso()"></div>
+            <div class="field"><label>EDAD AL INGRESO:</label><input type="text" id="edadReal" readonly class="highlight-box"></div>
         </div>
     </div>
-
-    <h2>4. Scores Médicos</h2>
     <div class="grid">
-        <div class="field"><label>Capurro (Puntos):</label><input type="number" id="pCap" oninput="calcCap()"></div>
-        <div class="field"><label>Semanas:</label><input type="text" id="resCap" readonly class="highlight-box"></div>
+        <div class="field"><label>Apellidos Neonato:</label><input type="text" id="apeN"></div>
+        <div class="field"><label>Nombres Neonato:</label><input type="text" id="nomN"></div>
+        <div class="field"><label>HCU:</label><input type="text" id="hcu"></div>
+        <div class="field"><label>Sexo:</label><select id="sexoN"><option>MASCULINO</option><option>FEMENINO</option></select></div>
+    </div>
+    <div class="grid">
+        <div class="field"><label>Madre:</label><input type="text" id="nomM"></div>
+        <div class="field"><label>Cédula M:</label><input type="text" id="cedM"></div>
+        <div class="field"><label>Instrucción:</label><input type="text" id="insM"></div>
+        <div class="field"><label>Ocupación/Prof:</label><input type="text" id="ocuM"></div>
+    </div>
+    <div class="grid">
+        <div class="field"><label>Religión:</label><select id="relM" onchange="document.getElementById('relO').classList.toggle('hidden', this.value!='OTRO')"><option>CATOLICA</option><option>CRISTIANA</option><option>EVANGELICA</option><option>TESTIGO DE JEHOVA</option><option value="OTRO">OTRO</option></select><input type="text" id="relO" class="hidden" placeholder="¿Cuál?"></div>
+        <div class="field"><label>GS Madre:</label><select id="gsM"><option>ORH+</option><option>ORH-</option><option>ARH+</option><option>ARH-</option><option>BRH+</option><option>BRH-</option><option>ABRH+</option><option>ABRH-</option></select></div>
+        <div class="field"><label>Emergencia avisar a:</label><textarea id="emergenciaCont" rows="1"></textarea></div>
     </div>
 
-    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA INTEGRAL</button>
+    <h2>2. Antecedentes Maternos y Perinatales</h2>
+    <div class="grid">
+        <div class="field full-width"><label>Patológicos/Quirúrgicos:</label><textarea id="antPat" rows="2"></textarea></div>
+    </div>
+    <div class="grid">
+        <div class="field"><label>FUM:</label><input type="date" id="fum" onchange="calcEG_FUM()"></div>
+        <div class="field"><label>EG por FUM:</label><input type="text" id="egFum" readonly class="highlight-box"></div>
+        <div class="field"><label>Gestas:</label><input type="number" id="gestas"></div>
+        <div class="field"><label>Partos:</label><input type="number" id="partos"></div>
+        <div class="field"><label>Cesáreas:</label><input type="number" id="cesareas"></div>
+        <div class="field"><label>Abortos:</label><input type="number" id="abortos"></div>
+    </div>
+    <div class="field full-width"><label>Antecedentes Natales/Postnatales (Narrativo):</label><textarea id="narrPerinato" rows="3"></textarea></div>
 
-    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:20px;">
+    <h2>3. Examen Físico y Escalas de Ingreso</h2>
+    
+    <div class="grid">
+        <div class="field"><label>FC:</label><input type="number" id="fc"></div>
+        <div class="field"><label>FR:</label><input type="number" id="fr"></div>
+        <div class="field"><label>T° Axilar:</label><input type="number" id="temp" step="0.1"></div>
+        <div class="field"><label>Sat O2:</label><input type="number" id="sat"></div>
+        <div class="field">
+            <label>TA (S/D) y TAM:</label>
+            <div style="display:flex; gap:2px">
+                <input type="text" id="ta" placeholder="60/40" style="width:50%">
+                <input type="text" id="tam" placeholder="TAM" style="width:40%">
+            </div>
+            <a href="https://zscore.research.chop.edu/bp_neonatal.php" target="_blank" class="tool-link">Percentiles TA/TAM ↗</a>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="field"><label>Peso (g):</label><input type="number" id="peso"></div>
+        <div class="field"><label>Talla (cm):</label><input type="number" id="talla"></div>
+        <div class="field"><label>P. Cefálico:</label><input type="number" id="pCef"></div>
+        <div class="field"><label>P. Torácico:</label><input type="number" id="pTor"></div>
+        <div class="field"><label>P. Braquial:</label><input type="number" id="pBra"></div>
+    </div>
+
+    <div class="calc-card">
+        <div class="ef-row"><div class="ef-label">Aspecto General:</div><textarea class="ef-input" id="ef_1">Activo, reactivo, buen tono, llanto vigoroso.</textarea></div>
+        <div class="ef-row"><div class="ef-label">Cabeza/Fontanelas:</div><textarea class="ef-input" id="ef_2">Normocéfalo, fontanelas normotensas.</textarea></div>
+        <div class="ef-row"><div class="ef-label">Tórax/Cuerpo:</div><textarea class="ef-input" id="ef_3">Simétrico, ruidos cardíacos rítmicos, murmullo vesicular conservado.</textarea></div>
+        <div class="ef-row"><div class="ef-label">Abdomen:</div><textarea class="ef-input" id="ef_4">Blando, depresible, cordón umbilical normal.</textarea></div>
+    </div>
+
+    <h3>Escalas de Valoración</h3>
+    <div class="grid">
+        <div class="apgar-col">
+            <b>APGAR (1' - 5' - 10')</b>
+            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <select class="ap1" onchange="calcApgar()"><option value="0">1': 0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9" selected>9</option><option value="10">10</option></select>
+                <select class="ap5" onchange="calcApgar()"><option value="0">5': 0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9" selected>9</option><option value="10">10</option></select>
+                <select class="ap10" onchange="calcApgar()"><option value="0">10': 0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9" selected>9</option><option value="10">10</option></select>
+            </div>
+            <div id="resApgar" class="highlight-box">APGAR: 9/9/9</div>
+        </div>
+
+        <div class="apgar-col">
+            <b>Puntaje de DOWNES (Resp.)</b>
+            <select class="dw" onchange="calcDownes()"><option value="0">Cianosis: Ninguna (0)</option><option value="1">Con FiO2 <40% (1)</option><option value="2">Con FiO2 >40% (2)</option></select>
+            <select class="dw" onchange="calcDownes()"><option value="0">Tiraje: Ninguno (0)</option><option value="1">Leve (1)</option><option value="2">Intenso (2)</option></select>
+            <select class="dw" onchange="calcDownes()"><option value="0">Quejido: Ninguno (0)</option><option value="1">Audible con fonendo (1)</option><option value="2">Audible a distancia (2)</option></select>
+            <select class="dw" onchange="calcDownes()"><option value="0">FR: <60 (0)</option><option value="1">60-80 (1)</option><option value="2">>80 o apnea (2)</option></select>
+            <select class="dw" onchange="calcDownes()"><option value="0">Entrada aire: Buena (0)</option><option value="1">Disminuida (1)</option><option value="2">Apenas audible (2)</option></select>
+            <div id="resDownes" class="highlight-box">DOWNES: 0 (Normal)</div>
+        </div>
+
+        <div class="apgar-col">
+            <b>CAPURRO (EG)</b>
+            <input type="number" id="pCap" placeholder="Suma de puntos" oninput="calcCap()">
+            <div id="resCap" class="highlight-box">EG: -- semanas</div>
+        </div>
+    </div>
+
+    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA HSVP</button>
+
+    <div id="export-section" class="hidden" style="margin-top:20px; border:3px double #000; padding:20px;">
         <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace;"></div>
     </div>
-
 </div>
 
 <script>
-    // LÓGICA FILIACIÓN BLINDADA
+    // FILIACIÓN & EG
     function calcEdadAlIngreso() {
         const naci = document.getElementById('fNac').value;
         const ingr = document.getElementById('fIngreso').value;
         if(naci && ingr) {
-            const d1 = new Date(naci + 'T00:00:00');
-            const d2 = new Date(ingr + 'T23:59:59');
-            const hrs = Math.floor((d2 - d1) / 3600000);
+            const hrs = Math.floor((new Date(ingr+'T23:59') - new Date(naci+'T'+(document.getElementById('hNac').value||'00:00'))) / 3600000);
             document.getElementById('edadReal').value = hrs < 48 ? hrs + " HORAS" : Math.floor(hrs/24) + " DÍAS";
         }
     }
 
-    // LÓGICA EXAMEN FÍSICO
-    function calcCap() {
-        let p = parseInt(document.getElementById('pCap').value) || 0;
-        document.getElementById('resCap').value = ((p + 204)/7).toFixed(1) + " SEMANAS";
+    function calcEG_FUM() {
+        const f = document.getElementById('fum').value;
+        if(f) {
+            const sem = (new Date() - new Date(f)) / (1000*60*60*24*7);
+            document.getElementById('egFum').value = Math.floor(sem) + "." + Math.floor((sem%1)*7) + " SEMANAS";
+        }
     }
 
-    function actualizarCalc() { 
-        // Lógica de VIG y Líquidos se mantiene latente para cuando entremos a esa fase
+    // ESCALAS
+    function calcApgar() {
+        const a1 = document.querySelector('.ap1').value;
+        const a5 = document.querySelector('.ap5').value;
+        const a10 = document.querySelector('.ap10').value;
+        document.getElementById('resApgar').innerText = `APGAR: ${a1}/${a5}/${a10}`;
+    }
+
+    function calcDownes() {
+        const total = Array.from(document.querySelectorAll('.dw')).reduce((s, el) => s + parseInt(el.value), 0);
+        let crit = total === 0 ? "Normal" : total < 4 ? "Dificultad Leve" : total < 6 ? "Dificultad Moderada" : "Dificultad Grave";
+        document.getElementById('resDownes').innerText = `DOWNES: ${total} (${crit})`;
+    }
+
+    function calcCap() {
+        let p = parseInt(document.getElementById('pCap').value) || 0;
+        if(p > 0) document.getElementById('resCap').innerText = `EG: ${((p + 204)/7).toFixed(1)} semanas`;
     }
 
     function generarTodo() {
         document.getElementById('export-section').classList.remove('hidden');
-        let txt = "=== EXAMEN FÍSICO NEONATAL ===\n";
-        txt += `SV: FC:${document.getElementById('fc').value} FR:${document.getElementById('fr').value} T:${document.getElementById('temp').value} Sat:${document.getElementById('sato2').value}\n`;
-        txt += `Antropometría: Peso:${document.getElementById('peso').value}g Talla:${document.getElementById('talla').value}cm PC:${document.getElementById('pCef').value} PT:${document.getElementById('pTor').value} PB:${document.getElementById('pBra').value}\n\n`;
-        txt += "DETALLE:\n";
-        txt += "- General: " + document.getElementById('ef_gen').value + "\n";
-        txt += "- Piel: " + document.getElementById('ef_piel').value + "\n";
-        txt += "- Cabeza: " + document.getElementById('ef_cab').value + "\n";
-        txt += "- Tórax: " + document.getElementById('ef_tor').value + "\n";
-        txt += "- Abdomen: " + document.getElementById('ef_abd').value + "\n";
-        txt += "- Neuro: " + document.getElementById('ef_neuro').value + "\n";
-        document.getElementById('finalOutput').innerText = txt;
+        let out = "=== HOSPITAL SAN VICENTE DE PAÚL - NEONATOLOGÍA ===\n";
+        out += `PACIENTE: ${document.getElementById('apeN').value} ${document.getElementById('nomN').value}\n`;
+        out += `EDAD: ${document.getElementById('edadReal').value} | HCU: ${document.getElementById('hcu').value}\n\n`;
+        out += `EXAMEN FÍSICO:\n${document.getElementById('ef_1').value}\n${document.getElementById('ef_3').value}\n\n`;
+        out += `VALORACIÓN:\n- ${document.getElementById('resApgar').innerText}\n- ${document.getElementById('resDownes').innerText}\n- ${document.getElementById('resCap').innerText}`;
+        document.getElementById('finalOutput').innerText = out;
         window.scrollTo(0, document.body.scrollHeight);
     }
 </script>

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v18.0 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v18.5 - HSVP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; --danger: #e74c3c; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
@@ -19,7 +19,7 @@
         .inmu-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #eee; }
         .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; text-align: center; }
         .score-box { background: #fff; padding: 8px; border: 1px dotted #999; border-radius: 4px; margin-bottom: 5px; }
-        .ef-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: center; background: #fff; padding: 6px; border-bottom: 1px solid #eee; }
+        .ef-row { display: grid; grid-template-columns: 200px 1fr; gap: 10px; align-items: center; background: #fff; padding: 6px; border-bottom: 1px solid #eee; }
         
         /* Estilos Sección Diagnósticos */
         .dx-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
@@ -127,10 +127,10 @@
         <div class="field"><label>Maduración Pulmonar:</label><select id="madPul"><option>NO</option><option>COMPLETA</option><option>INCOMPLETA</option></select></div>
     </div>
 
-    <h3>Antecedentes Narrativos</h3>
-    <div class="field full-width"><label><b>ANTECEDENTES PRENATALES:</b></label><textarea id="narrPre" rows="3"></textarea></div>
-    <div class="field full-width"><label><b>ANTECEDENTES NATALES:</b></label><textarea id="narrNat" rows="3"></textarea></div>
-    <div class="field full-width"><label><b>ANTECEDENTES POSTNATALES:</b></label><textarea id="narrPost" rows="3"></textarea></div>
+    <h3>Narrativos</h3>
+    <div class="field full-width"><label><b>ANTECEDENTES PRENATALES:</b></label><textarea id="narrPre" rows="2"></textarea></div>
+    <div class="field full-width"><label><b>ANTECEDENTES NATALES:</b></label><textarea id="narrNat" rows="2"></textarea></div>
+    <div class="field full-width"><label><b>ANTECEDENTES POSTNATALES:</b></label><textarea id="narrPost" rows="2"></textarea></div>
 
     <h2>3. Examen Físico y Escalas de Valoración</h2>
     <div class="grid">
@@ -169,13 +169,19 @@
     </div>
 
     <div class="calc-card" style="margin-top:15px">
-        <h3>Examen Físico Regional</h3>
-        <div class="ef-row"><b>Estado General:</b><textarea id="ef_gen" rows="1">Activo, reactivo, afebril.</textarea></div>
-        <div class="ef-row"><b>Piel / Faneras:</b><textarea id="ef_piel" rows="1">Rosada, elástica.</textarea></div>
-        <div class="ef-row"><b>Cabeza / Cuello:</b><textarea id="ef_cab" rows="1">Normocéfalo, fontanelas normotensas.</textarea></div>
-        <div class="ef-row"><b>Tórax / CP:</b><textarea id="ef_tor" rows="1">Simétrico, rítmico, murmullo conservado.</textarea></div>
-        <div class="ef-row"><b>Abdomen:</b><textarea id="ef_abd" rows="1">Suave, ruidos hidroaéreos presentes.</textarea></div>
-        <div class="ef-row"><b>Neurológico:</b><textarea id="ef_neuro" rows="1">Reflejos primarios presentes.</textarea></div>
+        <h3>Examen Físico Regional Detallado</h3>
+        <div class="ef-row"><b>Estado General:</b><textarea id="ef_gen" rows="1">Activo, reactivo, afebril, llenado capilar <2 seg.</textarea></div>
+        <div class="ef-row"><b>Piel y Faneras:</b><textarea id="ef_piel" rows="1">Rosada, elástica, sin lesiones ni cianosis. Vermix caseoso presente.</textarea></div>
+        <div class="ef-row"><b>Cabeza:</b><textarea id="ef_cab" rows="1">Normocéfalo, fontanela anterior normotensa (2x2cm), posterior puntiforme. Suturas cabalgadas (-) .</textarea></div>
+        <div class="ef-row"><b>Ojos, Oídos, Nariz, Boca:</b><textarea id="ef_ojos" rows="1">Pupilas isocóricas fotorreactivas. Pabellones auriculares implantación normal. Narinas permeables. Paladar íntegro.</textarea></div>
+        <div class="ef-row"><b>Cuello:</b><textarea id="ef_cuello" rows="1">Simétrico, móvil, no se palpan masas ni adenopatías.</textarea></div>
+        <div class="ef-row"><b>Tórax:</b><textarea id="ef_torax" rows="1">Simétrico, expansibilidad conservada. Glándulas mamarias normales.</textarea></div>
+        <div class="ef-row"><b>Pulmones:</b><textarea id="ef_pulm" rows="1">Murmullo vesicular conservado, no ruidos patológicos.</textarea></div>
+        <div class="ef-row"><b>Corazón:</b><textarea id="ef_cor" rows="1">Rítmico, ruidos cardíacos normofonéticos, no soplos.</textarea></div>
+        <div class="ef-row"><b>Abdomen:</b><textarea id="ef_abd" rows="1">Suave, depresible, no visceromegalias. Cordón umbilical: 2 arterias y 1 vena, sin signos de infección.</textarea></div>
+        <div class="ef-row"><b>Genitales y Ano:</b><textarea id="ef_genit" rows="1">Genitales externos normales acorde a sexo. Ano permeable.</textarea></div>
+        <div class="ef-row"><b>Extremidades:</b><textarea id="ef_ext" rows="1">Simétricas, móviles, pulsos distales presentes. Maniobras de Ortolani y Barlow negativas.</textarea></div>
+        <div class="ef-row"><b>Neurológico:</b><textarea id="ef_neuro" rows="1">Tono y fuerza normal. Reflejos de Moro, succión y búsqueda presentes.</textarea></div>
     </div>
 
     <h2>4. Diagnósticos y Codificación CIE-10</h2>
@@ -303,11 +309,15 @@
 
     function generarTodo() {
         document.getElementById('export-section').classList.remove('hidden');
-        let out = "=== HISTORIA CLÍNICA HSVP ===\n\n";
+        let out = "=== HISTORIA CLÍNICA HSVP - REPORTE COMPLETO ===\n\n";
         out += `PACIENTE: ${document.getElementById('ape1N').value} ${document.getElementById('nomN').value} | HCU: ${document.getElementById('hcu').value}\n`;
         out += `EDAD AL INGRESO: ${document.getElementById('edadReal').value}\n`;
         out += `EG FUM: ${document.getElementById('egFum').value}\n`;
         out += `APGAR: ${document.getElementById('resApgar1').value} | DOWNES: ${document.getElementById('resDownes').value}\n\n`;
+        out += "EXAMEN FÍSICO REGIONAL:\n";
+        out += `- Cabeza: ${document.getElementById('ef_cab').value}\n`;
+        out += `- Tórax: ${document.getElementById('ef_torax').value}\n`;
+        out += `- Abdomen: ${document.getElementById('ef_abd').value}\n\n`;
         out += "DIAGNÓSTICOS:\n";
         dxSeleccionados.forEach(i => out += `- [${i.code}] ${i.desc} ${i.principal ? '(PRINCIPAL)' : ''}\n`);
         document.getElementById('finalOutput').innerText = out;

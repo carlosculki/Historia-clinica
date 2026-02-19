@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v17.3 - HSVP</title>
+    <title>SISTEMA NEONATAL INTEGRAL v17.6 - HSVP</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --accent: #27ae60; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; font-size: 11px; color: #333; }
@@ -13,13 +13,19 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .field { display: flex; flex-direction: column; }
         .full-width { grid-column: 1 / -1; }
-        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; background: #fff; }
-        .calc-card { background: #eef2f7; border: 2px solid #d1d8e0; padding: 20px; border-radius: 10px; }
-        .hijo-row { background: #fff; border: 1px solid #ddd; padding: 10px; margin-top: 5px; border-radius: 5px; display: grid; grid-template-columns: 0.5fr 1fr 1fr 1fr 2fr; gap: 10px; }
-        .inmu-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #eee; }
-        .btn-main { background: var(--accent); color: white; padding: 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 30px; }
+        input, select, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; background: #fff; }
+        .calc-card { background: #eef2f7; border: 2px solid #d1d8e0; padding: 15px; border-radius: 10px; }
+        .ef-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: center; background: #fff; padding: 5px; border-bottom: 1px solid #eee; }
+        .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; text-align: center; padding: 5px; border-radius: 4px; }
+        
+        /* Estilos específicos para APGAR Detallado */
+        .apgar-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .apgar-box { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+        .apgar-box b { display: block; text-align: center; margin-bottom: 8px; color: var(--primary); border-bottom: 1px solid #eee; }
+        .apgar-select { width: 100%; margin-bottom: 4px; font-size: 9px !important; }
+        
+        .btn-main { background: var(--accent); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
         .hidden { display: none; }
-        .highlight-box { border: 2px solid var(--secondary) !important; background: #f0f7ff !important; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -27,180 +33,133 @@
 <div class="container">
     <h1>SISTEMA NEONATAL INTEGRAL - HSVP</h1>
 
-    <h2>1. Datos de Filiación y Admisión</h2>
-    <div class="calc-card" style="margin-bottom: 20px; border: 2px solid var(--secondary);">
-        <div class="grid">
-            <div class="field"><label><b>FECHA DE INGRESO:</b></label><input type="date" id="fIngreso" onchange="calcEdadAlIngreso()"></div>
-            <div class="field"><label><b>FECHA DE NACIMIENTO:</b></label><input type="date" id="fNac" onchange="calcEdadAlIngreso()"></div>
-            <div class="field"><label>Hora Nacimiento:</label><input type="time" id="hNac" onchange="calcEdadAlIngreso()"></div>
-            <div class="field"><label><b>EDAD AL INGRESO:</b></label><input type="text" id="edadReal" readonly class="highlight-box"></div>
+    <div id="filiacion-blindada">
+        <h2>1. Datos de Filiación y Admisión</h2>
+        <div class="calc-card" style="border: 2px solid var(--secondary);">
+            <div class="grid">
+                <div class="field"><label>F. Ingreso:</label><input type="date" id="fIngreso" onchange="calcEdadAlIngreso()"></div>
+                <div class="field"><label>F. Nacimiento:</label><input type="date" id="fNac" onchange="calcEdadAlIngreso()"></div>
+                <div class="field"><label>Hora:</label><input type="time" id="hNac" onchange="calcEdadAlIngreso()"></div>
+                <div class="field"><label>EDAD INGRESO:</label><input type="text" id="edadReal" readonly class="highlight-box"></div>
+            </div>
         </div>
     </div>
 
-    <div class="grid">
-        <div class="field"><label>Primer Apellido:</label><input type="text" id="ape1N"></div>
-        <div class="field"><label>Segundo Apellido:</label><input type="text" id="ape2N"></div>
-        <div class="field"><label>Nombres:</label><input type="text" id="nomN"></div>
-        <div class="field"><label>HCU:</label><input type="text" id="hcu"></div>
-        <div class="field"><label>Sexo:</label><select id="sexoN"><option>MASCULINO</option><option>FEMENINO</option><option>INDETERMINADO</option></select></div>
-    </div>
-
-    <h3>Datos de la Madre</h3>
-    <div class="grid">
-        <div class="field"><label>Nombre:</label><input type="text" id="nomM"></div>
-        <div class="field"><label>Cédula:</label><input type="text" id="cedM"></div>
-        <div class="field"><label>Edad:</label><input type="number" id="edadM"></div>
-        <div class="field"><label>Instrucción:</label><input type="text" id="insM"></div>
-        <div class="field"><label>Ocupación/Profesión:</label><input type="text" id="ocuM"></div>
-    </div>
-    <div class="grid">
-        <div class="field"><label>Raza:</label><input type="text" id="razaM" value="Mestiza"></div>
-        <div class="field"><label>Religión:</label>
-            <select id="relM" onchange="toggleOtroReligion(this)"><option value="CATOLICA">CATÓLICA</option><option value="CRISTIANA">CRISTIANA</option><option value="EVANGELICA">EVANGÉLICA</option><option value="TESTIGO DE JEHOVA">TESTIGO DE JEHOVÁ</option><option value="OTRO">OTRO</option></select>
-            <input type="text" id="relM_otro" class="hidden" placeholder="¿Cuál?" style="margin-top:5px">
-        </div>
-        <div class="field"><label>Tipo de Sangre:</label><select id="gsM"><option value="ORH+">ORH+</option><option value="ORH-">ORH-</option><option value="ARH+">ARH+</option><option value="ARH-">ARH-</option><option value="BRH+">BRH+</option><option value="BRH-">BRH-</option><option value="ABRH+">ABRH+</option><option value="ABRH-">ABRH-</option></select></div>
-        <div class="field"><label>Lugar de Nacimiento:</label><input type="text" id="lugNacM"></div>
-    </div>
-    <div class="grid">
-        <div class="field"><label>Dirección:</label><input type="text" id="dirM"></div>
-        <div class="field"><label>Teléfono:</label><input type="text" id="telM"></div>
-        <div class="field"><label>Cobertura:</label><select id="cobM"><option>IESS</option><option>MSP</option><option>ISSFA</option><option>ISSPOL</option><option>PRIVADO</option></select></div>
-        <div class="field"><label>Avisar a (Emergencia):</label><textarea id="emergenciaCont" rows="1"></textarea></div>
-    </div>
-
-    <h2>2. Antecedentes Clínicos</h2>
+    <h2>3. Examen Físico y Escalas</h2>
     
-    <h3>Patológicos y Familiares</h3>
     <div class="grid">
-        <div class="field full-width"><label>Antecedentes Patológicos Maternos:</label><textarea id="antPatM" rows="2"></textarea></div>
-        <div class="field full-width"><label>Antecedentes Quirúrgicos Maternos:</label><textarea id="antQuiM" rows="2"></textarea></div>
-        <div class="field full-width"><label>Antecedentes Familiares Maternos:</label><textarea id="antFamM" rows="2"></textarea></div>
+        <div class="field"><label>FC:</label><input type="number" id="fc"></div>
+        <div class="field"><label>FR:</label><input type="number" id="fr"></div>
+        <div class="field"><label>T°:</label><input type="number" id="temp" step="0.1"></div>
+        <div class="field"><label>SatO2:</label><input type="number" id="sat"></div>
+        <div class="field"><label>TA/TAM:</label>
+            <div style="display:flex; gap:2px"><input type="text" id="ta" placeholder="60/40" style="width:60%"><input type="text" id="tam" placeholder="TAM" style="width:40%"></div>
+            <a href="https://zscore.research.chop.edu/bp_neonatal.php" target="_blank" style="font-size:8px; color:blue;">Ver Percentiles ↗</a>
+        </div>
     </div>
 
-    <h3>Gineco-Obstétricos y Perinatales</h3>
     <div class="grid">
-        <div class="field"><label>Menarquia:</label><input type="number" id="menarquia"></div>
-        <div class="field"><label>IVSA:</label><input type="number" id="ivsa"></div>
-        <div class="field"><label>ETS:</label><input type="text" id="ets"></div>
-        <div class="field"><label>Paptest:</label><input type="text" id="paptest"></div>
-        <div class="field"><label>Parejas:</label><input type="number" id="parejas"></div>
+        <div class="field"><label>Peso(g):</label><input type="number" id="peso"></div>
+        <div class="field"><label>Talla(cm):</label><input type="number" id="talla"></div>
+        <div class="field"><label>PC:</label><input type="number" id="pCef"></div>
     </div>
 
     <div class="calc-card">
-        <div class="grid">
-            <div class="field"><label><b>FUM:</b></label><input type="date" id="fum" onchange="calcEG_FUM()"></div>
-            <div class="field"><label><b>EG por FUM:</b></label><input type="text" id="egFum" readonly class="highlight-box"></div>
-            <div class="field full-width"><label>EG por Eco / Estimada:</label><input type="text" id="egEco"></div>
-        </div>
-        <div class="grid" style="margin-top:10px">
-            <div class="field"><label>Gestas:</label><input type="number" id="gestas"></div>
-            <div class="field"><label>Partos:</label><input type="number" id="partos"></div>
-            <div class="field"><label>Cesáreas:</label><input type="number" id="cesareas"></div>
-            <div class="field"><label>Abortos:</label><input type="number" id="abortos"></div>
-            <div class="field"><label>Hijos Vivos:</label><input type="number" id="hVivos" oninput="generarHijos()"></div>
-            <div class="field"><label>Hijos Muertos:</label><input type="number" id="hMuertos" oninput="toggleHMuertos()"></div>
-        </div>
+        <div class="ef-row"><div class="ef-label">General:</div><textarea class="ef-input" id="ef_1">Activo, reactivo, buen tono, llanto vigoroso.</textarea></div>
+        <div class="ef-row"><div class="ef-label">Tórax:</div><textarea class="ef-input" id="ef_2">Simétrico, ruidos cardíacos rítmicos, murmullo vesicular conservado.</textarea></div>
     </div>
 
-    <div id="contenedorHijos"></div>
-    <div id="detallesMuertos" class="hidden"><label>Descripción Hijos Muertos:</label><textarea id="antHMuertos" class="full-width" rows="2"></textarea></div>
-
-    <h3>Control Prenatal e Inmunizaciones</h3>
-    <div class="grid">
-        <div class="field"><label>N° Controles:</label><input type="number" id="numCont" oninput="toggleLugarControl()"></div>
-        <div id="divLugarCont" class="field hidden"><label>Lugar:</label><input type="text" id="lugCont"></div>
-        <div class="field"><label>N° Ecos:</label><input type="number" id="numEco" oninput="toggleEcoNov()"></div>
-        <div id="divEcoNov" class="field hidden"><label>Novedades Ecos:</label><input type="text" id="ecoNov"></div>
-    </div>
-
-    <div class="field full-width"><label>Complementos Nutricionales:</label><input type="text" id="nutri" placeholder="Ácido fólico, Hierro, etc."></div>
-
-    <div class="calc-card" style="margin-top:10px">
-        <label><b>Inmunizaciones (Marque todas las recibidas):</b></label>
-        <div class="grid" style="margin-top:10px">
-            <div class="inmu-item"><input type="checkbox" id="v_dt"> <label>DT</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
-            <div class="inmu-item"><input type="checkbox" id="v_covid"> <label>COVID</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
-            <div class="inmu-item"><input type="checkbox" id="v_inf"> <label>INFLUENZA</label> <input type="number" placeholder="Dosis" style="width:40px"></div>
-            <div class="inmu-item"><input type="checkbox" id="v_otra" onchange="document.getElementById('v_otra_txt').classList.toggle('hidden', !this.checked)"> <label>OTRA</label> <input type="text" id="v_otra_txt" class="hidden" placeholder="¿Cuál?" style="width:80px"></div>
+    <h3>Valoración APGAR Detallada</h3>
+    <div class="apgar-container">
+        <div class="apgar-box">
+            <b>1 MINUTO</b>
+            <select class="ap1 apgar-select" onchange="calcApgarTotal()"><option value="0">Color: Cianosis/Palidez (0)</option><option value="1">Cuerpo rosado/Acrocianosis (1)</option><option value="2" selected>Rosado completo (2)</option></select>
+            <select class="ap1 apgar-select" onchange="calcApgarTotal()"><option value="0">Pulso: Ausente (0)</option><option value="1">< 100 lpm (1)</option><option value="2" selected>> 100 lpm (2)</option></select>
+            <select class="ap1 apgar-select" onchange="calcApgarTotal()"><option value="0">Gesto: Sin respuesta (0)</option><option value="1">Mueca/Llanto débil (1)</option><option value="2" selected>Estornudo/Tos/Llanto (2)</option></select>
+            <select class="ap1 apgar-select" onchange="calcApgarTotal()"><option value="0">Tono: Flácido (0)</option><option value="1">Alguna flexión (1)</option><option value="2" selected>Movimiento activo (2)</option></select>
+            <select class="ap1 apgar-select" onchange="calcApgarTotal()"><option value="0">Resp: Ausente (0)</option><option value="1">Lenta/Irregular (1)</option><option value="2" selected>Llanto fuerte (2)</option></select>
+            <div id="resAp1" class="highlight-box" style="margin-top:5px">Puntaje 1': 10</div>
+        </div>
+        <div class="apgar-box">
+            <b>5 MINUTOS</b>
+            <select class="ap5 apgar-select" onchange="calcApgarTotal()"><option value="0">Color: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap5 apgar-select" onchange="calcApgarTotal()"><option value="0">Pulso: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap5 apgar-select" onchange="calcApgarTotal()"><option value="0">Gesto: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap5 apgar-select" onchange="calcApgarTotal()"><option value="0">Tono: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap5 apgar-select" onchange="calcApgarTotal()"><option value="0">Resp: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <div id="resAp5" class="highlight-box" style="margin-top:5px">Puntaje 5': 10</div>
+        </div>
+        <div class="apgar-box">
+            <b>10 MINUTOS</b>
+            <select class="ap10 apgar-select" onchange="calcApgarTotal()"><option value="0">Color: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap10 apgar-select" onchange="calcApgarTotal()"><option value="0">Pulso: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap10 apgar-select" onchange="calcApgarTotal()"><option value="0">Gesto: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap10 apgar-select" onchange="calcApgarTotal()"><option value="0">Tono: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <select class="ap10 apgar-select" onchange="calcApgarTotal()"><option value="0">Resp: 0</option><option value="1">1</option><option value="2" selected>2</option></select>
+            <div id="resAp10" class="highlight-box" style="margin-top:5px">Puntaje 10': 10</div>
         </div>
     </div>
 
-    <div class="grid" style="margin-top:10px">
-        <div class="field"><label>Maduración Pulmonar:</label><select id="madPul"><option>COMPLETA</option><option>INCOMPLETA</option><option>NO REALIZADA</option></select></div>
-        <div class="field full-width"><label>Especificar (Fármaco/Dosis):</label><input type="text" id="madDetalle"></div>
-    </div>
-
-    <h3>Redacción de Antecedentes Narrativos</h3>
-    <div class="field full-width"><label><b>ANTECEDENTES PRENATALES (Narrativo):</b></label><textarea id="narrPre" rows="4" placeholder="Redacte hallazgos en controles, infecciones en el embarazo, hospitalizaciones..."></textarea></div>
-    <div class="field full-width"><label><b>ANTECEDENTES NATALES (Narrativo):</b></label><textarea id="narrNat" rows="4" placeholder="Redacte tipo de parto, características del líquido, RPM, trabajo de parto..."></textarea></div>
-    <div class="field full-width"><label><b>ANTECEDENTES POSTNATALES (Narrativo):</b></label><textarea id="narrPost" rows="4" placeholder="Redacte adaptación neonatal, reanimación, APGAR, Silverman, paso a alojamiento..."></textarea></div>
-    
+    <h3>Valoración Respiratoria (DOWNES) y EG</h3>
     <div class="grid">
-        <div class="field"><label>Ruptura Membranas (Hrs/Días):</label><input type="text" id="rpm"></div>
-        <div class="field full-width"><label><b>Fuente de Información:</b></label><input type="text" id="fuenteInf" value="Madre / Carné Perinatal"></div>
+        <div class="apgar-box">
+            <b>SCORE DE DOWNES</b>
+            <select class="dw apgar-select" onchange="calcDownes()"><option value="0">Cianosis: No (0)</option><option value="1">Con FiO2<40% (1)</option><option value="2">Con FiO2>40% (2)</option></select>
+            <select class="dw apgar-select" onchange="calcDownes()"><option value="0">Tiraje: No (0)</option><option value="1">Leve (1)</option><option value="2">Intenso (2)</option></select>
+            <select class="dw apgar-select" onchange="calcDownes()"><option value="0">Quejido: No (0)</option><option value="1">Fendoscopio (1)</option><option value="2">Distancia (2)</option></select>
+            <select class="dw apgar-select" onchange="calcDownes()"><option value="0">FR: <60 (0)</option><option value="1">60-80 (1)</option><option value="2">>80 (2)</option></select>
+            <select class="dw apgar-select" onchange="calcDownes()"><option value="0">Aire: Bueno (0)</option><option value="1">Disminuido (1)</option><option value="2">Apenas (2)</option></select>
+            <div id="resDownes" class="highlight-box" style="margin-top:5px">Downes: 0 (Normal)</div>
+        </div>
+        <div class="apgar-box">
+            <b>CAPURRO</b>
+            <input type="number" id="pCap" placeholder="Suma Puntos" oninput="calcCap()" style="width:90%">
+            <div id="resCap" class="highlight-box" style="margin-top:10px">EG: -- semanas</div>
+        </div>
     </div>
 
-    <h2>3. Evaluación y Planes</h2>
-    <div class="grid">
-        <div class="field"><label>Peso (g):</label><input type="number" id="peso" oninput="actualizarCalc()"></div>
-        <div class="field"><label>Talla (cm):</label><input type="number" id="talla"></div>
-    </div>
-    
-    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA COMPLETA</button>
+    <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA INTEGRAL</button>
 
-    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:20px; background: #fff;">
-        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace; font-size: 12px;"></div>
+    <div id="export-section" class="hidden" style="margin-top:20px; border:2px solid #000; padding:15px;">
+        <div id="finalOutput" style="white-space: pre-wrap; font-family: monospace;"></div>
     </div>
 </div>
 
 <script>
-    // LÓGICA FILIACIÓN
     function calcEdadAlIngreso() {
         const naci = document.getElementById('fNac').value;
         const ingr = document.getElementById('fIngreso').value;
         if(naci && ingr) {
-            const d1 = new Date(naci + 'T' + (document.getElementById('hNac').value || "00:00"));
-            const d2 = new Date(ingr + 'T23:59:59');
-            const hrs = Math.floor((d2 - d1) / 3600000);
+            const hrs = Math.floor((new Date(ingr+'T23:59') - new Date(naci+'T'+(document.getElementById('hNac').value||'00:00'))) / 3600000);
             document.getElementById('edadReal').value = hrs < 48 ? hrs + " HORAS" : Math.floor(hrs/24) + " DÍAS";
         }
     }
 
-    function toggleOtroReligion(sel) { document.getElementById('relM_otro').classList.toggle('hidden', sel.value !== 'OTRO'); }
-
-    // LÓGICA ANTECEDENTES
-    function calcEG_FUM() {
-        const f = document.getElementById('fum').value;
-        if(f) {
-            const sem = (new Date() - new Date(f)) / (1000 * 60 * 60 * 24 * 7);
-            document.getElementById('egFum').value = Math.floor(sem) + "." + Math.floor((sem % 1) * 7) + " SEMANAS";
-        }
+    function calcApgarTotal() {
+        const sumar = (clase) => Array.from(document.querySelectorAll(clase)).reduce((a, b) => a + parseInt(b.value), 0);
+        document.getElementById('resAp1').innerText = "Puntaje 1': " + sumar('.ap1');
+        document.getElementById('resAp5').innerText = "Puntaje 5': " + sumar('.ap5');
+        document.getElementById('resAp10').innerText = "Puntaje 10': " + sumar('.ap10');
     }
 
-    function generarHijos() {
-        const n = parseInt(document.getElementById('hVivos').value) || 0;
-        const c = document.getElementById('contenedorHijos');
-        c.innerHTML = n > 0 ? "<h4>Detalle de Hijos Vivos:</h4>" : "";
-        for(let i=1; i<=n; i++) {
-            c.innerHTML += `<div class="hijo-row"><span>Hijo ${i}:</span><select><option>PARTO</option><option>CESÁREA</option></select><select><option>MASC</option><option>FEM</option></select><input type="number" placeholder="Edad"><input type="text" placeholder="Complicaciones"></div>`;
-        }
+    function calcDownes() {
+        const total = Array.from(document.querySelectorAll('.dw')).reduce((a, b) => a + parseInt(b.value), 0);
+        let msg = total === 0 ? "Normal" : total < 4 ? "Leve" : "Severo";
+        document.getElementById('resDownes').innerText = `Downes: ${total} (${msg})`;
     }
 
-    function toggleHMuertos() { document.getElementById('detallesMuertos').classList.toggle('hidden', parseInt(document.getElementById('hMuertos').value) === 0); }
-    function toggleLugarControl() { document.getElementById('divLugarCont').classList.toggle('hidden', !document.getElementById('numCont').value); }
-    function toggleEcoNov() { document.getElementById('divEcoNov').classList.toggle('hidden', !document.getElementById('numEco').value); }
-
-    function actualizarCalc() { /* Lógica de líquidos heredada de v17.1 */ }
+    function calcCap() {
+        let p = parseInt(document.getElementById('pCap').value) || 0;
+        if(p > 0) document.getElementById('resCap').innerText = `EG: ${((p + 204)/7).toFixed(1)} sem`;
+    }
 
     function generarTodo() {
         document.getElementById('export-section').classList.remove('hidden');
-        let txt = "=== HISTORIA CLÍNICA NEONATAL ===\n\n";
-        txt += "ANTECEDENTES NARRATIVOS:\n";
-        txt += "PRENATALES: " + document.getElementById('narrPre').value + "\n";
-        txt += "NATALES: " + document.getElementById('narrNat').value + "\n";
-        txt += "POSTNATALES: " + document.getElementById('narrPost').value + "\n";
-        document.getElementById('finalOutput').innerText = txt;
+        let out = "=== HOSPITAL SAN VICENTE DE PAÚL ===\n";
+        out += `HCU: ${document.getElementById('hcu').value}\n`;
+        out += `APGAR: ${document.getElementById('resAp1').innerText} / ${document.getElementById('resAp5').innerText}\n`;
+        out += `DOWNES: ${document.getElementById('resDownes').innerText}\n`;
+        document.getElementById('finalOutput').innerText = out;
         window.scrollTo(0, document.body.scrollHeight);
     }
 </script>

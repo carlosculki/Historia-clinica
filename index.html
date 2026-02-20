@@ -1050,66 +1050,74 @@
             function generarTodo() {
                 document.getElementById('export-section').classList.remove('hidden');
 
+                const val = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+                const chk = (id) => { const el = document.getElementById(id); return el ? el.checked : false; };
+                const txt = (id) => { const el = document.getElementById(id); return el ? el.innerText || el.innerHTML : ''; };
+
                 // Historia Clinica Column (Left)
                 let hc = "==== HISTORIA CLÍNICA HSVP ====\n\n";
                 // REDACCIÓN NARRATIVA
 
                 // Bloque 1
-                const fIngreso = document.getElementById('fIngreso').value;
-                const nomM = document.getElementById('nomM').value;
-                const edadM = document.getElementById('edadM').value;
-                const cedM = document.getElementById('cedM').value;
-                const insM = document.getElementById('insM').value;
-                const raza = document.getElementById('razaM') ? document.getElementById('razaM').value : "";
-                const etnia = document.getElementById('etniaM') ? document.getElementById('etniaM').value : "";
-                const ocuM = document.getElementById('ocuM') ? document.getElementById('ocuM').value : "";
-                const gsM = document.getElementById('gsM').value;
-                const cobM = document.getElementById('cobM').value === 'PRIVADO' ? document.getElementById('cobM_priv').value : document.getElementById('cobM').value;
-                const telM = document.getElementById('telM').value;
-                const rel_madre = document.getElementById('relM').value === 'OTRO' ? document.getElementById('relM_otro').value : document.getElementById('relM').value;
-                const dirM = document.getElementById('dirM').value;
+                const fIngreso = val('fIngreso');
+                const nomM = val('nomM');
+                const edadM = val('edadM');
+                const cedM = val('cedM');
+                const insM = val('insM');
+                const raza = val('razaM');
+                const etnia = val('etniaM');
+                const ocuM = val('ocuM');
+                const gsM = val('gsM');
+                const cobM = val('cobM') === 'PRIVADO' ? val('cobM_priv') : val('cobM');
+                const telM = val('telM');
+                const rel_madre = val('relM') === 'OTRO' ? val('relM_otro') : val('relM');
+                const dirM = val('dirM');
 
-                const nomP = document.getElementById('nomP').value;
-                const edadP = document.getElementById('edadP').value;
-                const cedP = document.getElementById('cedP').value;
-                const dirP = document.getElementById('dirP').value;
-                const ocuP = document.getElementById('ocuP').value;
-                const cobP = document.getElementById('cobP').value === 'PRIVADO' ? document.getElementById('cobP_priv').value : document.getElementById('cobP').value;
-                const telP = document.getElementById('telP').value;
+                const nomP = val('nomP');
+                const edadP = val('edadP');
+                const cedP = val('cedP');
+                const dirP = val('dirP');
+                const ocuP = val('ocuP');
+                const cobP = val('cobP') === 'PRIVADO' ? val('cobP_priv') : val('cobP');
+                const telP = val('telP');
 
-                const paciN = `${document.getElementById('ape1N').value} ${document.getElementById('ape2N').value} ${document.getElementById('nomN').value}`;
-                const hcu = document.getElementById('hcu').value;
-                const sexoN = document.getElementById('sexoN').value.toUpperCase();
-                const fNac = document.getElementById('fNac').value;
-                const hNac = document.getElementById('hNac').value;
-                const edadReal = document.getElementById('edadReal').value;
+                const paciN = `${val('ape1N')} ${val('ape2N')} ${val('nomN')}`;
+                const hcu = val('hcu');
+                const sexoN = val('sexoN').toUpperCase();
+                const fNac = val('fNac');
+                const hNac = val('hNac');
+                const edadReal = val('edadReal');
 
                 hc += `El día ${fIngreso}, se admite paciente recién nacido de sexo ${sexoN} (${paciN}), con historia clínica ${hcu}, nacido el ${fNac} a las ${hNac}, con una edad real al ingreso de ${edadReal}. `;
                 hc += `La madre, ${nomM}, de ${edadM} años de edad, portadora de cédula ${cedM}, con instrucción ${insM}, ocupación ${ocuM}, de autoidentificación étnica ${raza} ${etnia}, `;
                 hc += `grupo sanguíneo ${gsM}, religión ${rel_madre}, cobertura ${cobM}, reside en ${dirM} y su contacto es ${telM}. `;
-                hc += `El padre, ${nomP}, de ${edadP} años de edad, portador de cédula ${cedP}, ocupación ${ocuP}, reside en ${dirP}, cobertura ${cobP} y su contacto es ${telP}.\n\n`;
+                if (nomP || cedP) {
+                    hc += `El padre, ${nomP}, de ${edadP} años de edad, portador de cédula ${cedP}, ocupación ${ocuP}, reside en ${dirP}, cobertura ${cobP} y su contacto es ${telP}.\n\n`;
+                } else {
+                    hc += `\n\n`;
+                }
 
                 // Bloque 2
-                const antPatM = document.getElementById('antPatM').value;
-                const antQuiM = document.getElementById('antQuiM').value;
-                const antFamM = document.getElementById('antFamM').value;
+                const antPatM = val('antPatM');
+                const antQuiM = val('antQuiM');
+                const antFamM = val('antFamM');
                 hc += `En cuanto a los antecedentes maternos, de relevancia clínica presenta: ${antPatM ? `Patológicos: ${antPatM}. ` : "Sin patológicos reportados. "}`;
                 hc += `${antQuiM ? `Quirúrgicos: ${antQuiM}. ` : "Sin quirúrgicos reportados. "}`;
                 hc += `${antFamM ? `Familiares: ${antFamM}. ` : "Sin familiares reportados. "}\n\n`;
 
-                const menarquia = document.getElementById('menarquia').value;
-                const ciclos = document.getElementById('ciclos').value;
-                const ivsa = document.getElementById('ivsa').value;
-                const parejas = document.getElementById('parejas').value;
-                const ets = document.getElementById('ets').value;
-                const paptest = document.getElementById('paptest').value;
-                const aco = document.getElementById('aco').value;
-                const numGestas = parseInt(document.getElementById('gestas').value) || 0;
-                const partos = document.getElementById('partos').value;
-                const cesareas = document.getElementById('cesareas').value;
-                const abortos = document.getElementById('abortos').value;
-                const hVivos = document.getElementById('hVivos').value;
-                const hMuertos = document.getElementById('hMuertos').value;
+                const menarquia = val('menarquia');
+                const ciclos = val('ciclos');
+                const ivsa = val('ivsa');
+                const parejas = val('parejas');
+                const ets = val('ets');
+                const paptest = val('paptest');
+                const aco = val('aco');
+                const numGestas = parseInt(val('gestas')) || 0;
+                const partos = val('partos');
+                const cesareas = val('cesareas');
+                const abortos = val('abortos');
+                const hVivos = val('hVivos');
+                const hMuertos = val('hMuertos');
 
                 hc += `Historia Gineco-Obstétrica: Menarquia a los ${menarquia} años, ciclos de ${ciclos}, IVSA a los ${ivsa} años, ${parejas} parejas sexuales. `;
                 hc += `ETS: ${ets}, último Paptest: ${paptest}, uso de anticonceptivos: ${aco}. `;
@@ -1117,64 +1125,70 @@
 
                 let detalleGestas = [];
                 for (let i = 1; i <= numGestas; i++) {
-                    const eg = document.getElementById(`gesta_${i}_edad`) ? document.getElementById(`gesta_${i}_edad`).value : '';
-                    const tp = document.getElementById(`gesta_${i}_tipo`) ? document.getElementById(`gesta_${i}_tipo`).value : '';
-                    const cp = document.getElementById(`gesta_${i}_comp`) ? document.getElementById(`gesta_${i}_comp`).value : '';
+                    const eg = val(`gesta_${i}_edad`);
+                    const tp = val(`gesta_${i}_tipo`);
+                    const cp = val(`gesta_${i}_comp`);
                     if (eg || tp || cp) detalleGestas.push(`Gesta ${i} cursó como parto tipo ${tp} a las ${eg} ${cp ? 'complicándose con ' + cp : 'sin complicaciones'}`);
                 }
                 if (detalleGestas.length > 0) {
                     hc += `El historial de las gestaciones se detalla de la siguiente manera: ${detalleGestas.join('; ')}. `;
                 }
-                if (document.getElementById('antHMuertos').value && !document.getElementById('detallesMuertos').classList.contains('hidden')) {
-                    hc += `Causa de muerte de hijos anteriores referida: ${document.getElementById('antHMuertos').value}. `;
+                const antHMuertosStr = val('antHMuertos');
+                if (antHMuertosStr) {
+                    hc += `Causa de muerte de hijos anteriores referida: ${antHMuertosStr}. `;
                 }
 
                 let vacunas = [];
-                if (document.getElementById('v_dt').checked) vacunas.push(`DT con ${document.getElementById('dt_dosis').value} dosis`);
-                if (document.getElementById('v_hepb').checked) vacunas.push(`HepB con ${document.getElementById('hepb_dosis').value} dosis`);
-                if (document.getElementById('v_inf').checked) vacunas.push(`Influenza con ${document.getElementById('inf_dosis').value} dosis`);
-                if (document.getElementById('v_covid').checked) vacunas.push(`COVID-19 con ${document.getElementById('covid_dosis').value} dosis`);
+                if (chk('v_dt')) vacunas.push(`DT con ${val('dt_dosis')} dosis`);
+                if (chk('v_hepb')) vacunas.push(`HepB con ${val('hepb_dosis')} dosis`);
+                if (chk('v_inf')) vacunas.push(`Influenza con ${val('inf_dosis')} dosis`);
+                if (chk('v_covid')) vacunas.push(`COVID-19 con ${val('covid_dosis')} dosis`);
                 hc += `\n\nEl esquema de vacunación reportado incluye: ${vacunas.length > 0 ? vacunas.join(", ") : "ninguna vacuna registrada"}. `;
 
-                const mad = document.getElementById('madPul').value;
-                hc += `Maduración pulmonar fetal: ${mad} ${['COMPLETA', 'INCOMPLETA'].includes(mad) ? "(" + document.getElementById('madPul_tipo').value + ")" : ""}. `;
+                const mad = val('madPul');
+                hc += `Maduración pulmonar fetal: ${mad} ${['COMPLETA', 'INCOMPLETA'].includes(mad) ? "(" + val('madPul_tipo') + ")" : ""}. `;
 
-                if (document.getElementById('narrPre').value || document.getElementById('narrNat').value || document.getElementById('narrPost').value) {
+                const narrPre = val('narrPre');
+                const narrNat = val('narrNat');
+                const narrPost = val('narrPost');
+                if (narrPre || narrNat || narrPost) {
                     hc += `\n\nSe destacan los siguientes antecedentes en la narrativa clínica: `;
-                    if (document.getElementById('narrPre').value) hc += `Antecedentes Prenatales: ${document.getElementById('narrPre').value}. `;
-                    if (document.getElementById('narrNat').value) hc += `Antecedentes Natales: ${document.getElementById('narrNat').value}. `;
-                    if (document.getElementById('narrPost').value) hc += `Antecedentes Postnatales: ${document.getElementById('narrPost').value}.`;
+                    if (narrPre) hc += `Antecedentes Prenatales: ${narrPre}. `;
+                    if (narrNat) hc += `Antecedentes Natales: ${narrNat}. `;
+                    if (narrPost) hc += `Antecedentes Postnatales: ${narrPost}.`;
                 }
 
                 // Bloque 3
                 hc += `\n\nAl examen físico se obtienen las siguientes medidas antropométricas y signos vitales: `;
-                hc += `Peso de ${document.getElementById('peso_ex').value}g, Talla de ${document.getElementById('talla').value}cm, Perímetro Cefálico de ${document.getElementById('pc').value}cm y Perímetro Braquial de ${document.getElementById('pb').value}cm. `;
-                hc += `Frecuencia Cardíaca de ${document.getElementById('fc').value} lpm, Frecuencia Respiratoria de ${document.getElementById('fr').value} rpm, Temperatura de ${document.getElementById('temp').value}°C, Saturación de O2 al ${document.getElementById('sat').value}% `;
-                hc += `y Presión Arterial reportada en ${document.getElementById('pa_val').value}. `;
+                hc += `Peso de ${val('peso_ex')}g, Talla de ${val('talla')}cm, Perímetro Cefálico de ${val('pc')}cm y Perímetro Braquial de ${val('pb')}cm. `;
+                hc += `Frecuencia Cardíaca de ${val('fc')} lpm, Frecuencia Respiratoria de ${val('fr')} rpm, Temperatura de ${val('temp')}°C, Saturación de O2 al ${val('sat')}% `;
+                hc += `y Presión Arterial reportada en ${val('pa_val')}. `;
 
-                hc += `\n\nEn cuanto a las escalas de valoración neonatal, se asignó un puntaje Apgar de: ${document.getElementById('resApgar1').value} al min, ${document.getElementById('resApgar5').value} a los 5 min y ${document.getElementById('resApgar10').value} a los 10 min. `;
-                const downes = document.getElementById('resDownes') ? document.getElementById('resDownes').value : '';
+                hc += `\n\nEn cuanto a las escalas de valoración neonatal, se asignó un puntaje Apgar de: ${val('resApgar1')} al min, ${val('resApgar5')} a los 5 min y ${val('resApgar10')} a los 10 min. `;
+                const downes = val('resDownes');
                 if (downes) {
                     hc += `El Score de dificultad respiratoria de Downes muestra un puntaje total de: ${downes}.\n\n`;
                 } else {
                     hc += `\n\n`;
                 }
 
-                if (document.getElementById('ef_piel').value) {
+                const efPiel = val('ef_piel');
+                if (efPiel) {
                     hc += `Al examen físico regional detallado se describe: `;
-                    hc += `Piel/Faneras: ${document.getElementById('ef_piel').value}. `;
-                    hc += `Cabeza: ${document.getElementById('ef_cab').value}. `;
-                    hc += `Cuello: ${document.getElementById('ef_cuello').value}. `;
-                    hc += `Tórax: ${document.getElementById('ef_torax').value}. `;
-                    hc += `Pulmones: ${document.getElementById('ef_pulm').value}. `;
-                    hc += `Corazón: ${document.getElementById('ef_cor').value}. `;
-                    hc += `Abdomen: ${document.getElementById('ef_abd').value}. `;
-                    hc += `Genitales: ${document.getElementById('ef_genit').value}.\n\n`;
+                    hc += `Piel/Faneras: ${efPiel}. `;
+                    hc += `Cabeza: ${val('ef_cab')}. `;
+                    hc += `Cuello: ${val('ef_cuello')}. `;
+                    hc += `Tórax: ${val('ef_torax')}. `;
+                    hc += `Pulmones: ${val('ef_pulm')}. `;
+                    hc += `Corazón: ${val('ef_cor')}. `;
+                    hc += `Abdomen: ${val('ef_abd')}. `;
+                    hc += `Genitales: ${val('ef_genit')}.\n\n`;
                 }
 
                 // Bloque 4
-                if (document.getElementById('diag').value) {
-                    hc += `De acuerdo a lo recabado, el o los diagnósticos planteados son:\n${document.getElementById('diag').value.split(';').map(d => d.trim()).filter(d => d).map(d => " - " + d).join('\n')}\n`;
+                const diagVal = val('diag');
+                if (diagVal) {
+                    hc += `De acuerdo a lo recabado, el o los diagnósticos planteados son:\n${diagVal.split(';').map(d => d.trim()).filter(d => d).map(d => " - " + d).join('\n')}\n`;
                 }
 
                 document.getElementById('finalOutput-hc').innerText = hc;
@@ -1182,23 +1196,23 @@
                 // ADCAVANDIMELCO Column (Right)
                 let adca = "==== PLAN DE MANEJO HSVP ====\n\n";
                 adca += "INDICACIONES (ADCAVANDIMELCO):\n";
-                adca += "A: " + document.getElementById('adm').value + "\n";
-                adca += "D: " + document.getElementById('diag').value + "\n";
-                adca += "C: " + document.getElementById('cond').value + "\n";
-                adca += "A: ALERGIAS " + document.getElementById('aler').value + "\n";
-                adca += "V: " + document.getElementById('vit_txt').value + "\n";
-                adca += "A: POSICIÓN " + document.getElementById('act').value + "\n";
-                adca += "D: DIETA " + document.getElementById('tipoDieta').value + "\n";
-                adca += "I: " + document.getElementById('resFinalIV').innerText + "\n";
+                adca += "A: " + val('adm') + "\n";
+                adca += "D: " + val('diag') + "\n";
+                adca += "C: " + val('cond') + "\n";
+                adca += "A: ALERGIAS " + val('aler') + "\n";
+                adca += "V: " + val('vit_txt') + "\n";
+                adca += "A: POSICIÓN " + val('act') + "\n";
+                adca += "D: DIETA " + val('tipoDieta') + "\n";
+                adca += "I: " + txt('resFinalIV') + "\n";
                 adca += "M: MEDICAMENTOS\n";
                 listaMedicamentos.forEach(m => {
                     const nombreMedicamento = m.n === 'OTRO' && m.otroNombre ? m.otroNombre : m.n;
                     adca += "   - " + nombreMedicamento + ": " + m.d + " mg/kg c/" + m.f + "h\n";
                 });
-                adca += "E: " + document.getElementById('exa').value + "\n";
-                adca += "L: " + document.getElementById('lab').value + "\n";
-                adca += "C: " + document.getElementById('int').value + "\n";
-                adca += "O: " + document.getElementById('otr').value + "\n";
+                adca += "E: " + val('exa') + "\n";
+                adca += "L: " + val('lab') + "\n";
+                adca += "C: " + val('int') + "\n";
+                adca += "O: " + val('otr') + "\n";
 
                 document.getElementById('finalOutput-adca').innerText = adca;
 

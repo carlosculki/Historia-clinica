@@ -1056,139 +1056,137 @@
 
                 // Historia Clinica Column (Left)
                 let hc = "==== HISTORIA CLÍNICA HSVP ====\n\n";
-                // REDACCIÓN NARRATIVA
+                // FORMATO ESTRUCTURADO HOSPITALARIO
 
                 // Bloque 1
-                const fIngreso = val('fIngreso');
-                const nomM = val('nomM');
-                const edadM = val('edadM');
-                const cedM = val('cedM');
-                const insM = val('insM');
-                const raza = val('razaM');
-                const etnia = val('etniaM');
-                const ocuM = val('ocuM');
-                const gsM = val('gsM');
+                hc += "1. DATOS DE FILIACIÓN Y ADMISIÓN\n";
+                hc += "------------------------------------------------\n";
+                hc += "FECHA INGRESO: " + val('fIngreso') + "\n";
+
+                hc += "\n[ DE LA MADRE ]\n";
+                hc += "- Nombre: " + val('nomM') + "\n";
+                hc += "- Edad: " + val('edadM') + " años\n";
+                hc += "- Cédula: " + val('cedM') + "\n";
+                hc += "- Instrucción: " + val('insM') + " | Ocupación: " + val('ocuM') + "\n";
+                hc += "- Raza/Etnia: " + val('razaM') + " " + val('etniaM') + "\n";
+                hc += "- Grupo Sanguíneo: " + val('gsM') + "\n";
+                const relM = val('relM') === 'OTRO' ? val('relM_otro') : val('relM');
+                hc += "- Religión: " + relM + "\n";
                 const cobM = val('cobM') === 'PRIVADO' ? val('cobM_priv') : val('cobM');
-                const telM = val('telM');
-                const rel_madre = val('relM') === 'OTRO' ? val('relM_otro') : val('relM');
-                const dirM = val('dirM');
+                hc += "- Cobertura: " + cobM + "\n";
+                hc += "- Dirección: " + val('dirM') + "\n";
+                hc += "- Teléfono: " + val('telM') + "\n";
 
                 const nomP = val('nomP');
-                const edadP = val('edadP');
                 const cedP = val('cedP');
-                const dirP = val('dirP');
-                const ocuP = val('ocuP');
-                const cobP = val('cobP') === 'PRIVADO' ? val('cobP_priv') : val('cobP');
-                const telP = val('telP');
-
-                const paciN = `${val('ape1N')} ${val('ape2N')} ${val('nomN')}`;
-                const hcu = val('hcu');
-                const sexoN = val('sexoN').toUpperCase();
-                const fNac = val('fNac');
-                const hNac = val('hNac');
-                const edadReal = val('edadReal');
-
-                hc += `El día ${fIngreso}, se admite paciente recién nacido de sexo ${sexoN} (${paciN}), con historia clínica ${hcu}, nacido el ${fNac} a las ${hNac}, con una edad real al ingreso de ${edadReal}. `;
-                hc += `La madre, ${nomM}, de ${edadM} años de edad, portadora de cédula ${cedM}, con instrucción ${insM}, ocupación ${ocuM}, de autoidentificación étnica ${raza} ${etnia}, `;
-                hc += `grupo sanguíneo ${gsM}, religión ${rel_madre}, cobertura ${cobM}, reside en ${dirM} y su contacto es ${telM}. `;
                 if (nomP || cedP) {
-                    hc += `El padre, ${nomP}, de ${edadP} años de edad, portador de cédula ${cedP}, ocupación ${ocuP}, reside en ${dirP}, cobertura ${cobP} y su contacto es ${telP}.\n\n`;
-                } else {
-                    hc += `\n\n`;
+                    hc += "\n[ DEL PADRE ]\n";
+                    hc += "- Nombre: " + nomP + "\n";
+                    hc += "- Edad: " + val('edadP') + " años\n";
+                    hc += "- Cédula: " + cedP + "\n";
+                    hc += "- Ocupación: " + val('ocuP') + "\n";
+                    const cobP = val('cobP') === 'PRIVADO' ? val('cobP_priv') : val('cobP');
+                    hc += "- Cobertura: " + cobP + "\n";
+                    hc += "- Dirección: " + val('dirP') + "\n";
+                    hc += "- Teléfono: " + val('telP') + "\n";
                 }
 
+                hc += "\n[ DEL PACIENTE RECIÉN NACIDO ]\n";
+                hc += "- Nombres: " + val('ape1N') + " " + val('ape2N') + " " + val('nomN') + "\n";
+                hc += "- HCU: " + val('hcu') + "\n";
+                hc += "- Sexo: " + val('sexoN').toUpperCase() + "\n";
+                hc += "- Fecha Nacimiento: " + val('fNac') + " | Hora: " + val('hNac') + "\n";
+                hc += "- Edad al Ingreso: " + val('edadReal') + "\n\n";
+
                 // Bloque 2
-                const antPatM = val('antPatM');
-                const antQuiM = val('antQuiM');
-                const antFamM = val('antFamM');
-                hc += `En cuanto a los antecedentes maternos, de relevancia clínica presenta: ${antPatM ? `Patológicos: ${antPatM}. ` : "Sin patológicos reportados. "}`;
-                hc += `${antQuiM ? `Quirúrgicos: ${antQuiM}. ` : "Sin quirúrgicos reportados. "}`;
-                hc += `${antFamM ? `Familiares: ${antFamM}. ` : "Sin familiares reportados. "}\n\n`;
+                hc += "2. ANTECEDENTES CLÍNICOS\n";
+                hc += "------------------------------------------------\n";
+                hc += "[ ANTECEDENTES MATERNOS ]\n";
+                hc += "- Patológicos: " + (val('antPatM') || 'No refiere') + "\n";
+                hc += "- Quirúrgicos: " + (val('antQuiM') || 'No refiere') + "\n";
+                hc += "- Familiares: " + (val('antFamM') || 'No refiere') + "\n";
 
-                const menarquia = val('menarquia');
-                const ciclos = val('ciclos');
-                const ivsa = val('ivsa');
-                const parejas = val('parejas');
-                const ets = val('ets');
-                const paptest = val('paptest');
-                const aco = val('aco');
+                hc += "\n[ GINECO-OBSTÉTICOS ]\n";
+                hc += "- Menarquia: " + val('menarquia') + " | Ciclos: " + val('ciclos') + " | IVSA: " + val('ivsa') + "\n";
+                hc += "- Parejas: " + val('parejas') + " | ETS: " + val('ets') + " | Último Paptest: " + val('paptest') + " | Método ACO: " + val('aco') + "\n";
+
                 const numGestas = parseInt(val('gestas')) || 0;
-                const partos = val('partos');
-                const cesareas = val('cesareas');
-                const abortos = val('abortos');
-                const hVivos = val('hVivos');
-                const hMuertos = val('hMuertos');
+                hc += "- Fórmula Obstétrica: Gestas " + numGestas + ", Partos " + val('partos') + ", Cesáreas " + val('cesareas') + ", Abortos " + val('abortos') + "\n";
+                hc += "- Hijos vivos: " + val('hVivos') + " | Hijos muertos: " + val('hMuertos') + "\n";
 
-                hc += `Historia Gineco-Obstétrica: Menarquia a los ${menarquia} años, ciclos de ${ciclos}, IVSA a los ${ivsa} años, ${parejas} parejas sexuales. `;
-                hc += `ETS: ${ets}, último Paptest: ${paptest}, uso de anticonceptivos: ${aco}. `;
-                hc += `Fórmula obstétrica: Gestas ${numGestas}, Partos ${partos}, Cesáreas ${cesareas}, Abortos ${abortos}, Hijos vivos ${hVivos}, Hijos muertos ${hMuertos}. `;
-
-                let detalleGestas = [];
                 for (let i = 1; i <= numGestas; i++) {
                     const eg = val(`gesta_${i}_edad`);
                     const tp = val(`gesta_${i}_tipo`);
                     const cp = val(`gesta_${i}_comp`);
-                    if (eg || tp || cp) detalleGestas.push(`Gesta ${i} cursó como parto tipo ${tp} a las ${eg} ${cp ? 'complicándose con ' + cp : 'sin complicaciones'}`);
-                }
-                if (detalleGestas.length > 0) {
-                    hc += `El historial de las gestaciones se detalla de la siguiente manera: ${detalleGestas.join('; ')}. `;
+                    if (eg || tp || cp) {
+                        hc += `  * Gesta ${i}: a término de ${eg}, parto tipo ${tp}${cp ? ', complicación: ' + cp : ''}\n`;
+                    }
                 }
                 const antHMuertosStr = val('antHMuertos');
                 if (antHMuertosStr) {
-                    hc += `Causa de muerte de hijos anteriores referida: ${antHMuertosStr}. `;
+                    hc += "- Causa Hijos Muertos: " + antHMuertosStr + "\n";
                 }
 
+                hc += "\n[ INMUNIZACIONES Y MADURACIÓN ]\n";
                 let vacunas = [];
-                if (chk('v_dt')) vacunas.push(`DT con ${val('dt_dosis')} dosis`);
-                if (chk('v_hepb')) vacunas.push(`HepB con ${val('hepb_dosis')} dosis`);
-                if (chk('v_inf')) vacunas.push(`Influenza con ${val('inf_dosis')} dosis`);
-                if (chk('v_covid')) vacunas.push(`COVID-19 con ${val('covid_dosis')} dosis`);
-                hc += `\n\nEl esquema de vacunación reportado incluye: ${vacunas.length > 0 ? vacunas.join(", ") : "ninguna vacuna registrada"}. `;
-
+                if (chk('v_dt')) vacunas.push(`DT (${val('dt_dosis')} dosis)`);
+                if (chk('v_hepb')) vacunas.push(`HepB (${val('hepb_dosis')} dosis)`);
+                if (chk('v_inf')) vacunas.push(`Influenza (${val('inf_dosis')} dosis)`);
+                if (chk('v_covid')) vacunas.push(`COVID-19 (${val('covid_dosis')} dosis)`);
+                hc += "- Vacunas Maternas: " + (vacunas.length > 0 ? vacunas.join(", ") : "Ninguna reportada") + "\n";
                 const mad = val('madPul');
-                hc += `Maduración pulmonar fetal: ${mad} ${['COMPLETA', 'INCOMPLETA'].includes(mad) ? "(" + val('madPul_tipo') + ")" : ""}. `;
+                hc += "- Maduración Pulmonar: " + mad + (['COMPLETA', 'INCOMPLETA'].includes(mad) ? " (" + val('madPul_tipo') + ")" : "") + "\n";
 
                 const narrPre = val('narrPre');
                 const narrNat = val('narrNat');
                 const narrPost = val('narrPost');
                 if (narrPre || narrNat || narrPost) {
-                    hc += `\n\nSe destacan los siguientes antecedentes en la narrativa clínica: `;
-                    if (narrPre) hc += `Antecedentes Prenatales: ${narrPre}. `;
-                    if (narrNat) hc += `Antecedentes Natales: ${narrNat}. `;
-                    if (narrPost) hc += `Antecedentes Postnatales: ${narrPost}.`;
+                    hc += "\n[ NARRATIVA CLÍNICA ]\n";
+                    if (narrPre) hc += "- Prenatal: " + narrPre + "\n";
+                    if (narrNat) hc += "- Natal: " + narrNat + "\n";
+                    if (narrPost) hc += "- Postnatal: " + narrPost + "\n";
                 }
 
                 // Bloque 3
-                hc += `\n\nAl examen físico se obtienen las siguientes medidas antropométricas y signos vitales: `;
-                hc += `Peso de ${val('peso_ex')}g, Talla de ${val('talla')}cm, Perímetro Cefálico de ${val('pc')}cm y Perímetro Braquial de ${val('pb')}cm. `;
-                hc += `Frecuencia Cardíaca de ${val('fc')} lpm, Frecuencia Respiratoria de ${val('fr')} rpm, Temperatura de ${val('temp')}°C, Saturación de O2 al ${val('sat')}% `;
-                hc += `y Presión Arterial reportada en ${val('pa_val')}. `;
+                hc += "\n3. EXAMEN FÍSICO Y ESCALAS\n";
+                hc += "------------------------------------------------\n";
+                hc += "[ ANTROPOMETRÍA Y SIGNOS VITALES ]\n";
+                hc += "- Peso: " + val('peso_ex') + " g\n";
+                hc += "- Talla: " + val('talla') + " cm\n";
+                hc += "- Perímetro Cefálico: " + val('pc') + " cm\n";
+                hc += "- Perímetro Braquial: " + val('pb') + " cm\n";
+                hc += "- Frecuencia Cardíaca: " + val('fc') + " lpm\n";
+                hc += "- Frecuencia Respiratoria: " + val('fr') + " rpm\n";
+                hc += "- Temperatura: " + val('temp') + " °C\n";
+                hc += "- Saturación O2: " + val('sat') + " %\n";
+                hc += "- Presión Arterial: " + val('pa_val') + "\n";
 
-                hc += `\n\nEn cuanto a las escalas de valoración neonatal, se asignó un puntaje Apgar de: ${val('resApgar1')} al min, ${val('resApgar5')} a los 5 min y ${val('resApgar10')} a los 10 min. `;
+                hc += "\n[ ESCALAS DE VALORACIÓN NEONATAL ]\n";
+                hc += "- APGAR: 1 min (" + val('resApgar1') + ") | 5 min (" + val('resApgar5') + ") | 10 min (" + val('resApgar10') + ")\n";
                 const downes = val('resDownes');
-                if (downes) {
-                    hc += `El Score de dificultad respiratoria de Downes muestra un puntaje total de: ${downes}.\n\n`;
-                } else {
-                    hc += `\n\n`;
-                }
+                if (downes) hc += "- SCORE DOWNES: " + downes + " puntos\n";
 
                 const efPiel = val('ef_piel');
                 if (efPiel) {
-                    hc += `Al examen físico regional detallado se describe: `;
-                    hc += `Piel/Faneras: ${efPiel}. `;
-                    hc += `Cabeza: ${val('ef_cab')}. `;
-                    hc += `Cuello: ${val('ef_cuello')}. `;
-                    hc += `Tórax: ${val('ef_torax')}. `;
-                    hc += `Pulmones: ${val('ef_pulm')}. `;
-                    hc += `Corazón: ${val('ef_cor')}. `;
-                    hc += `Abdomen: ${val('ef_abd')}. `;
-                    hc += `Genitales: ${val('ef_genit')}.\n\n`;
+                    hc += "\n[ EXAMEN FÍSICO REGIONAL ]\n";
+                    hc += "- Piel/Faneras: " + efPiel + "\n";
+                    hc += "- Cabeza: " + val('ef_cab') + "\n";
+                    hc += "- Cuello: " + val('ef_cuello') + "\n";
+                    hc += "- Tórax: " + val('ef_torax') + "\n";
+                    hc += "- Pulmones: " + val('ef_pulm') + "\n";
+                    hc += "- Corazón: " + val('ef_cor') + "\n";
+                    hc += "- Abdomen: " + val('ef_abd') + "\n";
+                    hc += "- Genitales: " + val('ef_genit') + "\n\n";
+                } else {
+                    hc += "\n";
                 }
 
                 // Bloque 4
                 const diagVal = val('diag');
                 if (diagVal) {
-                    hc += `De acuerdo a lo recabado, el o los diagnósticos planteados son:\n${diagVal.split(';').map(d => d.trim()).filter(d => d).map(d => " - " + d).join('\n')}\n`;
+                    hc += "4. DIAGNÓSTICOS\n";
+                    hc += "------------------------------------------------\n";
+                    hc += diagVal.split(';').map(d => d.trim()).filter(d => d).map(d => " - " + d).join('\n') + "\n";
                 }
 
                 document.getElementById('finalOutput-hc').innerText = hc;

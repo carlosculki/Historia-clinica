@@ -303,14 +303,18 @@
         <div class="grid">
             <div class="field"><label>Dirección:</label><input type="text" id="dirM"></div>
             <div class="field"><label>Teléfono:</label><input type="text" id="telM"></div>
-            <div class="field"><label>Cobertura:</label><select id="cobM">
+            <div class="field">
+                <label>Cobertura:</label>
+                <select id="cobM" onchange="toggleCoberturaPrivada(this, 'cobM_priv')">
                     <option>NINGUNA</option>
                     <option>IESS</option>
                     <option>MSP</option>
                     <option>ISSFA</option>
                     <option>ISSPOL</option>
-                    <option>PRIVADO</option>
-                </select></div>
+                    <option value="PRIVADO">PRIVADO</option>
+                </select>
+                <input type="text" id="cobM_priv" class="hidden" placeholder="¿Cuál?" style="margin-top:5px">
+            </div>
             <div class="field"><label>Avisar a (Emergencia):</label><textarea id="emergenciaCont" rows="1"></textarea>
             </div>
         </div>
@@ -322,14 +326,18 @@
             <div class="field"><label>Edad:</label><input type="number" id="edadP"></div>
             <div class="field"><label>Dirección:</label><input type="text" id="dirP"></div>
             <div class="field"><label>Teléfono:</label><input type="text" id="telP"></div>
-            <div class="field"><label>Cobertura:</label><select id="cobP">
+            <div class="field">
+                <label>Cobertura:</label>
+                <select id="cobP" onchange="toggleCoberturaPrivada(this, 'cobP_priv')">
                     <option>NINGUNA</option>
                     <option>IESS</option>
                     <option>MSP</option>
                     <option>ISSFA</option>
                     <option>ISSPOL</option>
-                    <option>PRIVADO</option>
-                </select></div>
+                    <option value="PRIVADO">PRIVADO</option>
+                </select>
+                <input type="text" id="cobP_priv" class="hidden" placeholder="¿Cuál?" style="margin-top:5px">
+            </div>
         </div>
 
         <h2>2. Antecedentes Clínicos</h2>
@@ -451,11 +459,69 @@
                     <div class="field" style="margin-top:10px;">
                         <label>APGAR 1 min:</label><input type="text" id="resApgar1" readonly class="highlight-box">
                     </div>
-                    <div class="field" style="margin-top:5px;">
-                        <label>APGAR 5 min:</label><input type="text" id="resApgar5" class="highlight-box">
+                </div>
+
+                <div class="calc-card">
+                    <h3>Puntuación APGAR (5 min)</h3>
+                    <div class="score-box">FC: <select class="apgar-calc-5">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Esfuerzo: <select class="apgar-calc-5">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Tono: <select class="apgar-calc-5">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Reflejos: <select class="apgar-calc-5">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Color: <select class="apgar-calc-5">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="field" style="margin-top:10px;">
+                        <label>APGAR 5 min:</label><input type="text" id="resApgar5" readonly class="highlight-box">
                     </div>
-                    <div class="field" style="margin-top:5px;">
-                        <label>APGAR 10 min:</label><input type="text" id="resApgar10" class="highlight-box">
+                </div>
+
+                <div class="calc-card">
+                    <h3>Puntuación APGAR (10 min)</h3>
+                    <div class="score-box">FC: <select class="apgar-calc-10">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Esfuerzo: <select class="apgar-calc-10">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Tono: <select class="apgar-calc-10">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Reflejos: <select class="apgar-calc-10">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="score-box">Color: <select class="apgar-calc-10">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select></div>
+                    <div class="field" style="margin-top:10px;">
+                        <label>APGAR 10 min:</label><input type="text" id="resApgar10" readonly class="highlight-box">
                     </div>
                 </div>
 
@@ -675,8 +741,13 @@
 
             <div id="export-section" class="hidden"
                 style="margin-top:20px; border:3px solid #000; padding:25px; background: #fff; border-radius:10px;">
-                <div id="finalOutput"
-                    style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 12px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div id="finalOutput-hc"
+                        style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 12px; border-right: 1px solid #ccc; padding-right: 15px;">
+                    </div>
+                    <div id="finalOutput-adca"
+                        style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 12px;"></div>
+                </div>
             </div>
         </div>
 
@@ -725,7 +796,7 @@
                     <div class="calc-card" style="margin-top: 10px; border: 1px solid #ccc;">
                         <h4>Gestación ${i}</h4>
                         <div class="grid">
-                            <div class="field"><label>Edad Gestacional:</label><input type="text" id="gesta_${i}_edad"></div>
+                            <div class="field"><label>Edad:</label><input type="text" id="gesta_${i}_edad"></div>
                             <div class="field"><label>Tipo de Parto:</label><select id="gesta_${i}_tipo"><option>PARTO NORMAL</option><option>CESÁREA</option><option>ABORTO</option></select></div>
                             <div class="field full-width"><label>Complicaciones:</label><textarea id="gesta_${i}_comp" rows="1"></textarea></div>
                         </div>
@@ -744,12 +815,26 @@
 
             // --- LÓGICA ESCALAS ---
             function actualizarEscalas() {
-                let a = 0; document.querySelectorAll('.apgar-calc').forEach(s => a += parseInt(s.value));
-                document.getElementById('resApgar1').value = a + "/10";
+                let a1 = 0; document.querySelectorAll('.apgar-calc').forEach(s => a1 += parseInt(s.value));
+                document.getElementById('resApgar1').value = a1 + "/10";
+
+                let a5 = 0; document.querySelectorAll('.apgar-calc-5').forEach(s => a5 += parseInt(s.value));
+                document.getElementById('resApgar5').value = a5 + "/10";
+
+                let a10 = 0; document.querySelectorAll('.apgar-calc-10').forEach(s => a10 += parseInt(s.value));
+                document.getElementById('resApgar10').value = a10 + "/10";
+
                 let d = 0; document.querySelectorAll('.downes-calc').forEach(s => d += parseInt(s.value));
                 document.getElementById('resDownes').value = d + "/10";
             }
-            document.querySelectorAll('.apgar-calc, .downes-calc').forEach(s => s.onchange = actualizarEscalas);
+            document.querySelectorAll('.apgar-calc, .apgar-calc-5, .apgar-calc-10, .downes-calc').forEach(s => s.onchange = actualizarEscalas);
+
+            // --- LÓGICA COBERTURA PRIVADA ---
+            function toggleCoberturaPrivada(select, inputId) {
+                const el = document.getElementById(inputId);
+                if (select.value === 'PRIVADO') el.classList.remove('hidden');
+                else { el.classList.add('hidden'); el.value = ''; }
+            }
 
             // --- LÓGICA CIE-10 ---
             let dbCIE10 = [{ c: "Z38.0", d: "RN VIVO ÚNICO" }, { c: "P36.9", d: "SEPSIS NEONATAL" }, { c: "P22.0", d: "SDR NEONATAL" }, { c: "P59.9", d: "ICTERICIA NEONATAL" }];
@@ -764,10 +849,28 @@
                     const row = document.createElement('div');
                     row.className = 'suggestion-item';
                     row.innerHTML = `<b>${item.c}</b> - ${item.d}`;
-                    row.onclick = () => { dxSeleccionados.push({ id: Date.now(), ...item }); renderDx(); div.classList.add('hidden'); };
+                    row.onclick = () => {
+                        dxSeleccionados.push({ id: Date.now(), c: item.c, d: item.d, tipo: 'DEF', cond: 'ING', prin: false });
+                        renderDx();
+                        div.classList.add('hidden');
+                        document.getElementById('dx-search').value = '';
+                    };
                     div.appendChild(row);
                 });
                 div.classList.remove('hidden');
+            }
+
+            function updateDx(id, field, value) {
+                const dx = dxSeleccionados.find(x => x.id === id);
+                if (dx) {
+                    if (field === 'prin') {
+                        dxSeleccionados.forEach(x => x.prin = false);
+                        dx.prin = true;
+                    } else {
+                        dx[field] = value;
+                    }
+                    renderDx();
+                }
             }
 
             function renderDx() {
@@ -775,10 +878,33 @@
                 tbody.innerHTML = '';
                 let dxStr = "";
                 dxSeleccionados.forEach(item => {
-                    tbody.innerHTML += `<tr><td>${item.c}</td><td>${item.d}</td><td><select><option>DEF</option><option>PRE</option></select></td><td><select><option>ING</option></select></td><td><input type="radio" name="p"></td><td><button onclick="dxSeleccionados=dxSeleccionados.filter(x=>x.id!==${item.id});renderDx()">✖</button></td></tr>`;
-                    dxStr += item.d + "; ";
+                    tbody.innerHTML += `
+                    <tr>
+                        <td>${item.c}</td>
+                        <td>${item.d}</td>
+                        <td>
+                            <select onchange="updateDx(${item.id}, 'tipo', this.value)">
+                                <option ${item.tipo === 'DEF' ? 'selected' : ''}>DEF</option>
+                                <option ${item.tipo === 'PRE' ? 'selected' : ''}>PRE</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select onchange="updateDx(${item.id}, 'cond', this.value)">
+                                <option ${item.cond === 'ING' ? 'selected' : ''}>ING</option>
+                                <option ${item.cond === 'EGR' ? 'selected' : ''}>EGR</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="radio" name="dx_prin" ${item.prin ? 'checked' : ''} onchange="updateDx(${item.id}, 'prin', true)">
+                        </td>
+                        <td>
+                            <button onclick="dxSeleccionados=dxSeleccionados.filter(x=>x.id!==${item.id});renderDx()">✖</button>
+                        </td>
+                    </tr>`;
+                    dxStr += `${item.d} (${item.tipo}) - ${item.cond}${item.prin ? ' [PRINCIPAL]' : ''};\n`;
                 });
                 document.getElementById('diag').value = dxStr;
+                saveForm();
             }
 
             // --- LÓGICA ADCAVANDIMELCO ---
@@ -846,27 +972,47 @@
 
             function generarTodo() {
                 document.getElementById('export-section').classList.remove('hidden');
-                let out = "==== HISTORIA CLÍNICA Y PLAN DE MANEJO HSVP ====\n\n";
-                out += "PACIENTE: " + document.getElementById('ape1N').value + " " + document.getElementById('ape2N').value + " " + document.getElementById('nomN').value + "\n";
-                out += "HCU: " + document.getElementById('hcu').value + " | EDAD: " + document.getElementById('edadReal').value + "\n";
-                out += "------------------------------------------------\n";
-                out += "INDICACIONES (ADCAVANDIMELCO):\n";
-                out += "A: " + document.getElementById('adm').value + "\n";
-                out += "D: " + document.getElementById('diag').value + "\n";
-                out += "C: " + document.getElementById('cond').value + "\n";
-                out += "A: ALERGIAS " + document.getElementById('aler').value + "\n";
-                out += "V: " + document.getElementById('vit_txt').value + "\n";
-                out += "A: POSICIÓN " + document.getElementById('act').value + "\n";
-                out += "D: DIETA " + document.getElementById('tipoDieta').value + "\n";
-                out += "I: " + document.getElementById('resFinalIV').innerText + "\n";
-                out += "M: MEDICAMENTOS\n";
-                listaMedicamentos.forEach(m => out += "- " + m.n + ": " + m.d + " mg/kg c/" + m.f + "h\n");
-                out += "E: " + document.getElementById('exa').value + "\n";
-                out += "L: " + document.getElementById('lab').value + "\n";
-                out += "C: " + document.getElementById('int').value + "\n";
-                out += "O: " + document.getElementById('otr').value + "\n";
-                document.getElementById('finalOutput').innerText = out;
-                window.scrollTo(0, document.body.scrollHeight);
+
+                // Historia Clinica Column (Left)
+                let hc = "==== HISTORIA CLÍNICA HSVP ====\n\n";
+                hc += "PACIENTE: " + document.getElementById('ape1N').value + " " + document.getElementById('ape2N').value + " " + document.getElementById('nomN').value + "\n";
+                hc += "HCU: " + document.getElementById('hcu').value + " | EDAD: " + document.getElementById('edadReal').value + "\n";
+                hc += "FECHA INGRESO: " + document.getElementById('fIngreso').value + "\n";
+                hc += "------------------------------------------------\n";
+                hc += "MADRE: " + document.getElementById('nomM').value + " | " + document.getElementById('edadM').value + " años\n";
+                hc += "GS: " + document.getElementById('gsM').value + " | COBERTURA: " + (document.getElementById('cobM').value === 'PRIVADO' ? 'PRIVADO - ' + document.getElementById('cobM_priv').value : document.getElementById('cobM').value) + "\n";
+                hc += "PADRE: " + document.getElementById('nomP').value + " | " + document.getElementById('edadP').value + " años\n";
+                hc += "GS: " + document.getElementById('gsM').value + " | COBERTURA: " + (document.getElementById('cobP').value === 'PRIVADO' ? 'PRIVADO - ' + document.getElementById('cobP_priv').value : document.getElementById('cobP').value) + "\n";
+                hc += "------------------------------------------------\n";
+                hc += "APGAR: 1m=" + document.getElementById('resApgar1').value + " | 5m=" + document.getElementById('resApgar5').value + " | 10m=" + document.getElementById('resApgar10').value + "\n";
+                hc += "PESO: " + document.getElementById('peso_ex').value + "g | TALLA: " + document.getElementById('talla').value + "cm\n";
+                hc += "PC: " + document.getElementById('pc').value + "cm | PB: " + document.getElementById('pb').value + "cm\n";
+                hc += "PA: " + document.getElementById('pa_val').value + " | FC: " + document.getElementById('fc').value + " | SatO2: " + document.getElementById('sat').value + "%\n";
+                hc += "------------------------------------------------\n";
+
+                document.getElementById('finalOutput-hc').innerText = hc;
+
+                // ADCAVANDIMELCO Column (Right)
+                let adca = "==== PLAN DE MANEJO HSVP ====\n\n";
+                adca += "INDICACIONES (ADCAVANDIMELCO):\n";
+                adca += "A: " + document.getElementById('adm').value + "\n";
+                adca += "D: " + document.getElementById('diag').value + "\n";
+                adca += "C: " + document.getElementById('cond').value + "\n";
+                adca += "A: ALERGIAS " + document.getElementById('aler').value + "\n";
+                adca += "V: " + document.getElementById('vit_txt').value + "\n";
+                adca += "A: POSICIÓN " + document.getElementById('act').value + "\n";
+                adca += "D: DIETA " + document.getElementById('tipoDieta').value + "\n";
+                adca += "I: " + document.getElementById('resFinalIV').innerText + "\n";
+                adca += "M: MEDICAMENTOS\n";
+                listaMedicamentos.forEach(m => adca += "   - " + m.n + ": " + m.d + " mg/kg c/" + m.f + "h\n");
+                adca += "E: " + document.getElementById('exa').value + "\n";
+                adca += "L: " + document.getElementById('lab').value + "\n";
+                adca += "C: " + document.getElementById('int').value + "\n";
+                adca += "O: " + document.getElementById('otr').value + "\n";
+
+                document.getElementById('finalOutput-adca').innerText = adca;
+
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
 
             // --- LÓGICA AUTOGUARDADO ---
@@ -875,6 +1021,11 @@
                 document.querySelectorAll('input:not([type="radio"]), select, textarea').forEach(el => {
                     if (el.id) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
                 });
+
+                // Guardar estructuras dinamicas complejas
+                data['listaMedicamentos'] = listaMedicamentos;
+                data['dxSeleccionados'] = dxSeleccionados;
+
                 localStorage.setItem('hsvp_data', JSON.stringify(data));
             }
 
@@ -887,7 +1038,23 @@
                             else el.value = data[el.id];
                         }
                     });
+
+                    if (data['listaMedicamentos']) listaMedicamentos = data['listaMedicamentos'];
+                    if (data['dxSeleccionados']) dxSeleccionados = data['dxSeleccionados'];
+
                     generarGestaciones();
+
+                    // Restaurar datos dinámicos de Gestaciones si existen
+                    const num = parseInt(document.getElementById('gestas').value) || 0;
+                    for (let i = 1; i <= num; i++) {
+                        if (data[`gesta_${i}_edad`] !== undefined) document.getElementById(`gesta_${i}_edad`).value = data[`gesta_${i}_edad`];
+                        if (data[`gesta_${i}_tipo`] !== undefined) document.getElementById(`gesta_${i}_tipo`).value = data[`gesta_${i}_tipo`];
+                        if (data[`gesta_${i}_comp`] !== undefined) document.getElementById(`gesta_${i}_comp`).value = data[`gesta_${i}_comp`];
+                    }
+
+                    if (document.getElementById('cobM') && document.getElementById('cobM').value === 'PRIVADO') toggleCoberturaPrivada(document.getElementById('cobM'), 'cobM_priv');
+                    if (document.getElementById('cobP') && document.getElementById('cobP').value === 'PRIVADO') toggleCoberturaPrivada(document.getElementById('cobP'), 'cobP_priv');
+
                     toggleHMuertos();
                     ['v_dt', 'v_hepb', 'v_inf', 'v_covid'].forEach(id => {
                         const cb = document.getElementById(id);
@@ -896,6 +1063,8 @@
                         }
                     });
                     if (typeof toggleMaduracion === 'function') toggleMaduracion();
+
+                    renderDx();
                     recalcular();
                 }
             }

@@ -234,6 +234,12 @@
 
     <div class="container">
         <h1>SISTEMA NEONATAL INTEGRAL - HSVP</h1>
+        <div style="display: flex; gap: 10px; margin-bottom:20px;">
+            <button class="btn-main" onclick="limpiarFormulario()"
+                style="flex:1; background-color: #e74c3c; margin-top:0;">NUEVO PACIENTE (LIMPIAR)</button>
+            <button class="btn-main" onclick="loadForm(true)"
+                style="flex:1; background-color: #f39c12; margin-top:0;">RECUPERAR AUTO-GUARDADO</button>
+        </div>
 
         <h2>1. Datos de Filiación y Admisión</h2>
         <div class="calc-card" style="margin-bottom: 20px; border: 2px solid var(--secondary);">
@@ -576,12 +582,17 @@
                 </div>
             </div>
 
-            <h2>4. Diagnósticos CIE-10</h2>
-            <div class="calc-card">
-                <div class="search-container">
-                    <input type="text" id="dx-search" placeholder="Escriba para buscar diagnóstico..."
-                        oninput="showSuggestions(this.value)">
-                    <div id="dx-suggestions" class="suggestions hidden"></div>
+            <h3>Diagnósticos (CIE-10 / Libres)</h3>
+            <div class="grid">
+                <div class="field full-width" style="position:relative;">
+                    <label>Buscar / Ingresar Diagnóstico:</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="dx-search" oninput="showSuggestions(this.value)"
+                            placeholder="Escribe el código, descripción o un diagnóstico nuevo..." style="flex:1;">
+                        <button type="button" class="btn-main" style="width:auto; padding:0 15px;"
+                            onclick="agregarDxManual()">Agregar Manual / Aprender</button>
+                    </div>
+                    <div id="dx-suggestions" class="hidden"></div>
                 </div>
                 <table class="dx-table">
                     <thead>
@@ -737,7 +748,10 @@
                 </div>
             </div>
 
-            <button class="btn-main" onclick="generarTodo()">GENERAR HISTORIA CLÍNICA E INDICACIONES</button>
+            <div style="display: flex; gap: 10px; margin-top:20px;">
+                <button class="btn-main" onclick="generarTodo()" style="flex:2;">GENERAR HISTORIA CLÍNICA E
+                    INDICACIONES</button>
+            </div>
 
             <div id="export-section" class="hidden"
                 style="margin-top:20px; border:3px solid #000; padding:25px; background: #fff; border-radius:10px;">
@@ -836,8 +850,11 @@
                 else { el.classList.add('hidden'); el.value = ''; }
             }
 
-            // --- LÓGICA CIE-10 ---
+            // --- LÓGICA CIE-10 / DIAGNÓSTICOS LIBRES ---
             let dbCIE10 = [{ c: "Z38.0", d: "RN VIVO ÚNICO" }, { c: "P36.9", d: "SEPSIS NEONATAL" }, { c: "P22.0", d: "SDR NEONATAL" }, { c: "P59.9", d: "ICTERICIA NEONATAL" }];
+            const customCIE10 = JSON.parse(localStorage.getItem('custom_cie10') || '[]');
+            dbCIE10 = dbCIE10.concat(customCIE10);
+
             let dxSeleccionados = [];
 
             function showSuggestions(val) {
@@ -858,6 +875,25 @@
                     div.appendChild(row);
                 });
                 div.classList.remove('hidden');
+            }
+
+            function agregarDxManual() {
+                const val = document.getElementById('dx-search').value.trim().toUpperCase();
+                if (!val) return;
+                const nuevoDx = { c: "S/C", d: val };
+                dxSeleccionados.push({ id: Date.now(), c: nuevoDx.c, d: nuevoDx.d, tipo: 'DEF', cond: 'ING', prin: false });
+
+                // Aprender diagnóstico nuevo si no existe
+                if (!dbCIE10.find(item => item.d === val)) {
+                    dbCIE10.push(nuevoDx);
+                    const customList = JSON.parse(localStorage.getItem('custom_cie10') || '[]');
+                    customList.push(nuevoDx);
+                    localStorage.setItem('custom_cie10', JSON.stringify(customList));
+                }
+
+                renderDx();
+                document.getElementById('dx-suggestions').classList.add('hidden');
+                document.getElementById('dx-search').value = '';
             }
 
             function updateDx(id, field, value) {
@@ -948,7 +984,10 @@
                     for (let k in dbHSVP) options += `<option value="${k}" ${m.n === k ? 'selected' : ''}>${k}</option>`;
                     body.innerHTML += `
                 <tr style="background:${m.b ? '#fff' : '#ffebee'}">
-                    <td><select onchange="seleccionarMed(${i}, this.value)" style="width:100px">${options}<option value="OTRO">OTRO</option></select></td>
+                    <td>
+                        <select onchange="seleccionarMed(${i}, this.value)" style="width:100px">${options}<option value="OTRO" ${m.n === 'OTRO' ? 'selected' : ''}>OTRO</option></select>
+                        ${m.n === 'OTRO' ? `<input type="text" placeholder="Nombre fármaco..." value="${m.otroNombre || ''}" oninput="listaMedicamentos[${i}].otroNombre=this.value; recalcular()" style="width:100px; margin-top:5px; display:block;">` : ''}
+                    </td>
                     <td><input type="number" value="${m.d}" oninput="listaMedicamentos[${i}].d=this.value; recalcular()" style="width:40px"></td>
                     <td><input type="number" value="${m.f}" oninput="listaMedicamentos[${i}].f=this.value; recalcular()" style="width:40px"></td>
                     <td><input type="number" value="${m.c}" oninput="listaMedicamentos[${i}].c=this.value; recalcular()" style="width:40px"></td>
@@ -964,31 +1003,91 @@
                 if (dbHSVP[key]) {
                     const d = dbHSVP[key];
                     listaMedicamentos[idx] = { n: key, d: d.d, f: d.f, c: d.c, b: d.b };
-                } else { listaMedicamentos[idx].n = "OTRO"; }
+                } else { listaMedicamentos[idx].n = "OTRO"; listaMedicamentos[idx].otroNombre = ""; }
                 renderMedTable();
             }
 
-            function agregarFilaMed() { listaMedicamentos.push({ n: '', d: 0, f: 24, c: 1, b: true }); renderMedTable(); }
+            function agregarFilaMed() { listaMedicamentos.push({ n: '', otroNombre: '', d: 0, f: 24, c: 1, b: true }); renderMedTable(); }
 
             function generarTodo() {
                 document.getElementById('export-section').classList.remove('hidden');
 
                 // Historia Clinica Column (Left)
                 let hc = "==== HISTORIA CLÍNICA HSVP ====\n\n";
+                hc += "1. DATOS DE FILIACIÓN Y ADMISIÓN\n";
+                hc += "------------------------------------------------\n";
+                // Fila 1 - Madre y Padre
+                hc += "MADRE: " + document.getElementById('nomM').value + " | " + document.getElementById('edadM').value + " a | C.I: " + document.getElementById('cedM').value + "\n";
+                const raza = document.getElementById('razaM') ? document.getElementById('razaM').value : "";
+                hc += "    ESCOLARIDAD: " + document.getElementById('insM').value + (raza ? " | RAZA: " + raza : "") + "\n";
+                hc += "    GS: " + document.getElementById('gsM').value + " | COBERTURA: " + (document.getElementById('cobM').value === 'PRIVADO' ? document.getElementById('cobM_priv').value : document.getElementById('cobM').value) + "\n";
+                hc += "    DIR: " + document.getElementById('dirM').value + " | TELF: " + document.getElementById('telM').value + "\n";
+                hc += "PADRE: " + document.getElementById('nomP').value + " | " + document.getElementById('edadP').value + " a | C.I: " + document.getElementById('cedP').value + "\n";
+                hc += "    COBERTURA: " + (document.getElementById('cobP').value === 'PRIVADO' ? document.getElementById('cobP_priv').value : document.getElementById('cobP').value) + " | TELF: " + document.getElementById('telP').value + "\n\n";
+
+                // Fila 2 - Recién Nacido
                 hc += "PACIENTE: " + document.getElementById('ape1N').value + " " + document.getElementById('ape2N').value + " " + document.getElementById('nomN').value + "\n";
-                hc += "HCU: " + document.getElementById('hcu').value + " | EDAD: " + document.getElementById('edadReal').value + "\n";
-                hc += "FECHA INGRESO: " + document.getElementById('fIngreso').value + "\n";
+                hc += "HCU: " + document.getElementById('hcu').value + " | SEXO: " + (document.getElementById('sexoN').value.toUpperCase()) + "\n";
+                hc += "FECHA NAC/ING: " + document.getElementById('fIngreso').value + "\n";
+                hc += "EDAD REAL: " + document.getElementById('edadReal').value + "\n\n";
+
+                hc += "2. ANTECEDENTES CLÍNICOS\n";
                 hc += "------------------------------------------------\n";
-                hc += "MADRE: " + document.getElementById('nomM').value + " | " + document.getElementById('edadM').value + " años\n";
-                hc += "GS: " + document.getElementById('gsM').value + " | COBERTURA: " + (document.getElementById('cobM').value === 'PRIVADO' ? 'PRIVADO - ' + document.getElementById('cobM_priv').value : document.getElementById('cobM').value) + "\n";
-                hc += "PADRE: " + document.getElementById('nomP').value + " | " + document.getElementById('edadP').value + " años\n";
-                hc += "GS: " + document.getElementById('gsM').value + " | COBERTURA: " + (document.getElementById('cobP').value === 'PRIVADO' ? 'PRIVADO - ' + document.getElementById('cobP_priv').value : document.getElementById('cobP').value) + "\n";
+                if (document.getElementById('antPatM').value) hc += "PATOL MATERNOS: " + document.getElementById('antPatM').value + "\n";
+                if (document.getElementById('antQuiM').value) hc += "QUIRURG MATERNOS: " + document.getElementById('antQuiM').value + "\n";
+                if (document.getElementById('antFamM').value) hc += "FAMILIARES MATERNOS: " + document.getElementById('antFamM').value + "\n";
+                hc += "GINECO-OBSTÉTICOS:\n";
+                hc += "MENARQUIA: " + document.getElementById('menarquia').value + " | CICLOS: " + document.getElementById('ciclos').value + " | IVSA: " + document.getElementById('ivsa').value + "\n";
+                hc += "PAREJAS: " + document.getElementById('parejas').value + " | ETS: " + document.getElementById('ets').value + " | PAPTEST: " + document.getElementById('paptest').value + " | ACO: " + document.getElementById('aco').value + "\n";
+                hc += "FUM: " + document.getElementById('fum').value + " -> EGx FUM: " + document.getElementById('egFum').value + " | ECO: " + document.getElementById('egEco').value + "\n";
+                hc += "GESTAS (" + document.getElementById('gestas').value + "), PARTOS (" + document.getElementById('partos').value + "), CESÁREAS (" + document.getElementById('cesareas').value + "), ABORTOS (" + document.getElementById('abortos').value + ")\n";
+                hc += "HIJOS VIVOS (" + document.getElementById('hVivos').value + "), HIJOS MUERTOS (" + document.getElementById('hMuertos').value + ")\n";
+
+                const numGestas = parseInt(document.getElementById('gestas').value) || 0;
+                for (let i = 1; i <= numGestas; i++) {
+                    const eg = document.getElementById(`gesta_${i}_edad`) ? document.getElementById(`gesta_${i}_edad`).value : '';
+                    const tp = document.getElementById(`gesta_${i}_tipo`) ? document.getElementById(`gesta_${i}_tipo`).value : '';
+                    const cp = document.getElementById(`gesta_${i}_comp`) ? document.getElementById(`gesta_${i}_comp`).value : '';
+                    if (eg || tp || cp) hc += `  - Gesta ${i}: Edad ${eg}, Tipo: ${tp}${cp ? ', Comp: ' + cp : ''}\n`;
+                }
+                if (document.getElementById('antHMuertos').value && !document.getElementById('detallesMuertos').classList.contains('hidden')) {
+                    hc += "  - Causa Muerte Hijos: " + document.getElementById('antHMuertos').value + "\n";
+                }
+
+                hc += "\nINMUNIZACIONES/MADURACIÓN:\n";
+                let vacunas = [];
+                if (document.getElementById('v_dt').checked) vacunas.push("DT (" + document.getElementById('v_dt_dosis').value + " dosis)");
+                if (document.getElementById('v_hepb').checked) vacunas.push("HepB (" + document.getElementById('v_hepb_dosis').value + " dosis)");
+                if (document.getElementById('v_inf').checked) vacunas.push("Influenza (" + document.getElementById('v_inf_dosis').value + " dosis)");
+                if (document.getElementById('v_covid').checked) vacunas.push("COVID-19 (" + document.getElementById('v_covid_dosis').value + " dosis)");
+                hc += "VACUNAS: " + (vacunas.length > 0 ? vacunas.join(", ") : "Ninguna reportada") + "\n";
+
+                const mad = document.getElementById('madPul').value;
+                hc += "MADURACIÓN PULMONAR: " + mad + (['COMPLETA', 'INCOMPLETA'].includes(mad) ? " - " + document.getElementById('madPul_tipo').value : "") + "\n\n";
+
+                hc += "NARRATIVA:\n";
+                if (document.getElementById('narrPre').value) hc += "**PRENATAL:** " + document.getElementById('narrPre').value + "\n";
+                if (document.getElementById('narrNat').value) hc += "**NATAL:** " + document.getElementById('narrNat').value + "\n";
+                if (document.getElementById('narrPost').value) hc += "**POSTNATAL:** " + document.getElementById('narrPost').value + "\n\n";
+
+                hc += "3. EXAMEN FÍSICO Y ESCALAS\n";
                 hc += "------------------------------------------------\n";
-                hc += "APGAR: 1m=" + document.getElementById('resApgar1').value + " | 5m=" + document.getElementById('resApgar5').value + " | 10m=" + document.getElementById('resApgar10').value + "\n";
+                hc += "MEDIDAS ANTROPOMÉTRICAS Y SIGNOS VITALES:\n";
                 hc += "PESO: " + document.getElementById('peso_ex').value + "g | TALLA: " + document.getElementById('talla').value + "cm\n";
-                hc += "PC: " + document.getElementById('pc').value + "cm | PB: " + document.getElementById('pb').value + "cm\n";
-                hc += "PA: " + document.getElementById('pa_val').value + " | FC: " + document.getElementById('fc').value + " | SatO2: " + document.getElementById('sat').value + "%\n";
-                hc += "------------------------------------------------\n";
+                hc += "P. CEFÁLICO: " + document.getElementById('pc').value + "cm | P. BRAQUIAL: " + document.getElementById('pb').value + "cm\n";
+                hc += "FC: " + document.getElementById('fc').value + "lpm | FR: " + document.getElementById('fr').value + "rpm | T°: " + document.getElementById('temp').value + "°C | SatO2: " + document.getElementById('sat').value + "%\n";
+                hc += "P. ARTERIAL: " + document.getElementById('pa_val').value + "\n\n";
+
+                hc += "ESCALAS DE VALORACIÓN:\n";
+                hc += "APGAR (1 min): " + document.getElementById('resApgar1').value + "\n";
+                hc += "APGAR (5 min): " + document.getElementById('resApgar5').value + "\n";
+                hc += "APGAR (10 min): " + document.getElementById('resApgar10').value + "\n\n";
+
+                if (document.getElementById('diag').value) {
+                    hc += "4. DIAGNÓSTICOS\n";
+                    hc += "------------------------------------------------\n";
+                    hc += document.getElementById('diag').value + "\n";
+                }
 
                 document.getElementById('finalOutput-hc').innerText = hc;
 
@@ -1004,7 +1103,10 @@
                 adca += "D: DIETA " + document.getElementById('tipoDieta').value + "\n";
                 adca += "I: " + document.getElementById('resFinalIV').innerText + "\n";
                 adca += "M: MEDICAMENTOS\n";
-                listaMedicamentos.forEach(m => adca += "   - " + m.n + ": " + m.d + " mg/kg c/" + m.f + "h\n");
+                listaMedicamentos.forEach(m => {
+                    const nombreMedicamento = m.n === 'OTRO' && m.otroNombre ? m.otroNombre : m.n;
+                    adca += "   - " + nombreMedicamento + ": " + m.d + " mg/kg c/" + m.f + "h\n";
+                });
                 adca += "E: " + document.getElementById('exa').value + "\n";
                 adca += "L: " + document.getElementById('lab').value + "\n";
                 adca += "C: " + document.getElementById('int').value + "\n";
@@ -1018,7 +1120,7 @@
             // --- LÓGICA AUTOGUARDADO ---
             function saveForm() {
                 const data = {};
-                document.querySelectorAll('input:not([type="radio"]), select, textarea').forEach(el => {
+                document.querySelectorAll('input:not([type="radio"]):not([type="search"]), select, textarea').forEach(el => {
                     if (el.id) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
                 });
 
@@ -1029,10 +1131,15 @@
                 localStorage.setItem('hsvp_data', JSON.stringify(data));
             }
 
-            function loadForm() {
-                const data = JSON.parse(localStorage.getItem('hsvp_data'));
+            function loadForm(manualLoad = false) {
+                const dataStr = localStorage.getItem('hsvp_data');
+                if (!dataStr) {
+                    if (manualLoad) alert("No hay datos de autoguardado disponibles.");
+                    return;
+                }
+                const data = JSON.parse(dataStr);
                 if (data) {
-                    document.querySelectorAll('input:not([type="radio"]), select, textarea').forEach(el => {
+                    document.querySelectorAll('input:not([type="radio"]):not([type="search"]), select, textarea').forEach(el => {
                         if (data[el.id] !== undefined) {
                             if (el.type === 'checkbox') el.checked = data[el.id];
                             else el.value = data[el.id];
@@ -1069,11 +1176,18 @@
                 }
             }
 
+            function limpiarFormulario() {
+                if (confirm("¿Estás seguro de que quieres limpiar todo el formulario para un nuevo paciente?")) {
+                    localStorage.removeItem('hsvp_data');
+                    window.location.reload();
+                }
+            }
+
             document.addEventListener("input", saveForm);
             document.addEventListener("change", saveForm);
 
             window.onload = () => {
-                loadForm();
+                // loadForm() is intentionally NOT called on load to start with a blank form
                 calcEdadAlIngreso();
                 renderMedTable();
             };

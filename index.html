@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA NEONATAL INTEGRAL v21.0 - HSVP</title>
+    <title>HISTORIA CLINICA INGRESO NEONATOLOGIA v21.0 - HSVP</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -375,6 +375,37 @@
                         class="highlight-box"></div>
                 <div class="field"><label>EG Eco/Estimada:</label><input type="text" id="egEco"></div>
             </div>
+
+            <div class="grid" style="margin-top:10px">
+                <div class="field"><label>Controles Prenatales:</label><input type="number" id="ctrlPre"
+                        oninput="toggleInputVal(this, 'ctrlPre_lugar')"></div>
+                <div class="field hidden" id="box_ctrlPre_lugar"><label>Lugar de Controles:</label><input type="text"
+                        id="ctrlPre_lugar"></div>
+                <div class="field"><label>Número de Ecos:</label><input type="number" id="numEcos"
+                        oninput="toggleInputVal(this, 'ecos_obs')"></div>
+                <div class="field hidden" id="box_ecos_obs"><label>Observaciones Ecos:</label><input type="text"
+                        id="ecos_obs"></div>
+            </div>
+
+            <div class="grid" style="margin-top:10px">
+                <div class="field full-width">
+                    <label><input type="checkbox" id="chk_inf_hosp"
+                            onchange="toggleCheckboxBlock(this, 'inf_hosp_desc')"> Antecedentes Infecciosos /
+                        Hospitalizaciones durante el embarazo</label>
+                    <textarea id="inf_hosp_desc" class="hidden" rows="2" style="margin-top:5px; width:100%"></textarea>
+                </div>
+                <div class="field full-width">
+                    <label><input type="checkbox" id="chk_comp_nutri"
+                            onchange="toggleCheckboxBlock(this, 'comp_nutri_desc')"> Complementos Nutricionales</label>
+                    <textarea id="comp_nutri_desc" class="hidden" rows="2"
+                        style="margin-top:5px; width:100%"></textarea>
+                </div>
+                <div class="field full-width">
+                    <label><input type="checkbox" id="chk_med_emb" onchange="toggleCheckboxBlock(this, 'med_emb_desc')">
+                        Medicación durante el embarazo</label>
+                    <textarea id="med_emb_desc" class="hidden" rows="2" style="margin-top:5px; width:100%"></textarea>
+                </div>
+            </div>
             <div class="grid" style="margin-top:10px">
                 <div class="grid" style="margin-top:10px">
                     <div class="field"><label>Gestas:</label><input type="number" id="gestas"
@@ -440,6 +471,7 @@
                         oninput="document.getElementById('p').value=this.value; recalcular();"></div>
                 <div class="field"><label>Talla (cm):</label><input type="number" id="talla"></div>
                 <div class="field"><label>P. Cefálico (cm):</label><input type="number" id="pc"></div>
+                <div class="field"><label>P. Torácico (cm):</label><input type="number" id="pt"></div>
                 <div class="field"><label>P. Braquial (cm):</label><input type="number" id="pb"></div>
                 <div class="field"><label>FC (lpm):</label><input type="number" id="fc"></div>
                 <div class="field"><label>FR (rpm):</label><input type="number" id="fr"></div>
@@ -581,6 +613,14 @@
                         </select></div>
                     <div class="field"><label>TOTAL DOWNES:</label><input type="text" id="resDownes" readonly
                             class="highlight-box"></div>
+                </div>
+
+                <div class="calc-card" style="margin-top:15px; grid-column: 1 / -1;">
+                    <h3>Edad Gestacional por Capurro</h3>
+                    <div class="field">
+                        <label>Semanas estimadas (Capurro):</label>
+                        <input type="text" id="capurro" placeholder="ej. 38 semanas">
+                    </div>
                 </div>
             </div>
 
@@ -769,6 +809,22 @@
                 </div>
             </div>
 
+            <div class="calc-card" style="margin-top:20px; border-color:var(--accent)">
+                <h3>Médicos que Ingresan</h3>
+                <div class="field" style="width:100%; max-width:400px; margin:0 auto;">
+                    <label>Nombre del Médico:</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="medicoInput" list="listaMedicos"
+                            placeholder="Escriba o seleccione un médico" autocomplete="off" style="flex:1;">
+                        <button onclick="agregarMedicoSel()"
+                            style="padding: 5px 15px; border-radius:4px; border:none; background:var(--primary); color:white; cursor:pointer;"
+                            type="button">Agregar</button>
+                    </div>
+                    <datalist id="listaMedicos"></datalist>
+                </div>
+                <div id="medicosContainer" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"></div>
+            </div>
+
             <div style="display: flex; gap: 10px; margin-top:20px;">
                 <button class="btn-main" onclick="generarTodo()" style="flex:2;">GENERAR HISTORIA CLÍNICA E
                     INDICACIONES</button>
@@ -799,6 +855,7 @@
             };
 
             let listaMedicamentos = [];
+            let medicosSeleccionados = [];
 
             // --- LÓGICA FILIACIÓN Y EDAD ---
             function calcEdadAlIngreso() {
@@ -879,6 +936,20 @@
                     input.classList.add('hidden');
                     input.value = '';
                 }
+            }
+
+            function toggleInputVal(inputPara, boxId) {
+                const val = parseInt(inputPara.value) || 0;
+                const box = document.getElementById('box_' + boxId);
+                const inner = document.getElementById(boxId);
+                if (val > 0) { box.classList.remove('hidden'); }
+                else { box.classList.add('hidden'); inner.value = ''; }
+            }
+
+            function toggleCheckboxBlock(chk, txtId) {
+                const txt = document.getElementById(txtId);
+                if (chk.checked) { txt.classList.remove('hidden'); }
+                else { txt.classList.add('hidden'); txt.value = ''; }
             }
 
             function toggleMaduracion() {
@@ -1061,7 +1132,14 @@
                 // Bloque 1
                 hc += "1. DATOS DE FILIACIÓN Y ADMISIÓN\n";
                 hc += "------------------------------------------------\n";
-                hc += "FECHA INGRESO: " + val('fIngreso') + "\n";
+
+                hc += "[ DEL PACIENTE RECIÉN NACIDO ]\n";
+                hc += "- Nombres: " + val('ape1N') + " " + val('ape2N') + " " + val('nomN') + "\n";
+                hc += "- HCU: " + val('hcu') + "\n";
+                hc += "- Sexo: " + val('sexoN').toUpperCase() + "\n";
+                hc += "- Fecha de Ingreso: " + val('fIngreso') + "\n";
+                hc += "- Fecha Nacimiento: " + val('fNac') + " | Hora: " + val('hNac') + "\n";
+                hc += "- Edad al Ingreso: " + val('edadReal') + "\n";
 
                 hc += "\n[ DE LA MADRE ]\n";
                 hc += "- Nombre: " + val('nomM') + "\n";
@@ -1088,15 +1166,10 @@
                     const cobP = val('cobP') === 'PRIVADO' ? val('cobP_priv') : val('cobP');
                     hc += "- Cobertura: " + cobP + "\n";
                     hc += "- Dirección: " + val('dirP') + "\n";
-                    hc += "- Teléfono: " + val('telP') + "\n";
+                    hc += "- Teléfono: " + val('telP') + "\n\n";
+                } else {
+                    hc += "\n";
                 }
-
-                hc += "\n[ DEL PACIENTE RECIÉN NACIDO ]\n";
-                hc += "- Nombres: " + val('ape1N') + " " + val('ape2N') + " " + val('nomN') + "\n";
-                hc += "- HCU: " + val('hcu') + "\n";
-                hc += "- Sexo: " + val('sexoN').toUpperCase() + "\n";
-                hc += "- Fecha Nacimiento: " + val('fNac') + " | Hora: " + val('hNac') + "\n";
-                hc += "- Edad al Ingreso: " + val('edadReal') + "\n\n";
 
                 // Bloque 2
                 hc += "2. ANTECEDENTES CLÍNICOS\n";
@@ -1127,13 +1200,35 @@
                     hc += "- Causa Hijos Muertos: " + antHMuertosStr + "\n";
                 }
 
-                hc += "\n[ INMUNIZACIONES Y MADURACIÓN ]\n";
+                if (parseInt(val('ctrlPre')) > 0) {
+                    hc += "- Controles Prenatales: " + val('ctrlPre') + (val('ctrlPre_lugar') ? ` en ${val('ctrlPre_lugar')}` : "") + "\n";
+                }
+                if (parseInt(val('numEcos')) > 0) {
+                    hc += "- Número de Ecos: " + val('numEcos') + (val('ecos_obs') ? ` - Observaciones: ${val('ecos_obs')}` : "") + "\n";
+                }
+                if (chk('chk_inf_hosp') && val('inf_hosp_desc')) {
+                    hc += "- Ant. Infecciosos/Hosp.: " + val('inf_hosp_desc') + "\n";
+                }
+                if (chk('chk_comp_nutri') && val('comp_nutri_desc')) {
+                    hc += "- Complementos Nutricionales: " + val('comp_nutri_desc') + "\n";
+                }
+                if (chk('chk_med_emb') && val('med_emb_desc')) {
+                    hc += "- Medicación en el Embarazo: " + val('med_emb_desc') + "\n";
+                }
+
                 let vacunas = [];
                 if (chk('v_dt')) vacunas.push(`DT (${val('dt_dosis')} dosis)`);
                 if (chk('v_hepb')) vacunas.push(`HepB (${val('hepb_dosis')} dosis)`);
                 if (chk('v_inf')) vacunas.push(`Influenza (${val('inf_dosis')} dosis)`);
                 if (chk('v_covid')) vacunas.push(`COVID-19 (${val('covid_dosis')} dosis)`);
-                hc += "- Vacunas Maternas: " + (vacunas.length > 0 ? vacunas.join(", ") : "Ninguna reportada") + "\n";
+
+                if (vacunas.length > 0) {
+                    hc += "\n[ INMUNIZACIONES Y MADURACIÓN ]\n";
+                    hc += "- Vacunas Maternas: " + vacunas.join(", ") + "\n";
+                } else {
+                    hc += "\n[ MADURACIÓN ]\n";
+                }
+
                 const mad = val('madPul');
                 hc += "- Maduración Pulmonar: " + mad + (['COMPLETA', 'INCOMPLETA'].includes(mad) ? " (" + val('madPul_tipo') + ")" : "") + "\n";
 
@@ -1154,6 +1249,7 @@
                 hc += "- Peso: " + val('peso_ex') + " g\n";
                 hc += "- Talla: " + val('talla') + " cm\n";
                 hc += "- Perímetro Cefálico: " + val('pc') + " cm\n";
+                hc += "- Perímetro Torácico: " + val('pt') + " cm\n";
                 hc += "- Perímetro Braquial: " + val('pb') + " cm\n";
                 hc += "- Frecuencia Cardíaca: " + val('fc') + " lpm\n";
                 hc += "- Frecuencia Respiratoria: " + val('fr') + " rpm\n";
@@ -1161,10 +1257,20 @@
                 hc += "- Saturación O2: " + val('sat') + " %\n";
                 hc += "- Presión Arterial: " + val('pa_val') + "\n";
 
-                hc += "\n[ ESCALAS DE VALORACIÓN NEONATAL ]\n";
-                hc += "- APGAR: 1 min (" + val('resApgar1') + ") | 5 min (" + val('resApgar5') + ") | 10 min (" + val('resApgar10') + ")\n";
+                let apgarStr = [];
+                if (val('resApgar1')) apgarStr.push(`1 min (${val('resApgar1')})`);
+                if (val('resApgar5')) apgarStr.push(`5 min (${val('resApgar5')})`);
+                if (val('resApgar10')) apgarStr.push(`10 min (${val('resApgar10')})`);
+
+                const capurro = val('capurro');
                 const downes = val('resDownes');
-                if (downes) hc += "- SCORE DOWNES: " + downes + " puntos\n";
+
+                if (apgarStr.length > 0 || downes || capurro) {
+                    hc += "\n[ ESCALAS DE VALORACIÓN NEONATAL ]\n";
+                    if (apgarStr.length > 0) hc += "- APGAR: " + apgarStr.join(" | ") + "\n";
+                    if (downes) hc += "- SCORE DOWNES: " + downes + " puntos\n";
+                    if (capurro) hc += "- CAPURRO: " + capurro + "\n";
+                }
 
                 const efPiel = val('ef_piel');
                 if (efPiel) {
@@ -1182,11 +1288,17 @@
                 }
 
                 // Bloque 4
-                const diagVal = val('diag');
-                if (diagVal) {
+                if (dxSeleccionados.length > 0) {
                     hc += "4. DIAGNÓSTICOS\n";
                     hc += "------------------------------------------------\n";
-                    hc += diagVal.split(';').map(d => d.trim()).filter(d => d).map(d => " - " + d).join('\n') + "\n";
+
+                    // Ordenar diagnósticos para que el Principal aparezca primero
+                    let sortedDx = [...dxSeleccionados].sort((a, b) => b.prin - a.prin);
+
+                    sortedDx.forEach(dx => {
+                        let cie10Text = (dx.c && dx.c !== "S/C") ? ` (${dx.c})` : "";
+                        hc += ` - ${dx.d}${cie10Text}${dx.prin ? ' [PRINCIPAL]' : ''}\n`;
+                    });
                 }
 
                 document.getElementById('finalOutput-hc').innerText = hc;
@@ -1195,7 +1307,14 @@
                 let adca = "==== PLAN DE MANEJO HSVP ====\n\n";
                 adca += "INDICACIONES (ADCAVANDIMELCO):\n";
                 adca += "A: " + val('adm') + "\n";
-                adca += "D: " + val('diag') + "\n";
+
+                let dxAdca = "";
+                let sortedDxAdca = [...dxSeleccionados].sort((a, b) => b.prin - a.prin);
+                sortedDxAdca.forEach(dx => {
+                    let cie10Text = (dx.c && dx.c !== "S/C") ? ` (${dx.c})` : "";
+                    dxAdca += `${dx.d}${cie10Text}${dx.prin ? ' [PRINCIPAL]' : ''}; `;
+                });
+                adca += "D: " + (dxAdca || val('diag').replace(/\n/g, ' ')) + "\n";
                 adca += "C: " + val('cond') + "\n";
                 adca += "A: ALERGIAS " + val('aler') + "\n";
                 adca += "V: " + val('vit_txt') + "\n";
@@ -1211,7 +1330,20 @@
                 adca += "L: " + val('lab') + "\n";
                 adca += "C: " + val('int') + "\n";
                 adca += "O: " + val('otr') + "\n";
+                if (medicosSeleccionados.length > 0) {
+                    adca += "\n------------------------------------------------\n";
+                    adca += "MÉDICA/O(S) QUE INGRESA(N):\n";
+                    hc += "\n------------------------------------------------\n";
+                    hc += "MÉDICA/O(S) QUE INGRESA(N):\n";
+                    medicosSeleccionados.forEach(med => {
+                        adca += "- " + med + "\n";
+                        hc += "- " + med + "\n";
+                    });
+                    adca += "\n";
+                    hc += "\n";
+                }
 
+                document.getElementById('finalOutput-hc').innerText = hc;
                 document.getElementById('finalOutput-adca').innerText = adca;
 
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -1227,6 +1359,7 @@
                 // Guardar estructuras dinamicas complejas
                 data['listaMedicamentos'] = listaMedicamentos;
                 data['dxSeleccionados'] = dxSeleccionados;
+                data['medicosSeleccionados'] = medicosSeleccionados;
 
                 localStorage.setItem('hsvp_data', JSON.stringify(data));
             }
@@ -1248,6 +1381,10 @@
 
                     if (data['listaMedicamentos']) listaMedicamentos = data['listaMedicamentos'];
                     if (data['dxSeleccionados']) dxSeleccionados = data['dxSeleccionados'];
+                    if (data['medicosSeleccionados']) {
+                        medicosSeleccionados = data['medicosSeleccionados'];
+                        renderMedicos();
+                    }
 
                     generarGestaciones();
 
@@ -1286,10 +1423,63 @@
             document.addEventListener("input", saveForm);
             document.addEventListener("change", saveForm);
 
+            function agregarMedicoSel() {
+                const inp = document.getElementById('medicoInput');
+                if (!inp) return;
+                let nombre = inp.value.trim().toUpperCase();
+                if (!nombre) return;
+
+                if (!medicosSeleccionados.includes(nombre)) {
+                    medicosSeleccionados.push(nombre);
+                    renderMedicos();
+                    saveForm();
+                }
+
+                let medGuardados = JSON.parse(localStorage.getItem('hsvp_medicos') || '[]');
+                if (!medGuardados.includes(nombre)) {
+                    medGuardados.push(nombre);
+                    localStorage.setItem('hsvp_medicos', JSON.stringify(medGuardados));
+                    cargarMedicos();
+                }
+                inp.value = '';
+            }
+
+            function eliminarMedico(nombre) {
+                medicosSeleccionados = medicosSeleccionados.filter(m => m !== nombre);
+                renderMedicos();
+                saveForm();
+            }
+
+            function renderMedicos() {
+                const container = document.getElementById('medicosContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                medicosSeleccionados.forEach(m => {
+                    container.innerHTML += `<div style="background:#e3f2fd; padding:5px 10px; border-radius:15px; border:1px solid #1976D2; display:flex; align-items:center; gap:5px; font-size:0.9em;">
+                        ${m}
+                        <span onclick="eliminarMedico('${m}')" style="color:red; cursor:pointer; font-weight:bold; margin-left:5px;">✖</span>
+                    </div>`;
+                });
+            }
+
+            function cargarMedicos() {
+                let medGuardados = JSON.parse(localStorage.getItem('hsvp_medicos') || '[]');
+                const dt = document.getElementById('listaMedicos');
+                if (dt) {
+                    dt.innerHTML = '';
+                    medGuardados.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        dt.appendChild(opt);
+                    });
+                }
+            }
+
             window.onload = () => {
                 // loadForm() is intentionally NOT called on load to start with a blank form
                 calcEdadAlIngreso();
                 renderMedTable();
+                cargarMedicos();
             };
         </script>
 </body>
